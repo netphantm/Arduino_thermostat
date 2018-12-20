@@ -40,6 +40,7 @@ $pem = preg_replace('/\-+BEGIN CERTIFICATE\-+/','',$x509_cert);
 $pem = preg_replace('/\-+END CERTIFICATE\-+/','',$pem);
 
 $SHA1 = str_replace("SHA1 Fingerprint=", '', x509_fingerprint($pem,$hash='sha1'));
+$SHA1 = wordwrap($SHA1 , 2 , ':' , true );
 $host = "temperature.hugo.ro";
 $httpsPort = "443";
 $interval = 120000;

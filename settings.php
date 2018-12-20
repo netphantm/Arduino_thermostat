@@ -61,12 +61,12 @@ print("Hostname = <select name=\"IP\">\n");#onchange=\"this.form.action=this.val
 #print(" <option value=\"\">Select...</option>\n");
 print(" <option value=\"http://192.168.178.104/\">Clamps</option>\n");
 print("</select><br>\n");
-print("Certificate Fingerprint SHA1 = <input type='text' name='SHA1' maxlength=59 size=55 value=$SHA1><br>\n");
-print("Host = <input type='text' name='host' size=15 value=$host>\n");
-print("Port = <input type='text' name='httpsPort' size=3 value=$httpsPort><br>\n");
-print("Refresh interval = <input type='text' name='interval' size=5 value=$interval><br>\n");
-print("Temperature MIN = <input type='text' name='temp_min' size=2 value=$temp_min><br>\n");
-print("Temperature MAX = <input type='text' name='temp_max' size=2 value=$temp_min><br>\n");
+print("Certificate Fingerprint SHA1 = <input type='text' name='SHA1' maxlength=59 size=40 value=$SHA1><br>\n");
+print("Host = <input type='text' name='host' size=12 value=$host>\n");
+print("Port = <input type='text' name='httpsPort' size=2 value=$httpsPort><br>\n");
+print("Refresh interval = <input type='text' name='interval' size=2 value=$interval><br>\n");
+print("Temperature MIN = <input type='text' name='temp_min' size=1 value=$temp_min><br>\n");
+print("Temperature MAX = <input type='text' name='temp_max' size=1 value=$temp_max><br>\n");
 print("<input type='submit' value='Submit' >\n");
 print("</form></body>");
 ?>

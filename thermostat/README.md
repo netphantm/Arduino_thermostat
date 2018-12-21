@@ -8,30 +8,30 @@ All settings can be introduced in a form on the logging webserver (with preloade
 
 ---
 
-##Features:
-- Draws a google graph from the logged data, including a gauge where you can see the hysteresis, a toggle for the date/time display
-- Uses a webserver to log the measurements (HTTPS)
-- Checks it's certificates SHA1 fingerprint against the one specified
-- Uses WiFiManager lib, so you don't have to hardcode the WiFi credentials
-- Stores config data to SPIFFS in JSON format:
-- **ESP8266 hostname (in case you have more than one device logging to the same webserver)**
-- **SHA1 fingerprint (with php script running on the webserver, that reads it from localhost)**
-- **Log webserver hostname**
-- **Log webserver portname (HTTPS)**
-- **Refresh/measuring interval**
-- **Minimum/maximum temperature values for the hysteresis**
+### Features:
+- **Draws a google graph from the logged data, including a gauge where you can see the hysteresis, a toggle for the date/time display**
+- **Uses a webserver to log the measurements (HTTPS)**
+- **Checks it's certificates SHA1 fingerprint against the one specified**
+- **Uses WiFiManager lib, so you don't have to hardcode the WiFi credentials**
+- **Stores config data to SPIFFS in JSON format:**
+    - ESP8266 hostname (in case you have more than one device logging to the same webserver)
+    - SHA1 fingerprint (with php script running on the webserver, that reads it from localhost)
+    - Log webserver hostname
+    - Log webserver portname (HTTPS)
+    - Refresh/measuring interval
+    - Minimum/maximum temperature values for the hysteresis
 
 ---
 
 ### Libraries used:
-<ESP8266HTTPClient.h>
-<WiFiManager.h>
-<ESP8266WebServer.h>
-<ESP8266mDNS.h>
-<FS.h>
-<OneWire.h>
-<DallasTemperature.h>
-<ArduinoJson.h>
+- <WiFiManager.h>
+- <ESP8266HTTPClient.h>
+- <ESP8266WebServer.h>
+- <ESP8266mDNS.h>
+- <FS.h>
+- <OneWire.h>
+- <DallasTemperature.h>
+- <ArduinoJson.h>
 
 ---
 

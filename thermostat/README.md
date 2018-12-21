@@ -1,6 +1,6 @@
 ## DS18B20 (oneWire) thermostat
 
-A thermostat using a DS18B20 oneWire sensor on a WEMOS D1 Mini Pro. I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 deg. C tolerance. The DS18B20 has a +/-0.5 deg. C tolerance and is perfectly stable. It uses two relais, for safety (to be sure that there is no current on either one of the power lines).
+A thermostat using a DS18B20 oneWire sensor on a WEMOS D1 Mini Pro. It uses two relais, for safety (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 deg. C tolerance. The DS18B20 has a +/-0.5 deg. C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relais, so I bought a kit (circuit board, relais, terminal strip and SMD components) and soldered it myself.
 
 The thermostat is made for a refrigerator, so it will fire up the relais if the temperature is greater than temp_max and power them off if temperature is below temp_min (see TODO below).
 
@@ -44,6 +44,6 @@ All settings can be introduced in a form on the logging webserver (with preloade
 - CSS styled tooltip, with relais ON/OFF display
 - Documentation (hardware 'fritzing')
 - Clean up code and add comments
-- Add links to hardware on eBay
+- Add links to hardware (eBay)
 - A nice design
 - Add some nice pictures

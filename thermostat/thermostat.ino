@@ -40,7 +40,7 @@ void getTemperature() {
   uptime = (millis() / 1000 );
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0));
-  temp_c = temp_c - 2.4;
+  //temp_c = temp_c - 2.4;
   delay(10);
 }
 

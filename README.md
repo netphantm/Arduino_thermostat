@@ -1,2 +1,2 @@
 # thermostat
-ESP8266 playgroung
+Hugo's ESP8266 playgroung

@@ -17,6 +17,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [TODO](#TODO)
 - [Hardware](#Hardware-links)
 - [Images](#Images)
+- [Screenshots](#Screenshot-graph-page)
 - [License](#License)
 
 [↑ goto top](#DS18B20-thermostat)

@@ -15,7 +15,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [Features](#features)
 - [Libraries](#Libraries-needed)
 - [TODO](#TODO)
-- [Hardware](#Hardware-links)
+- [Links](#Hardware-suftware-links)
 - [Images](#Images)
 - [Screenshots](#Screenshot-graph-page)
 - [License](#License)
@@ -74,13 +74,15 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### Hardware links
+### Hardware/Software links
 
 [16MB WeMos D1 Mini Pro # NodeMcu # ESP8266 ESP-8266EX CP2104 for Arduino NodeMCU](https://www.ebay.de/itm/16MB-WeMos-D1-Mini-Pro-NodeMcu-ESP8266-ESP-8266EX-CP2104-for-Arduino-NodeMCU/272405937539?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 
 [DS18b20 Wasserdichter Temperatursensor Thermometer Temperaturfühler LS4G](https://www.ebay.de/itm/DS18b20-Wasserdichter-Temperatursensor-Thermometer-Temperaturf%C3%BChler-LS4G/232860153205?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 
 [Dual Relais Shield für WEMOS D1 Mini (ESP 8266) WIFI Modul Kit/Bausatz -Neu!](https://www.ebay.de/itm/Dual-Relais-Shield-fur-WEMOS-D1-Mini-ESP-8266-WIFI-Modul-Kit-Bausatz-Neu/143054227109?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20140107084234%26meid%3Df7ec875706584a5497b0bdaa8d4e8cbc%26pid%3D100011%26rk%3D3%26rkt%3D12%26sd%3D143021212740%26itm%3D143054227109&_trksid=p2047675.c100011.m1850)
+
+[Moment.js](https://momentjs.com/)
 
 [↑ goto top](#DS18B20-thermostat)
 

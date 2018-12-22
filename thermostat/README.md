@@ -54,4 +54,4 @@ All settings can be introduced in a form on the logging webserver (with preloade
 
 ---
 
-![pic-01](pic-01.png){:height="217px" width="300px"}
+<img src="/netphantm/Arduino/raw/master/thermostat/pic-01.png" alt="pic-01" width: "300px" height:"217px">

@@ -50,7 +50,7 @@ All settings can be introduced in a form on the logging webserver (with preloade
 - Clean up code and add comments
 - Add links to hardware (eBay)
 - Change the horrible design
-- Add some nice pictures
+- Add some nice pictures √
 
 ---
 

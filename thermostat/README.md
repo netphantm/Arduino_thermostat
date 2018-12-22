@@ -90,7 +90,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-01.png" alt="pic-01" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-02.png" alt="pic-02" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-03.png" alt="pic-03" width="290px" height="210px">
 
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-04.png" alt="pic-04" width="450px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-05.png" alt="pic-05" width="450px">
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-04.png" alt="pic-04" width="440px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-05.png" alt="pic-05" width="440px">
 
 [↑ goto top](#DS18B20-thermostat)
 

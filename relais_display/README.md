@@ -60,9 +60,9 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 
 ### Images
 
-| <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-01.png" alt="pic-01" width="440px" align="left"> | 
-<img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-02.png" alt="pic-02" width="440px" align="right"> <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-03.png" alt="pic-03" width="440px" align="right"> <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-04.png" alt="pic-04" width="440px" align="right"> |
-
+| <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-01.png" alt="pic-01" width="400px" align="left"> | 
+<img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-02.png" alt="pic-02" width="400px" align="right"> <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-03.png" alt="pic-03" width="400px" align="right"> <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-04.png" alt="pic-04" width="400px" align="right"> |
+---
 ### Screenshot
 
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/screen-01.png" alt="screen-01">

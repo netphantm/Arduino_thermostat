@@ -11,7 +11,16 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### Features:
+### Table of Contents
+- [Features](#features)
+- [Libraries](#Libraries)
+- [TODO](#TODO)
+- [Hardware](#Hardware)
+- [Images](#Images)
+
+---
+
+### Features
 - **Draws a google graph from the logged data (including a gauge with hysteresis and a toggle button for the date/time format of the graph)**
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**
@@ -27,7 +36,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### Libraries used:
+### Libraries used
 - <WiFiManager.h>
 - <ESP8266HTTPClient.h>
 - <ESP8266WebServer.h>
@@ -39,7 +48,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### TODO (priority order may change):
+### TODO
 - License, including links to the original inspiration sources (!ASAP!)
 - Clean up code and add comments
 - Add a small TFT display for temperature, relay status and LAN IP
@@ -55,7 +64,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### Links (hardware)
+### Hardware
 
 [16MB WeMos D1 Mini Pro # NodeMcu # ESP8266 ESP-8266EX CP2104 for Arduino NodeMCU](https://www.ebay.de/itm/16MB-WeMos-D1-Mini-Pro-NodeMcu-ESP8266-ESP-8266EX-CP2104-for-Arduino-NodeMCU/272405937539?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 

@@ -1,9 +1,9 @@
 ## Relay socket with TFT display
 > ESP8266 Socket relay switch
 
-![header](pics/header.png)
+![](pics/pic-01.png)
 
-An IoT socket with a WeMos D1 Mini Pro, an inductive touch sensor and a .96" OLED display. I made it, so I don't have to go in the evening all around to the nightstand to switch the light on, and go back to the office and switch the light off.
+An IoT socket with a WeMos D1 Mini Pro, an inductive touch sensor and a .96" OLED display. I made it, so I don't have to go in the evening all the way over to the nightstand to switch the light on, and go back to the desk and switch the light off (it's a 15m trip every evening :).
 
 The first version is installed in a 3-way extension socket. It also inclded a touch sensor, so you can turn it on locally.
 
@@ -11,15 +11,16 @@ I used tzapu's WiFiManager, so you don't have to hardcode the WiFi credentials i
 
 I've also used a simple relay for this one, since I didn't find a double relay shield at the time (for safety reasons, it's better to switch both power lines off). It should be simple to change though. Take a look at the other project called 'thermostat'.
 
-To switch it on/off from my mobile, I use an app called 'HTTP Shortcuts'. You could also put a shortcut/link on your homescreen and fire up a browser every time, but that's not the simplest way to switch a light on. Perhaps it could be integrated into [Home Assistant](https://hass.io/) or other (more fancy and expensive, the ones you can talk to) home automation systems, I suppose. But in my case, that's overkill.
+To switch it on/off from my mobile, I use an app called 'HTTP Shortcuts'. You could also put a shortcut/link on your homescreen and fire up a browser every time, but that's not the simplest way to switch a light on. I suppose it could be integrated into [Home Assistant](https://hass.io/) or other (more fancy and expensive, the home spies you can talk to) home automation systems with some changes, but in my case that's overkill.
 
 ---
 
 ### Features
 - **WiFiManager**
 - **Touch sensor**
-- **OLED Display (for WiFi config and regular operation)**
-    - It Shows the IP in config mode and after getting a new one over DHCP from the local WiFi AP
+- **OLED Display
+    - It Shows the socket status (On/Off), the IP of the own WiFi access point in config mode, and the LAN and internet IP after connecting to the local WiFi AP
+    - The display dimms down, one minute after using the touch sensor
 
 ---
 

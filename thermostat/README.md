@@ -51,3 +51,7 @@ All settings can be introduced in a form on the logging webserver (with preloade
 - Add links to hardware (eBay)
 - Change the horrible design
 - Add some nice pictures
+
+---
+
+![pic-01](pic-01.png){:height="217px" width="300px"}

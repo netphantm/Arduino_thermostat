@@ -45,15 +45,13 @@ All settings can be introduced in a form on the logging webserver. Some standard
 - Option to change between 'cooling' and 'heating' thermostats (fire up on temp_min or on temp_max)
 - Set graphing time period (perhaps enable zooming)
 - CSS styled mouseover tooltip, including relay status
+- Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against uploaded CA certificate (longer validity then my letsencrypt signed certificate)
+- Perhaps: switching to syslog on port 514 (UDP)
 - Documentation (including hardware 'fritzing')
 - Clean up code and add comments
 - Add links to hardware (eBay)
 - Change the horrible design
 - Add some nice pictures √
-
-
-- Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against uploaded CA certificate (longer validity then my letsencrypt signed certificate)
-- Perhaps: switching to syslog on port 514 (UDP)
 
 ---
 

@@ -1,4 +1,7 @@
 ## DS18B20 (oneWire) thermostat
+> WEMOS D1 Mini Pro thermostat with DS18B20 oneWire sensor
+
+![](header.png | width=100)
 
 A thermostat using a DS18B20 oneWire sensor on a WEMOS D1 Mini Pro. It uses two relays, for safety (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 deg. C tolerance. The DS18B20 has a +/-0.5 deg. C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and SMD components).
 
@@ -15,7 +18,7 @@ All settings can be introduced in a form on the logging webserver (with preloade
 - **Uses WiFiManager lib, so you don't have to hardcode the WiFi credentials**
 - **Shows time/date in the browser's timezone**
 - **Setup page for configuration variables, which it then stores to SPIFFS in JSON format:**
-    - ESP8266 hostname (in case you have more than one device logging to the same webserver)
+    - WEMOS D1 hostname (in case you have more than one device logging to the same webserver)
     - SHA1 fingerprint (with php script running on the webserver, that reads it from localhost)
     - Log webserver hostname
     - Log webserver portname (HTTPS)

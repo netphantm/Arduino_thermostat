@@ -39,7 +39,7 @@ All settings can be introduced in a form on the logging webserver. Some standard
 
 ---
 
-### TODO (order may change):
+### TODO (priority order may change):
 - License, including links to the original inspiration sources (!ASAP!)
 - Add a small TFT display for temperature, relay status and LAN IP
 - Option to change between 'cooling' and 'heating' thermostats (fire up on temp_min or on temp_max)
@@ -50,6 +50,7 @@ All settings can be introduced in a form on the logging webserver. Some standard
 - Add links to hardware (eBay)
 - Change the horrible design
 - Add some nice pictures √
+
 
 - Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against uploaded CA certificate (longer validity then my letsencrypt signed certificate)
 - Perhaps: switching to syslog on port 514 (UDP)

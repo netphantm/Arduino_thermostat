@@ -16,7 +16,7 @@ All settings can be introduced in a form on the logging webserver. Some standard
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**
 - **Uses WiFiManager library, so you don't have to hardcode the WiFi credentials**
-- **Shows time/date in the browser's timezone**
+- **Shows date/time in the browser's timezone**
 - **Provides a setup page for configuration variables that are sent to the WeMos, which then stores them as JSON to SPIFFS:**
     - WeMos D1 hostname (in case you have more than one device logging to the same webserver)
     - SHA1 fingerprint (calculated by the php script from localhosts certificate)
@@ -42,14 +42,14 @@ All settings can be introduced in a form on the logging webserver. Some standard
 ### TODO (priority order may change):
 - License, including links to the original inspiration sources (!ASAP!)
 - Add a small TFT display for temperature, relay status and LAN IP
-- Option to change between 'cooling' and 'heating' thermostats (fire up on temp_min or on temp_max)
-- Set graphing time period (perhaps enable zooming)
+- Option to change between 'cooling' and 'heating' thermostats (fire up on ```temp >= temp_max``` or on ```temp <= temp_min```)
+- Change graphing time period (perhaps enable zooming)
 - CSS styled mouseover tooltip, including relay status
 - Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against uploaded CA certificate (longer validity then my letsencrypt signed certificate)
 - Perhaps: switching to syslog on port 514 (UDP)
 - Documentation (including hardware 'fritzing')
 - Clean up code and add comments
-- Add links to hardware (eBay)
+- Add links to hardware (eBay) √
 - Change the horrible design
 - Add some nice pictures √
 
@@ -71,9 +71,9 @@ All settings can be introduced in a form on the logging webserver. Some standard
 
 ---
 
-### Screenshot graphs
+### Screenshot graph page
 
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-01.png" alt="screen-01">
 
-### Screenshot setup
+### Screenshot setup page
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">

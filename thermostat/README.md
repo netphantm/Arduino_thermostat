@@ -18,8 +18,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [Hardware](#Hardware)
 - [Images](#Images)
 
-[goto top ⇑](#DS18B20-thermostat)
----
+[↑ goto top](#DS18B20-thermostat)
 
 ### Features
 - **Draws a google graph from the logged data (including a gauge with hysteresis and a toggle button for the date/time format of the graph)**
@@ -35,8 +34,7 @@ All variables can be initialized/changed in a settings form on the logging webse
     - Refresh/measuring interval
     - Minimum/maximum temperature values for the hysteresis
 
-[goto top ⇑](#DS18B20-thermostat)
----
+[↑ goto top](#DS18B20-thermostat)
 
 ### Libraries
 - <WiFiManager.h>
@@ -48,8 +46,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - <DallasTemperature.h>
 - <ArduinoJson.h>
 
-[goto top ⇑](#DS18B20-thermostat)
----
+[↑ goto top](#DS18B20-thermostat)
 
 ### TODO
 - [ ] License, including links to the original inspiration sources (!ASAP!)
@@ -65,8 +62,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [ ] Change the horrible design
 - [√] Add some nice pictures
 
-[goto top ⇑](#DS18B20-thermostat)
----
+[↑ goto top](#DS18B20-thermostat)
 
 ### Hardware
 
@@ -76,15 +72,13 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 [Dual Relais Shield für WEMOS D1 Mini (ESP 8266) WIFI Modul Kit/Bausatz -Neu!](https://www.ebay.de/itm/Dual-Relais-Shield-fur-WEMOS-D1-Mini-ESP-8266-WIFI-Modul-Kit-Bausatz-Neu/143054227109?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20140107084234%26meid%3Df7ec875706584a5497b0bdaa8d4e8cbc%26pid%3D100011%26rk%3D3%26rkt%3D12%26sd%3D143021212740%26itm%3D143054227109&_trksid=p2047675.c100011.m1850)
 
-[goto top ⇑](#DS18B20-thermostat)
----
+[↑ goto top](#DS18B20-thermostat)
 
 ### Images
 
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-01.png" alt="pic-01" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-02.png" alt="pic-02" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-03.png" alt="pic-03" width="290px" height="210px">
 
-[goto top ⇑](#DS18B20-thermostat)
----
+[↑ goto top](#DS18B20-thermostat)
 
 ### Screenshot graph page
 
@@ -93,4 +87,4 @@ All variables can be initialized/changed in a settings form on the logging webse
 ### Screenshot setup page
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
 
-[goto top ⇑](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat)

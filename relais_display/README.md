@@ -37,8 +37,10 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 ---
 
 ### TODO
-- [x] Quite little, since it's already built
-- [ ] Some documentation, 'fritzing'
+A bit hard, since it's already built
+- [x] Pretty much all done
+- [ ] Change WAN to Inet in the display
+- [ ] Some documentation, perhaps 'fritzing'
 
 ---
 

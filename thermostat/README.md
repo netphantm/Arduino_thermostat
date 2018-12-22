@@ -3,11 +3,11 @@
 
 ![header](pics/header.png)
 
-A thermostat using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance. The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and SMD components).
+A 'simple' thermostat, using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety reasons (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance. The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
 
 The thermostat is made for a refrigerator, so it will fire up the relays if the temperature is greater than temp_max and power them off if temperature falls below temp_min (see TODO below).
 
-All settings can be introduced in a form on the logging webserver. Some standard values are filled in, and the SHA1 fingerprint is calculated from the localhost certificate.
+All variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated from the localhost certificate.
 
 ---
 
@@ -41,14 +41,14 @@ All settings can be introduced in a form on the logging webserver. Some standard
 
 ### TODO (priority order may change):
 - License, including links to the original inspiration sources (!ASAP!)
-- Add a small TFT display for temperature, relay status and LAN IP
-- Option to change between _'cooling'_ and _'heating'_ thermostats (fire up on ```temp >= temp_max``` or on ```temp <= temp_min```)
-- Change graphing time period (perhaps enable zooming)
-- CSS styled mouseover tooltip, including relay status
-- Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against uploaded CA certificate (longer validity then my letsencrypt signed certificate)
-- Perhaps: switching to syslog on port 514 (UDP)
-- Documentation (including hardware 'fritzing')
 - Clean up code and add comments
+- Add a small TFT display for temperature, relay status and LAN IP
+- Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on ```temp >= temp_max``` or on ```temp <= temp_min```)
+- Change the graph's time period (perhaps enable zooming)
+- CSS styled mouseover tooltip, including relay status
+- Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
+- Perhaps: switching to syslog on port 514 (UDP?)
+- Documentation (including hardware 'fritzing')
 - Add links to hardware (eBay) √
 - Change the horrible design
 - Add some nice pictures √

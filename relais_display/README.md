@@ -69,7 +69,7 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 
 ---
 
-Screenshot
+### Screenshot
 
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/screen-01.png" alt="screen-01" align="center">
 

@@ -13,9 +13,9 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### Table of Contents
 - [Features](#features)
-- [Libraries](#Libraries)
+- [Libraries](#Libraries-needed)
 - [TODO](#TODO)
-- [Hardware](#Hardware)
+- [Hardware](#Hardware-links)
 - [Images](#Images)
 
 [↑ goto top](#DS18B20-thermostat)
@@ -36,7 +36,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 [↑ goto top](#DS18B20-thermostat)
 
-### Libraries
+### Libraries needed
 - <WiFiManager.h>
 - <ESP8266HTTPClient.h>
 - <ESP8266WebServer.h>
@@ -64,7 +64,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 [↑ goto top](#DS18B20-thermostat)
 
-### Hardware
+### Hardware links
 
 [16MB WeMos D1 Mini Pro # NodeMcu # ESP8266 ESP-8266EX CP2104 for Arduino NodeMCU](https://www.ebay.de/itm/16MB-WeMos-D1-Mini-Pro-NodeMcu-ESP8266-ESP-8266EX-CP2104-for-Arduino-NodeMCU/272405937539?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 

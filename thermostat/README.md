@@ -58,9 +58,9 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [ ] Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
 - [ ] Perhaps: switching to syslog on port 514 (UDP?)
 - [ ] Documentation (including hardware 'fritzing')
-- [√] Add links to hardware (eBay)
+- [x] Add links to hardware (eBay)
 - [ ] Change the horrible design
-- [√] Add some nice pictures
+- [x] Add some nice pictures
 
 [↑ goto top](#DS18B20-thermostat)
 

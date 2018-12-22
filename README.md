@@ -7,6 +7,8 @@
 
 ---
 
-| Relais with display | Thermostat with logging |
--------------------------------------------------
-| <img src="https://raw.githubusercontent.com/netphantm/Arduino/master/relais_display/pics/pic-01.png" width="400px"> | <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/header.png" width="400px"> |
+> Relais with display
+<img src="https://raw.githubusercontent.com/netphantm/Arduino/master/relais_display/pics/header.png" width="400px">
+
+Thermostat with logging
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/header.png" width="500px">

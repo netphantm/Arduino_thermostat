@@ -13,7 +13,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### Table of Contents
 - [Features](#features)
-- [Libraries](#Libraries)
+- [Libraries](#Libraries used)
 - [TODO](#TODO)
 - [Hardware](#Hardware)
 - [Images](#Images)

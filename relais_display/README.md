@@ -37,7 +37,7 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 ---
 
 ### TODO
-- [x] Not much, since it's already built
+- [x] Quite little, since it's already built
 - [ ] Some documentation, 'fritzing'
 
 ---
@@ -67,9 +67,6 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-04.png" alt="pic-04" width="380px" align="right">
 
----
-
-### Screenshot
 
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/screen-01.png" alt="screen-01" align="center">
 

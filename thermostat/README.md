@@ -58,7 +58,7 @@ All settings can be introduced in a form on the logging webserver (with preloade
 
 ### Screenshot graphs
 
-![screen-01](pics/screen-01.png)
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-01.png" alt="screen-01">
 
 ### Screenshot setup
-![screen-02](pics/screen-02.png)
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">

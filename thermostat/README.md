@@ -7,7 +7,7 @@ A 'simple' thermostat, using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It
 
 The thermostat is made for a refrigerator, so it will fire up the relays if the temperature is greater than temp_max and power them off if temperature falls below temp_min (see TODO below).
 
-All variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated from the localhost certificate.
+All variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated from the localhost certificate, to make sure the WeMos sends the data to the right server.
 
 ---
 
@@ -86,3 +86,5 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### Screenshot setup page
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
+
+[goto top ⇑](#Table of Contents)

@@ -58,7 +58,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### TODO
 - [x] License, including links to the original inspiration sources (!ASAP!)
-- [ ] Checking that `temp_min <= temp_max`
+- [ ] Checking that `temp_min <= temp_max` when new settings are pushed
 - [ ] Rechecking temperature if it gets new settings, instead of waiting for `interval` time to pass
 - [ ] Clean up code and add comments
 - [ ] Add a small TFT display for temperature, relay status and LAN IP

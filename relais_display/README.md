@@ -1,4 +1,4 @@
-## Relay socket with TFT display
+## Relay socket with OLED display
 > ESP8266 Socket relay switch
 
 ![](pics/pic-01.png)
@@ -11,7 +11,7 @@ I used tzapu's WiFiManager, so I don't have to hard-code the WiFi credentials or
 
 I've also used a simple relay, since I didn't find a double relay shield at the time (for safety reasons, it's better to switch both power lines off). It should be simple to change though. Take a look at the other project called 'thermostat'.
 
-To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You could also put a shortcut/link on your homescreen and fire up a browser every time, but that's not the simplest way to turn on a light. I suppose it could be integrated into [Home Assistant](https://hass.io/) or other (more fancy and expensive home spies you can talk to) home automation systems with some (minor?) changes, but in my case those are overkill for the moment. 
+To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You could also put a shortcut/link on your homescreen and fire up a browser every time, but that's not the simplest way to turn on a light. I suppose it could be integrated into [Home Assistant](https://hass.io/) or anonther home automation system (the more fancy and expensive home spies you can talk to), with some (minor?) changes, but in my case those are overkill for the moment. 
 
 ---
 

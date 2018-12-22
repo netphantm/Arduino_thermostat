@@ -1,9 +1,9 @@
 ## DS18B20 thermostat
-> WeMos D1 Mini Pro thermostat with DS18B20 oneWire sensor
+> ESP8266 thermostat with DS18B20 oneWire sensor
 
 ![header](pics/header.png)
 
-A 'simple' thermostat, using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety reasons (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance. The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
+A 'simple' thermostat, using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety reasons (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
 
 The thermostat is made for a refrigerator, so it will fire up the relays if the temperature is greater than temp_max and power them off if temperature falls below temp_min (see TODO below).
 
@@ -15,7 +15,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [Features](#features)
 - [Libraries](#Libraries-needed)
 - [TODO](#TODO)
-- [Links](#Hardware-suftware-links)
+- [Links](#Links)
 - [Images](#Images)
 - [Screenshots](#Screenshot-graph-page)
 - [License](#License)
@@ -43,14 +43,14 @@ All variables can be initialized/changed in a settings form on the logging webse
 ---
 
 ### Libraries needed
-- <WiFiManager.h>
-- <ESP8266HTTPClient.h>
-- <ESP8266WebServer.h>
-- <ESP8266mDNS.h>
-- <FS.h>
-- <OneWire.h>
-- <DallasTemperature.h>
-- <ArduinoJson.h>
+- WiFiManager
+- ESP8266HTTPClient
+- ESP8266WebServer
+- ESP8266mDNS
+- FS
+- OneWire
+- DallasTemperature
+- ArduinoJson
 
 [↑ goto top](#DS18B20-thermostat)
 
@@ -74,13 +74,15 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### Hardware/Software links
+### Links
 
 [16MB WeMos D1 Mini Pro # NodeMcu # ESP8266 ESP-8266EX CP2104 for Arduino NodeMCU](https://www.ebay.de/itm/16MB-WeMos-D1-Mini-Pro-NodeMcu-ESP8266-ESP-8266EX-CP2104-for-Arduino-NodeMCU/272405937539?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 
 [DS18b20 Wasserdichter Temperatursensor Thermometer Temperaturfühler LS4G](https://www.ebay.de/itm/DS18b20-Wasserdichter-Temperatursensor-Thermometer-Temperaturf%C3%BChler-LS4G/232860153205?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 
 [Dual Relais Shield für WEMOS D1 Mini (ESP 8266) WIFI Modul Kit/Bausatz -Neu!](https://www.ebay.de/itm/Dual-Relais-Shield-fur-WEMOS-D1-Mini-ESP-8266-WIFI-Modul-Kit-Bausatz-Neu/143054227109?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20140107084234%26meid%3Df7ec875706584a5497b0bdaa8d4e8cbc%26pid%3D100011%26rk%3D3%26rkt%3D12%26sd%3D143021212740%26itm%3D143054227109&_trksid=p2047675.c100011.m1850)
+
+[WiFiManager](https://github.com/tzapu/WiFiManager)
 
 [Moment.js](https://momentjs.com/)
 

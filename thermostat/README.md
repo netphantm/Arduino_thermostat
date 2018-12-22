@@ -87,4 +87,4 @@ All variables can be initialized/changed in a settings form on the logging webse
 ### Screenshot setup page
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
 
-[goto top ⇑](#Table of Contents)
+[goto top ⇑](#'Table of Contents')

@@ -54,4 +54,4 @@ All settings can be introduced in a form on the logging webserver (with preloade
 
 ---
 
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pic-01.png" alt="pic-01" width="300px" height="217px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/header.png" alt="header" width="300px" height="192px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pic-02.png" alt="pic-02" width="300px" height="217px">
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pic-01.png" alt="pic-01" width="290px" height="210px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/header.png" alt="header" width="290px" height="185px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pic-02.png" alt="pic-02" width="290px" height="210px">

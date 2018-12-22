@@ -49,7 +49,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 [↑ goto top](#DS18B20-thermostat)
 
 ### TODO
-- [ ] License, including links to the original inspiration sources (!ASAP!)
+- [x] License, including links to the original inspiration sources (!ASAP!)
 - [ ] Clean up code and add comments
 - [ ] Add a small TFT display for temperature, relay status and LAN IP
 - [ ] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)

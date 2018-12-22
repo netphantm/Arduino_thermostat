@@ -1,7 +1,7 @@
 ## Relay socket with OLED display
 > ESP8266 Socket relay switch
 
-![](pics/pic-01.png)
+<img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-01.png" width="300" align="right" />
 
 An IoT socket made with a WeMos D1 Mini Pro, an inductive touch sensor and a .96" OLED display. I made it, so I don't have to go in the evening all the way over to the nightstand to switch the light on, and go back to the desk and switch the light off. I know, I'm lazy, but it's a 15m annoying trip every evening :). The scope here was to do these projects on my own, more or less from scratch, not just take an already built (big) home automation system and buy stuff that connects to it.
 

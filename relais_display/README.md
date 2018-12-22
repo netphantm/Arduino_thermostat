@@ -3,15 +3,15 @@
 
 ![](pics/pic-01.png)
 
-An IoT socket with a WeMos D1 Mini Pro, an inductive touch sensor and a .96" OLED display. I made it, so I don't have to go in the evening all the way over to the nightstand to switch the light on, and go back to the desk and switch the light off (it's a 15m trip every evening :).
+An IoT socket made with a WeMos D1 Mini Pro, an inductive touch sensor and a .96" OLED display. I made it, so I don't have to go in the evening all the way over to the nightstand to switch the light on, and go back to the desk and switch the light off. I know, I'm lazy, but it's a 15m annoying trip every evening :). The scope here was to do these projects on my own, more or less from scratch, not just take an already built (big) home automation system and buy stuff that connects to it.
 
-The first version is installed in a 3-way extension socket. It also inclded a touch sensor, so you can turn it on locally.
+The first version is installed in a 3-way extension socket. I was still waiting for the ordered socket cases to be shipped, but found out there is just enough space in this one. It also included a touch sensor, so it can be turned on and off locally.
 
-I used tzapu's WiFiManager, so you don't have to hardcode the WiFi credentials into the code (opening it up every time to flash the WeMos, if you decide to change your WiFi password or change location).
+I used tzapu's WiFiManager, so I don't have to hard-code the WiFi credentials or local IP (having to open it up every time, just to flash the WeMos on location or WiFi configuration change).
 
-I've also used a simple relay for this one, since I didn't find a double relay shield at the time (for safety reasons, it's better to switch both power lines off). It should be simple to change though. Take a look at the other project called 'thermostat'.
+I've also used a simple relay, since I didn't find a double relay shield at the time (for safety reasons, it's better to switch both power lines off). It should be simple to change though. Take a look at the other project called 'thermostat'.
 
-To switch it on/off from my mobile, I use an app called 'HTTP Shortcuts'. You could also put a shortcut/link on your homescreen and fire up a browser every time, but that's not the simplest way to switch a light on. I suppose it could be integrated into [Home Assistant](https://hass.io/) or other (more fancy and expensive, the home spies you can talk to) home automation systems with some changes, but in my case that's overkill.
+To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You could also put a shortcut/link on your homescreen and fire up a browser every time, but that's not the simplest way to turn on a light. I suppose it could be integrated into [Home Assistant](https://hass.io/) or other (more fancy and expensive home spies you can talk to) home automation systems with some (minor?) changes, but in my case those are overkill for the moment. 
 
 ---
 

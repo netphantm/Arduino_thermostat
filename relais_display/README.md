@@ -18,7 +18,7 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 ### Features
 - **WiFiManager**
 - **Touch sensor**
-- **OLED Display
+- **OLED Display**
     - It Shows the socket status (On/Off), the IP of the own WiFi access point in config mode, and the LAN and internet IP after connecting to the local WiFi AP
     - The display dimms down, one minute after using the touch sensor
 
@@ -37,7 +37,8 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 ---
 
 ### TODO
-- [x] Not much, since it's already built into the box(es)
+- [x] Not much, since it's already built
+- [ ] Some documentation, 'fritzing'
 
 ---
 
@@ -53,7 +54,7 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 
 [WiFiManager](https://github.com/tzapu/WiFiManager)
 
-[Home Assistant](https://hass.io/)
+[Home Assistant](http://hass.io/)
 
 ---
 

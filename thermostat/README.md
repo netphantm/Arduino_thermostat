@@ -49,18 +49,18 @@ All variables can be initialized/changed in a settings form on the logging webse
 ---
 
 ### TODO
-- License, including links to the original inspiration sources (!ASAP!)
-- Clean up code and add comments
-- Add a small TFT display for temperature, relay status and LAN IP
-- Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on ```temp >= temp_max``` or on ```temp <= temp_min```)
-- Change the graph's time period (perhaps enable zooming)
-- CSS styled mouseover tooltip, including relay status
-- Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
-- Perhaps: switching to syslog on port 514 (UDP?)
-- Documentation (including hardware 'fritzing')
-- Add links to hardware (eBay) √
-- Change the horrible design
-- Add some nice pictures √
+- [ ] License, including links to the original inspiration sources (!ASAP!)
+- [ ] Clean up code and add comments
+- [ ] Add a small TFT display for temperature, relay status and LAN IP
+- [ ] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
+- [ ] Change the graph's time period (perhaps enable zooming)
+- [ ] CSS styled mouseover tooltip, including relay status
+- [ ] Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
+- [ ] Perhaps: switching to syslog on port 514 (UDP?)
+- [ ] Documentation (including hardware 'fritzing')
+- [√] Add links to hardware (eBay)
+- [ ] Change the horrible design
+- [√] Add some nice pictures
 
 ---
 
@@ -87,4 +87,4 @@ All variables can be initialized/changed in a settings form on the logging webse
 ### Screenshot setup page
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
 
-[goto top ⇑](#DS18B20-thermostat)
+<p style="text-align: right;">[goto top ⇑](#DS18B20-thermostat)</p>

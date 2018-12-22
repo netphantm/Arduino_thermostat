@@ -13,7 +13,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### Table of Contents
 - [Features](#features)
-- [Libraries](#Libraries used)
+- [Libraries](#Libraries)
 - [TODO](#TODO)
 - [Hardware](#Hardware)
 - [Images](#Images)
@@ -36,7 +36,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ---
 
-### Libraries used
+### Libraries
 - <WiFiManager.h>
 - <ESP8266HTTPClient.h>
 - <ESP8266WebServer.h>

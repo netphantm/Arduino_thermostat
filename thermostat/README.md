@@ -42,7 +42,7 @@ All settings can be introduced in a form on the logging webserver. Some standard
 ### TODO (priority order may change):
 - License, including links to the original inspiration sources (!ASAP!)
 - Add a small TFT display for temperature, relay status and LAN IP
-- Option to change between 'cooling' and 'heating' thermostats (fire up on ```temp >= temp_max``` or on ```temp <= temp_min```)
+- Option to change between _'cooling'_ and _'heating'_ thermostats (fire up on ```temp >= temp_max``` or on ```temp <= temp_min```)
 - Change graphing time period (perhaps enable zooming)
 - CSS styled mouseover tooltip, including relay status
 - Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against uploaded CA certificate (longer validity then my letsencrypt signed certificate)

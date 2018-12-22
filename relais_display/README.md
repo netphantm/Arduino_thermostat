@@ -60,11 +60,11 @@ To switch it on or off from my mobile, I use an app called 'HTTP Shortcuts'. You
 
 ### Images
 
-<table><tr><td><img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-01.png" alt="pic-01" width="440px" align="left"></td><tr>
+<table><tr><td><img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-01.png" alt="pic-01" width="440px" align="left"></td></tr><tr><td>
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-02.png" alt="pic-02" width="440px" align="right">
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-03.png" alt="pic-03" width="440px" align="right">
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/pic-04.png" alt="pic-04" width="440px" align="right">
-</tr></td></table>
+</td></tr></table>
 ### Screenshot
 
 <img src="https://github.com/netphantm/Arduino/raw/master/relais_display/pics/screen-01.png" alt="screen-01">

@@ -1,7 +1,7 @@
 ## DS18B20 thermostat
 > WeMos D1 Mini Pro thermostat with DS18B20 oneWire sensor
 
-![header](header.png)
+![header](pics/header.png)
 
 A thermostat using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance. The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and SMD components).
 

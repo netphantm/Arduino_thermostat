@@ -1,4 +1,4 @@
-## DS18B20 thermostat
+## DS18B20 thermostat with logging
 > ESP8266 thermostat with DS18B20 oneWire sensor
 
 ![header](pics/header.png)

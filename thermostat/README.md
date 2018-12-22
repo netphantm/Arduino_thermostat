@@ -88,3 +88,13 @@ All variables can be initialized/changed in a settings form on the logging webse
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
 
 [↑ goto top](#DS18B20-thermostat)
+
+### License
+
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+
+- **[MIT license](http://opensource.org/licenses/mit-license.php)**
+- Copyright 2018 © netphantm.
+
+[↑ goto top](#DS18B20-thermostat)
+

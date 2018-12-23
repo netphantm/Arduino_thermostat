@@ -18,15 +18,14 @@ const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/prefs.json";
 unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
+bool justFormatted = false;
+bool emptyFile = false;
+bool cold = true;
 char buff_IP[16];
 uint8_t sha1[20];
 String webString = "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n";
 float temp_c;
 String relaisState;
-bool justFormatted = false;
-
-//String json = "{\"SHA1\":\"7E:E0:9E:A8:24:61:96:DE:6C:20:3B:13:FC:17:57:AE:92:23:8D:48\",\"host\":\"temperature.hugo.ro\",\"httpsPort\":443,\"interval\":300000,\"temp_min\":6,\"temp_max\":12}";
-
 String SHA1;
 String host;
 int httpsPort;
@@ -39,9 +38,10 @@ ESP8266WebServer server(80);
 void getTemperature() {
   uptime = (millis() / 1000 );
   DS18B20.requestTemperatures();  // initialize temperature sensor
-  temp_c = float(DS18B20.getTempCByIndex(0));
-  //temp_c = temp_c - 2.4;
+  temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
+  //temp_c = temp_c - 2.4; // calibrate sensor
   delay(10);
+  switchRelais();
 }
 
 void handle_root() {
@@ -63,6 +63,7 @@ void clearPrefsFile() {
     server.send(200, "text/plain", "HTTP CODE 200: OK, Preferences file cleared\n");
   }
   delay(10);
+  emptyFile = true;
 }
 
 void updatePrefsFile() {
@@ -105,12 +106,13 @@ void updatePrefsFile() {
       String output;
       root.printTo(output);
       webString += output;
+      emptyFile = false;
     }
     f.close();
   }
+  delay(10);
   server.send(200, "text/plain", webString);
   String webString = "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n";
-  delay(10);
 }
 
 void readPrefsFile() {
@@ -124,48 +126,53 @@ void readPrefsFile() {
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(f);
     if (!root.success()) {
-      Serial.println(F("Failed to deserialize json"));
+      Serial.println(F("ERROR deserializing json, maybe you cleared the file?"));
+      emptyFile = true;
       return;
+    } else {
+      emptyFile = false;
+      SHA1 = root["SHA1"].as<String>();
+      host = root["host"].as<String>(), sizeof(host);
+      httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
+      interval = root["interval"].as<long>(), sizeof(interval);
+      temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
+      temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
+      Serial.println("Got Preferences from file");
     }
-
-    SHA1 = root["SHA1"].as<String>();
-    host = root["host"].as<String>(), sizeof(host);
-    httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
-    interval = root["interval"].as<long>(), sizeof(interval);
-    temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
-    temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
   }
-  Serial.println("Got Preferences from file");
-
   f.close();
   delay(10);
 }
 
 void updateWebserver() {
-  // configure url
-  String url = "/logtemp.php?&status="; // <= mach OFF weg von hier!
-  url += relaisState;
-  url += "&uptime=";
-  url += uptime;
-  url += "&temperature=";
-  url += temp_c;
-  url += "&IP=";
-  url += buff_IP;
-  url += "&temp_min=";
-  url += temp_min;
-  url += "&temp_max=";
-  url += temp_max;
+  // configure path + query
+  if (emptyFile) {
+    Serial.println(F("ERROR deserializing json, maybe you cleared the file?"));
+    return;
+  }
+  String pathQuery = "/logtemp.php?&status=";
+  pathQuery += relaisState;
+  pathQuery += "&uptime=";
+  pathQuery += uptime;
+  pathQuery += "&temperature=";
+  pathQuery += temp_c;
+  pathQuery += "&IP=";
+  pathQuery += buff_IP;
+  pathQuery += "&temp_min=";
+  pathQuery += temp_min;
+  pathQuery += "&temp_max=";
+  pathQuery += temp_max;
 
   Serial.print("Connecting to https://");
   Serial.print(host);
-  Serial.println(url);
+  Serial.println(pathQuery);
 
   BearSSL::WiFiClientSecure webClient;
   from_str();
   webClient.setFingerprint(sha1);
   HTTPClient https;
   //Serial.println("[HTTPS] begin...");
-  if (https.begin(webClient, host, httpsPort, url)) {  // HTTPS
+  if (https.begin(webClient, host, httpsPort, pathQuery)) {  // HTTPS
     //Serial.println("[HTTPS] GET...");
     int httpCode = https.GET();
     if (httpCode > 0) {
@@ -230,6 +237,11 @@ void debug_vars() {
   Serial.println(temp_c);
   Serial.print("RelaisState: ");
   Serial.println(relaisState);
+  if (emptyFile) {
+    Serial.print("emptyFile: ");
+    Serial.println(emptyFile);
+    return;
+  }
   Serial.print("SHA1: ");
   Serial.println(SHA1);
   Serial.print("host: ");
@@ -306,17 +318,18 @@ void setup(void) {
   relaisState = "OFF";
  
   getTemperature();
-  switchRelais();
 
   // web client handlers
-  server.on("/", handle_root);
-  server.on("/update", updatePrefsFile);
   server.onNotFound(handleNotFound);
-/*
+  server.on("/", handle_root);
+  server.on("/update", []() {
+    updatePrefsFile();
+    getTemperature();
+    debug_vars();
+  });
   server.on("/clear", []() {
     clearPrefsFile();
   });
-*/
 
   server.begin();
   Serial.println("HTTP Server started. Giving you 5 seconds to send data.");
@@ -324,7 +337,6 @@ void setup(void) {
 } 
  
 void loop(void) {
-
   unsigned long currentMillis = millis();
   if ((unsigned long)(currentMillis - previousMillis) >= interval )
   {
@@ -332,8 +344,6 @@ void loop(void) {
     previousMillis = currentMillis;
 
     getTemperature();
-    switchRelais();
-
     readPrefsFile();
     updateWebserver();
 

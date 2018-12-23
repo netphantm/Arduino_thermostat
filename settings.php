@@ -8,27 +8,21 @@ if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !em
   $interval = $_GET["interval"];
   $temp_min = $_GET["temp_min"];
   $temp_max = $_GET["temp_max"];
-  header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&host=".$host."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max);
-  exit;
+  if($temp_min >= $temp_max) {
+    print("<html>\n");
+    print("<body>\n");
+    print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
+    print("<title>Clamps Thermostat IoT Settings</title>\n");
+    print("<style>\n.content { background-color: red; width: 1000px; margin: auto; }</style>\n");
+    print("</head><body>\n<div class=\"content\">\n");
+    print("<div align=\"center\"><h2><p>Temperature MIN must be smaller then Temperature MAX!</p></h2><h1><p>Try again!</p></h1></div>");
+    print("</body>");
+    exit();
+  } else {
+    header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&host=".$host."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max);
+    exit;
+  }
 }
-
-function x509_fingerprint($pem,$hash='sha1')
-{
-  $pem = preg_replace('/\-+BEGIN CERTIFICATE\-+/','',$pem);
-  $pem = preg_replace('/\-+END CERTIFICATE\-+/','',$pem);
-  $pem = str_replace( array("\n","\r"), '', trim($pem));
-  return strtoupper(hash($hash,base64_decode($pem)));
-}
-
-$contextOptions = array(
-  'ssl' => array(
-    'verify_peer' => false,
-    'verify_peer_name' => false,
-    #'allow_self_signed' => true,
-    'disable_compression' => true,
-    'capture_peer_cert' => true,
-  )
-);
 
 $g = stream_context_create($contextOptions);
 $r = stream_socket_client("ssl://localhost:443", $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $g);
@@ -69,4 +63,23 @@ print("Temperature MIN = <input type='text' name='temp_min' size=1 value=$temp_m
 print("Temperature MAX = <input type='text' name='temp_max' size=1 value=$temp_max><br>\n");
 print("<input type='submit' value='Submit' >\n");
 print("</form></body>");
+
+function x509_fingerprint($pem,$hash='sha1')
+{
+  $pem = preg_replace('/\-+BEGIN CERTIFICATE\-+/','',$pem);
+  $pem = preg_replace('/\-+END CERTIFICATE\-+/','',$pem);
+  $pem = str_replace( array("\n","\r"), '', trim($pem));
+  return strtoupper(hash($hash,base64_decode($pem)));
+}
+
+$contextOptions = array(
+  'ssl' => array(
+    'verify_peer' => false,
+    'verify_peer_name' => false,
+    #'allow_self_signed' => true,
+    'disable_compression' => true,
+    'capture_peer_cert' => true,
+  )
+);
+
 ?>

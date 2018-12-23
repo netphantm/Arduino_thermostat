@@ -58,18 +58,18 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### TODO
 - [x] License, including links to the original inspiration sources (!ASAP!)
-- [ ] Checking that `temp_min <= temp_max` when new settings are pushed
-- [ ] Rechecking temperature if it gets new settings, instead of waiting for `interval` time to pass
+- [x] Checking that `temp_min <= temp_max` when new settings are pushed
+- [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
 - [ ] Clean up code and add comments
 - [ ] Add a small TFT display for temperature, relay status and LAN IP
-- [ ] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
+- [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
 - [ ] Change the graph's time period (perhaps enable zooming)
 - [ ] CSS styled mouseover tooltip, including relay status
 - [ ] Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
 - [ ] Perhaps: switching to syslog on port 514 (UDP?)
 - [ ] Documentation (including hardware 'fritzing')
 - [x] Add links to hardware (eBay)
-- [ ] Change the horrible design
+- [ ] Change the horrible design (now I added even more of it)
 - [x] Add some nice pictures
 
 [↑ goto top](#DS18B20-thermostat)

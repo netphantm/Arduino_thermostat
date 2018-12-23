@@ -20,7 +20,7 @@ unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
 bool justFormatted = false;
 bool emptyFile = false;
-bool cold = true;
+bool heater = false;
 char buff_IP[16];
 uint8_t sha1[20];
 String webString = "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n";
@@ -62,7 +62,7 @@ void clearPrefsFile() {
 }
 
 void updatePrefsFile() {
-  if (server.args() < 1 || server.args() > 6) {
+  if (server.args() < 1 || server.args() > 7) {
     webString = "HTTP CODE 400: Invalid Request\n";
   } else {
     Serial.println("Got new preferences");
@@ -74,6 +74,7 @@ void updatePrefsFile() {
     interval = server.arg("interval").toInt();
     temp_min = server.arg("temp_min").toInt();
     temp_max = server.arg("temp_max").toInt();
+    heater = server.arg("heater").toInt();
 
     File f = SPIFFS.open(pFile, "w");
     if (!f) {
@@ -92,6 +93,7 @@ void updatePrefsFile() {
     root["interval"] = interval;
     root["temp_min"] = temp_min;
     root["temp_max"] = temp_max;
+    root["heater"] = heater;
     if (root.printTo(f) == 0) {
       Serial.println(F("Failed to write to file"));
       webString += "File write OPEN FAILED, NOT updated\n";
@@ -132,6 +134,7 @@ void readPrefsFile() {
       interval = root["interval"].as<long>(), sizeof(interval);
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
+      temp_max = root["heater"].as<bool>(), sizeof(heater);
       Serial.println("Got Preferences from file");
     }
   }
@@ -157,6 +160,8 @@ void updateWebserver() {
   pathQuery += temp_min;
   pathQuery += "&temp_max=";
   pathQuery += temp_max;
+  pathQuery += "&heater=";
+  pathQuery += heater;
 
   Serial.print("Connecting to https://");
   Serial.print(host);
@@ -208,16 +213,30 @@ void from_str() {
 }
 
 void switchRelais() {
+  if (heater) {
+    if (temp_c <= temp_min) {
+      digitalWrite(RELAISPIN1, HIGH);
+      digitalWrite(RELAISPIN2, HIGH);
+      Serial.println("Turn both Relais ON");
+      relaisState = "ON";
+    } else if (temp_c >= temp_max) {
+      digitalWrite(RELAISPIN1, LOW);
+      digitalWrite(RELAISPIN2, LOW);
+      Serial.println("Turn both Relais OFF");
+      relaisState = "OFF";
+    }
+  } else {
     if (temp_c >= temp_max) {
-    digitalWrite(RELAISPIN1, HIGH);
-    digitalWrite(RELAISPIN2, HIGH);
-    Serial.println("Turn both Relais ON");
-    relaisState = "ON";
-  } else if (temp_c <= temp_min) {
-    digitalWrite(RELAISPIN1, LOW);
-    digitalWrite(RELAISPIN2, LOW);
-    Serial.println("Turn both Relais OFF");
-    relaisState = "OFF";
+      digitalWrite(RELAISPIN1, HIGH);
+      digitalWrite(RELAISPIN2, HIGH);
+      Serial.println("Turn both Relais ON");
+      relaisState = "ON";
+    } else if (temp_c <= temp_min) {
+      digitalWrite(RELAISPIN1, LOW);
+      digitalWrite(RELAISPIN2, LOW);
+      Serial.println("Turn both Relais OFF");
+      relaisState = "OFF";
+    }
   }
   delay(10);
 }
@@ -249,6 +268,8 @@ void debug_vars() {
   Serial.println(temp_min);
   Serial.print("temp_max: ");
   Serial.println(temp_max);
+  Serial.print("heater: ");
+  Serial.println(heater);
 }
 
 void configModeCallback (WiFiManager *myWiFiManager) {

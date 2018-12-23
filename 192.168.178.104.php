@@ -35,13 +35,14 @@ function readDataFile() {
       $state = $line[1];
       $temp = $line[2];
       $date = $line[3];
+      $heater = $line[4];
 
       //$retStr = $retStr."\n      [new Date(".$date."), ".$temp.", '<table><tr><td>".options.hAxis."</td></tr><tr><td>Temp: ".$temp."</td></tr><tr><td>State: ".$state."</td></tr></table>'], ";
       $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
     }
   }
   fclose($fp);
-  return array ($retStr,$date,$state,$temp);
+  return array ($retStr,$date,$state,$temp,$heater);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -188,7 +189,12 @@ function readDataFile() {
   if (readDataFile()[2] == "OFF") {
     print("<div>Relais is: <font style=\"color:red\"><b>OFF</b></font></div><br>\n");
   } else {
-    print("<div>Relais is: <font style=\"color:red\"><b>ON</b></font></div><br>\n");
+    print("<div>Relais is: <font style=\"color:green\"><b>ON</b></font></div><br>\n");
+  }
+  if (readDataFile()[4] == "1") {
+    print("<div>Appliance is a <font style=\"color:red\"><b>Heater</b></font></div><br>\n");
+  } else {
+    print("<div>Appliance is a <font style=\"color:blue\"><b>Cooler</b></font></div><br>\n");
   }
   print("</td><td>\n");
   print("<div id=\"chart_divTemp\" style=\"width: 250px;\"></div>\n");

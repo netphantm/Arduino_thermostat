@@ -53,20 +53,12 @@ void handleNotFound(){
 }
 
 void clearPrefsFile() {
-/*
-  File f = SPIFFS.open(pFile, "w");
-  if (!f) {
-    Serial.println("Preferences file clear OPEN FAILED!");
-    server.send(200, "text/plain", "HTTP CODE 200: OK, File clear OPEN FAILED, NOT updated\n");
-  } else {
-    f.close();
-    Serial.println("Preferences file cleared");
-    server.send(200, "text/plain", "HTTP CODE 200: OK, Preferences file cleared\n");
-  }
-*/
+  Serial.println("Please wait for SPIFFS to be formatted");
   SPIFFS.format();
+  Serial.println("SPIFFS formatted");
   delay(10);
   emptyFile = true;
+  server.send(200, "text/plain", "[HTTPS] OK, SPIFFS formatted, preferences cleared");
 }
 
 void updatePrefsFile() {
@@ -122,14 +114,14 @@ void readPrefsFile() {
   File f = SPIFFS.open(pFile, "r");
   if (!f) {
     Serial.println("Preferences file read OPEN FAILED!");
+    emptyFile = true;
     return;
   }
-
   while (f.available()) {
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(f);
     if (!root.success()) {
-      Serial.println(F("ERROR deserializing json, maybe you cleared the file?"));
+      Serial.println(F("ERROR deserializing json, maybe you cleared the preferences file? Not updating logserver!"));
       emptyFile = true;
       return;
     } else {
@@ -150,7 +142,7 @@ void readPrefsFile() {
 void updateWebserver() {
   // configure path + query
   if (emptyFile) {
-    Serial.println(F("ERROR deserializing json, maybe you cleared the file?"));
+    Serial.println(F("ERROR deserializing json, maybe you cleared the preferences file? Not updating logserver!"));
     return;
   }
   String pathQuery = "/logtemp.php?&status=";
@@ -310,7 +302,7 @@ void setup(void) {
       Serial.println("Please wait for SPIFFS to be formatted");
       SPIFFS.format();
     }
-    Serial.println("Spiffs formatted");
+    Serial.println("SPIFFS formatted");
   }
   f.close();
 
@@ -320,6 +312,7 @@ void setup(void) {
   digitalWrite(RELAISPIN2, LOW);
   relaisState = "OFF";
  
+  Serial.println("- getTemperature");
   getTemperature();
 
   // web client handlers
@@ -346,8 +339,11 @@ void loop(void) {
     // save the last time you read the sensor
     previousMillis = currentMillis;
 
+    Serial.println("- getTemperature");
     getTemperature();
+    Serial.println("- readPrefsFile");
     readPrefsFile();
+    Serial.println("- updateWebserver");
     updateWebserver();
 
     // Failsafe, if json was malformed:

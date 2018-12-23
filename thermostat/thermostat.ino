@@ -53,6 +53,7 @@ void handleNotFound(){
 }
 
 void clearPrefsFile() {
+/*
   File f = SPIFFS.open(pFile, "w");
   if (!f) {
     Serial.println("Preferences file clear OPEN FAILED!");
@@ -62,6 +63,8 @@ void clearPrefsFile() {
     Serial.println("Preferences file cleared");
     server.send(200, "text/plain", "HTTP CODE 200: OK, Preferences file cleared\n");
   }
+*/
+  SPIFFS.format();
   delay(10);
   emptyFile = true;
 }

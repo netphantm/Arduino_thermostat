@@ -1,9 +1,9 @@
 ## DS18B20 thermostat with logging
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-01.png" alt="header">
+
 > ESP8266 thermostat with DS18B20 oneWire sensor
 
-![header](pics/header.png)
-
-A 'simple' thermostat, using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety reasons (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
+This is a simple thermostat, using a DS18B20 oneWire sensor on a WeMos D1 Mini Pro. It uses two relays, for safety reasons (to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
 
 The thermostat is made for a refrigerator, so it will fire up the relays if the temperature is greater than temp_max and power them off if temperature falls below temp_min (see TODO below).
 
@@ -20,7 +20,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [Screenshots](#Screenshot-graph-page)
 - [License](#License)
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
 
@@ -38,7 +38,7 @@ All variables can be initialized/changed in a settings form on the logging webse
     - Refresh/measuring interval
     - Minimum/maximum temperature values for the hysteresis
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
 
@@ -52,7 +52,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - DallasTemperature
 - ArduinoJson
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
 
@@ -73,7 +73,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming)
 - [ ] \(Perhaps) switching to syslog on port 514 (UDP?)
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
 
@@ -99,7 +99,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 - [amake](https://github.com/pavelmc/amake)
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
 
@@ -109,7 +109,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-04.png" alt="pic-04" width="440px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-05.png" alt="pic-05" width="440px">
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ### Screenshot graph page
 
@@ -121,7 +121,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 ### Screenshot console log
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-03.png" alt="screen-03">
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
 
@@ -132,5 +132,5 @@ All variables can be initialized/changed in a settings form on the logging webse
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
 - Copyright 2018 © netphantm.
 
-[↑ goto top](#DS18B20-thermostat)
+[↑ goto top](#DS18B20-thermostat-with-logging)
 

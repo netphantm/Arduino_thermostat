@@ -1,5 +1,5 @@
 ## DS18B20 thermostat with logging
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-01.png" alt="header">
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/header.png" alt="header">
 
 > ESP8266 thermostat with DS18B20 oneWire sensor
 

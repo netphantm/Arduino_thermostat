@@ -60,17 +60,17 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [x] License, including links to the original inspiration sources (!ASAP!)
 - [x] Checking that `temp_min <= temp_max` when new settings are pushed
 - [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
-- [ ] Clean up code and add comments
+- [x] Clean up code and add comments
 - [ ] Add a small TFT display for temperature, relay status and LAN IP
 - [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
-- [ ] Change the graph's time period (perhaps enable zooming)
-- [ ] CSS styled mouseover tooltip, including relay status
-- [ ] Perhaps: Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
-- [ ] Perhaps: switching to syslog on port 514 (UDP?)
-- [ ] Documentation (including hardware 'fritzing')
+- [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [x] Add links to hardware (eBay)
-- [ ] Change the horrible design (now I added even more of it)
+- [ ] Change the horrible design (now I've added even more of it)
 - [x] Add some nice pictures
+- [ ] \(Perhaps) Documentation (including hardware 'fritzing'). In the mean time, look at my sources [](#links), they have done a better job of documenting the work then I'll ever do.
+- [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
+- [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming)
+- [ ] \(Perhaps) switching to syslog on port 514 (UDP?)
 
 [↑ goto top](#DS18B20-thermostat)
 
@@ -78,15 +78,25 @@ All variables can be initialized/changed in a settings form on the logging webse
 
 ### Links
 
-[16MB WeMos D1 Mini Pro # NodeMcu # ESP8266 ESP-8266EX CP2104 for Arduino NodeMCU](https://www.ebay.de/itm/16MB-WeMos-D1-Mini-Pro-NodeMcu-ESP8266-ESP-8266EX-CP2104-for-Arduino-NodeMCU/272405937539?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
+#### Hardware
 
-[DS18b20 Wasserdichter Temperatursensor Thermometer Temperaturfühler LS4G](https://www.ebay.de/itm/DS18b20-Wasserdichter-Temperatursensor-Thermometer-Temperaturf%C3%BChler-LS4G/232860153205?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
+- [16MB WeMos D1 Mini Pro # NodeMcu # ESP8266 ESP-8266EX CP2104 for Arduino NodeMCU](https://www.ebay.de/itm/16MB-WeMos-D1-Mini-Pro-NodeMcu-ESP8266-ESP-8266EX-CP2104-for-Arduino-NodeMCU/272405937539?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 
-[Dual Relais Shield für WEMOS D1 Mini (ESP 8266) WIFI Modul Kit/Bausatz -Neu!](https://www.ebay.de/itm/Dual-Relais-Shield-fur-WEMOS-D1-Mini-ESP-8266-WIFI-Modul-Kit-Bausatz-Neu/143054227109?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20140107084234%26meid%3Df7ec875706584a5497b0bdaa8d4e8cbc%26pid%3D100011%26rk%3D3%26rkt%3D12%26sd%3D143021212740%26itm%3D143054227109&_trksid=p2047675.c100011.m1850)
+- [DS18b20 Wasserdichter Temperatursensor Thermometer Temperaturfühler LS4G](https://www.ebay.de/itm/DS18b20-Wasserdichter-Temperatursensor-Thermometer-Temperaturf%C3%BChler-LS4G/232860153205?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 
-[WiFiManager](https://github.com/tzapu/WiFiManager)
+- [Dual Relais Shield für WEMOS D1 Mini (ESP 8266) WIFI Modul Kit/Bausatz -Neu!](https://www.ebay.de/itm/Dual-Relais-Shield-fur-WEMOS-D1-Mini-ESP-8266-WIFI-Modul-Kit-Bausatz-Neu/143054227109?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20140107084234%26meid%3Df7ec875706584a5497b0bdaa8d4e8cbc%26pid%3D100011%26rk%3D3%26rkt%3D12%26sd%3D143021212740%26itm%3D143054227109&_trksid=p2047675.c100011.m1850)
 
-[Moment.js](https://momentjs.com/)
+#### Software
+
+- [WiFiManager](https://github.com/tzapu/WiFiManager)
+
+- [Moment.js](https://momentjs.com/)
+
+- [Adding WiFiManager](http://www.martyncurrey.com/esp8266-and-the-arduino-ide-part-5-adding-wifimanager/#more-7245)
+
+- [ESP8266-12E-DHT-Thermostat](https://github.com/dmainmon/ESP8266-12E-DHT-Thermostat)
+
+- [amake](https://github.com/pavelmc/amake)
 
 [↑ goto top](#DS18B20-thermostat)
 

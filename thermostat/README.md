@@ -118,6 +118,9 @@ All variables can be initialized/changed in a settings form on the logging webse
 ### Screenshot setup page
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
 
+### Screenshot console log
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-03.png" alt="screen-03">
+
 [↑ goto top](#DS18B20-thermostat)
 
 ---

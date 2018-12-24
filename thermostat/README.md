@@ -61,6 +61,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [x] Checking that `temp_min <= temp_max` when new settings are pushed
 - [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
 - [x] Clean up code and add comments
+- [x] Add a progress bar to the serial console, so you can predict how much until the next log update
 - [ ] Add a small TFT display for temperature, relay status and LAN IP
 - [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status

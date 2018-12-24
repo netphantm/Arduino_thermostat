@@ -36,10 +36,11 @@ float temp_max;
 ESP8266WebServer server(80);
 
 void getTemperature() {
+  // read temperature from the sensor
   uptime = (millis() / 1000 );
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
-  //temp_c = temp_c - 2.4; // calibrate sensor
+  temp_c = temp_c - 2.4; // calibrate sensor
   delay(10);
   switchRelais();
 }
@@ -49,7 +50,7 @@ void handle_root() {
 }
 
 void handleNotFound(){
-  server.send(404, "text/plain", "HTTP CODE 404: Not found\n");
+  server.send(404, "text/plain", "<h2><font style='color:red'>HTTP CODE 404: Not found</font></h2>\n");
 }
 
 void clearPrefsFile() {
@@ -57,17 +58,19 @@ void clearPrefsFile() {
   SPIFFS.format();
   Serial.println("SPIFFS formatted");
   delay(10);
+  // mark file as empty
   emptyFile = true;
-  server.send(200, "text/plain", "[HTTPS] OK, SPIFFS formatted, preferences cleared");
+  server.send(200, "text/plain", "<h2><font style='color:green'>[HTTPS] OK, SPIFFS formatted, preferences cleared</font></h2>");
 }
 
 void updatePrefsFile() {
   if (server.args() < 1 || server.args() > 7) {
-    webString = "HTTP CODE 400: Invalid Request\n";
+    webString = "<h2><font style='color:red'>HTTP CODE 400: Invalid Request</font></h2>\n";
   } else {
     Serial.println("Got new preferences");
-    webString = "HTTP CODE 200: OK, Got new Preferences\n";
+    webString = "<h2><font style='color:green'>HTTP CODE 200: OK, Got new Preferences</font></h2>\n";
 
+    // get new settings from URL
     SHA1 = server.arg("SHA1");
     host = server.arg("host");
     httpsPort = server.arg("httpsPort").toInt();
@@ -76,17 +79,16 @@ void updatePrefsFile() {
     temp_max = server.arg("temp_max").toInt();
     heater = server.arg("heater").toInt();
 
+    // open file for writing
     File f = SPIFFS.open(pFile, "w");
     if (!f) {
       Serial.println(F("Failed to create file"));
-      webString += "File write OPEN FAILED, NOT updated\n";
-      server.send(200, "text/plain", webString);
-      String webString = "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n";
+      server.send(200, "text/plain", "<h2><font style='color:red'>File write OPEN FAILED, NOT updated</font></h2>\n");
       return;
     }
+    // serialize JSON
     StaticJsonBuffer<256> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
-
     root["SHA1"] = SHA1;
     root["host"] = host;
     root["httpsPort"] = httpsPort;
@@ -94,32 +96,39 @@ void updatePrefsFile() {
     root["temp_min"] = temp_min;
     root["temp_max"] = temp_max;
     root["heater"] = heater;
+
+    // write JSON to file
     if (root.printTo(f) == 0) {
       Serial.println(F("Failed to write to file"));
-      webString += "File write OPEN FAILED, NOT updated\n";
+      webString = "<h2><font style='color:red'>File write OPEN FAILED, NOT updated</font></h2>\n";
     } else {
       Serial.println("Preferences file updated");
-      webString += "Preferences file updated\n";
+      webString = "<h2><font style='color:green'>Preferences file updated\n";
       String output;
       root.printTo(output);
       webString += output;
+      webString += "</font></h2>";
+      // mark file as not empty
       emptyFile = false;
     }
     f.close();
   }
   delay(10);
   server.send(200, "text/plain", webString);
+  // reset webString for normal / output
   String webString = "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n";
 }
 
 void readPrefsFile() {
   File f = SPIFFS.open(pFile, "r");
+  // open file for reading
   if (!f) {
     Serial.println("Preferences file read OPEN FAILED!");
     emptyFile = true;
     return;
   }
   while (f.available()) {
+    // deserialize JSON
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(f);
     if (!root.success()) {
@@ -143,7 +152,7 @@ void readPrefsFile() {
 }
 
 void updateWebserver() {
-  // configure path + query
+  // configure path + query for sending to logserver
   if (emptyFile) {
     Serial.println(F("ERROR deserializing json, maybe you cleared the preferences file? Not updating logserver!"));
     return;
@@ -168,7 +177,6 @@ void updateWebserver() {
   Serial.println(pathQuery);
 
   BearSSL::WiFiClientSecure webClient;
-  from_str();
   webClient.setFingerprint(sha1);
   HTTPClient https;
   //Serial.println("[HTTPS] begin...");
@@ -190,25 +198,6 @@ void updateWebserver() {
     https.end();
   } else {
     Serial.println("[HTTPS] Unable to connect");
-  }
-}
-
-void to_str() {
-  SHA1 = "";
-  for (int i = 0; i < 20; i++) {
-    SHA1 = SHA1 + String(sha1[i], HEX);
-    if (i < 19) {
-      SHA1 = SHA1 + ":";
-    }
-  }
-}
-
-void from_str() {
-  int j = 0;
-  for (int i = 0; i < 60; i = i + 3) {
-    String x = ("0x" + SHA1.substring(i, i+2));
-    sha1[j] = strtoul(x.c_str(), NULL, 16);
-    j++;
   }
 }
 
@@ -242,6 +231,7 @@ void switchRelais() {
 }
 
 void debug_vars() {
+  // write debug to serial port
   Serial.print("");
   Serial.print("IP: ");
   Serial.println(buff_IP);
@@ -292,11 +282,11 @@ void setup(void) {
     Serial.println("Failed to connect and hit timeout, restarting...");
     ESP.reset();
   }
-  Serial.print("secs in void setup() connection: ");
+  Serial.print("Seconds in void setup() WiFi connection: ");
   int connRes = WiFi.waitForConnectResult();
   Serial.println(connRes);
   if (WiFi.status()!=WL_CONNECTED) {
-      Serial.println("Failed to connect, resetting in 5 seconds");
+      Serial.println("Failed to connect to WiFi, resetting in 5 seconds");
       delay(5000);
       ESP.reset();
   } else {
@@ -329,6 +319,7 @@ void setup(void) {
 
   pinMode(RELAISPIN1, OUTPUT);
   pinMode(RELAISPIN2, OUTPUT);
+  // start with relais OFF
   digitalWrite(RELAISPIN1, LOW);
   digitalWrite(RELAISPIN2, LOW);
   relaisState = "OFF";
@@ -354,10 +345,11 @@ void setup(void) {
 } 
  
 void loop(void) {
+  // start main loop
   unsigned long currentMillis = millis();
   if ((unsigned long)(currentMillis - previousMillis) >= interval )
   {
-    // save the last time you read the sensor
+    // save the last time sensor was read
     previousMillis = currentMillis;
 
     Serial.println("- getTemperature");

@@ -65,10 +65,10 @@ All variables can be initialized/changed in a settings form on the logging webse
 - [ ] Add a small TFT display for temperature, relay status and LAN IP
 - [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
-- [x] Add links to hardware (eBay)
+- [x] Add links to hardware (eBay) and software (inspiration sources)
 - [ ] Change the horrible design (now I've added even more of it)
 - [x] Add some nice pictures
-- [ ] \(Perhaps) Documentation (including hardware 'fritzing'). In the mean time, look at my sources [](#links), they have done a better job of documenting the work then I'll ever do.
+- [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below
 - [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
 - [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming)
 - [ ] \(Perhaps) switching to syslog on port 514 (UDP?)

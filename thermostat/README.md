@@ -130,7 +130,7 @@ All variables can be initialized/changed in a settings form on the logging webse
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2018 © netphantm.
+- Copyright 2018 © [Hugo](https://github.com/netphantm).
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

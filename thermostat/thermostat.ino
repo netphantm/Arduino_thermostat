@@ -10,8 +10,8 @@
 #define ONE_WIRE_BUS 2  // DS18B20 pin D4 = GPIO2
 #define RELAISPIN1 D1
 #define RELAISPIN2 D2
-#define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-#define PBWIDTH 60
+#define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+#define PBWIDTH 80
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
@@ -50,7 +50,7 @@ void getTemperature() {
 
 void printProgress (unsigned long percentage) {
   long val = (unsigned long) (percentage + 1);
-  unsigned long lpad = (unsigned long) (percentage * PBWIDTH /100);
+  unsigned long lpad = (unsigned long) (val * PBWIDTH /100);
   unsigned long rpad = PBWIDTH - lpad;
   printf ("\r%3d%% [%.*s%*s]", val, lpad, PBSTR, rpad, "");
   fflush (stdout);

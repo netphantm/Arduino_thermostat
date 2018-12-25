@@ -9,6 +9,7 @@ if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !em
   $temp_min = $_GET["temp_min"];
   $temp_max = $_GET["temp_max"];
   $heater = $_GET["heater"] == "true" ? true : false;
+  $debug = $_GET["debug"] == "true" ? true : false;
   print("HERE!");
   if($temp_min >= $temp_max) {
     print("<html>\n");
@@ -21,7 +22,7 @@ if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !em
     print("</body>");
     exit();
   } else {
-    header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&host=".$host."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater);
+    header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&host=".$host."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&debug=".$debug);
     exit;
   }
 }
@@ -59,7 +60,8 @@ $httpsPort = "443";
 $interval = 120000;
 $temp_min = 6;
 $temp_max = 12;
-$heater = 0;
+$heater = 1;
+$debug = 1;
 
 print("<html><head>\n");
 print("</head><body>\n");
@@ -68,20 +70,18 @@ print("<title>Clamps Thermostat IoT Settings</title>\n");
 print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: auto; }</style>\n");
 print("</head><body>\n<div class=\"content\">\n");
 print("<form method=\"GET\">\n");
-print("<div align=\"center\"><h1>ESP8266-12E DHT11 - Thermostat IoT - Settings</h1></div>\n");
-print("<div align=\"center\"><table style=\"width:950px;\"><tr><td>\n");
-
-print("Hostname = <select name=\"IP\">\n");#onchange=\"this.form.action=this.value
-#print(" <option value=\"\">Select...</option>\n");
-print(" <option value=\"http://192.168.178.104/\">Clamps</option>\n");
-print("</select><br>\n");
-print("Certificate Fingerprint SHA1 = <input type='text' name='SHA1' maxlength=59 size=40 value=$SHA1><br>\n");
-print("Host = <input type='text' name='host' size=12 value=$host>\n");
-print("Port = <input type='text' name='httpsPort' size=2 value=$httpsPort><br>\n");
-print("Refresh interval = <input type='text' name='interval' size=2 value=$interval> Milliseconds<br>\n");
-print("Temperature MIN = <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C<br>\n");
-print("Temperature MAX = <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C<br>\n");
-print("It's a Heater\t<input type='checkbox' name='heater' value='true'><br>\n");
-print("<input type='submit' value='Submit' >\n");
+print("<div align=\"center\"><h1>ESP8266/WeMos D1 Mini Pro - DS18B20</h1></div>");
+print("<div align=\"center\"><h1>Thermostat IoT - Settings</h1></div>\n");
+print("<table style=\"width:950px;\"><tr><td>Sensor hostname <select name=\"IP\">\n");
+print("<option value=\"http://192.168.178.104/\">Clamps</option></select></td></tr><tr><td>\n");
+print("Certificate SHA1 fingerprint <input type='text' name='SHA1' maxlength=60 size=40 value=$SHA1></td></tr><tr><td>\n");
+print("Loghost <input type='text' name='host' size=11 value=$host></td><td>\n");
+print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></tr><tr><td>\n");
+print("Refresh interval <input type='text' name='interval' size=2 value=$interval> Milliseconds</td></tr><tr><td>\n");
+print("Temperature MIN <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C</td><td>\n");
+print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C</td></tr><tr><td>\n");
+print("It's a Heater\t<input type='checkbox' name='heater' value='true'></td><td>\n");
+print("DEBUG\t<input type='checkbox' name='debug' value='true'></td></tr>\n");
+print("</table><br><input type='submit' value='Submit' >\n");
 print("</form></body>");
 ?>

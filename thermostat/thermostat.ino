@@ -364,9 +364,9 @@ void setup(void) {
   readPrefsFile();
   if (!emptyFile) {
     getTemperature();
+    switchRelais();
     if (debug)
       debug_vars();
-    switchRelais();
   }
 
   // web client handlers
@@ -375,6 +375,7 @@ void setup(void) {
   server.on("/update", []() {
     updatePrefsFile();
     getTemperature();
+    switchRelais();
     if (debug)
       debug_vars();
   });

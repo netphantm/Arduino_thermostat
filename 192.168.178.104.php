@@ -177,8 +177,8 @@ function readDataFile() {
   print("</head><body>\n");
 
   print("\n<div class=\"content\">\n");
-  print("<div align=\"center\"><h1>ESP8266-12E DS18B20 - Thermostat IoT</h1></div>\n");
-  print("<div align=\"center\" style=\"color:red\">".$webMessage."</div>\n");
+  print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20");
+  print("<br>IoT Thermostat</h2></div>\n");
   print("<div align=\"center\"><table style=\"width:950px;\"><tr><td>");
   print("</td></tr></table>\n");
   print("<table style=\"width:950px;\"><tr><td>\n");
@@ -196,10 +196,10 @@ function readDataFile() {
   } else {
     print("<div>Appliance is a <font style=\"color:blue\"><b>Cooler</b></font></div><br>\n");
   }
+  print("<button id=\"change\">Change the date format</button>\n");
   print("</td><td>\n");
   print("<div id=\"chart_divTemp\" style=\"width: 250px;\"></div>\n");
   print("</td></tr></table>\n");
-  print("<button id=\"change\">Change the date format</button>\n");
   print("<style>div.google-visualization-tooltip { ; }</style>\n");
   print("<div id=\"curve_chart\" style=\"width: 1000px; height: 600px\"></div></div>\n");
   print("<div class=\"tooltip\"><a href=\"mailto:mail@hugo.ro?subject='Clamps' Thermostat IoT\">&copy;2018</a>\n");

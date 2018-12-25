@@ -23,6 +23,7 @@ unsigned long previousMillis = 0;
 bool justFormatted = false;
 bool emptyFile = false;
 bool heater = false;
+bool debug = true;
 char buff_IP[16];
 uint8_t sha1[20];
 float temp_c;
@@ -79,7 +80,7 @@ void clearPrefsFile() {
 void updatePrefsFile() {
   Serial.println("\n= updatePrefsFile");
 
-  if (server.args() < 1 || server.args() > 7) {
+  if (server.args() < 1 || server.args() > 8) {
     server.send(200, "text/plain", "HTTP CODE 400: Invalid Request\n");
     return;
   }
@@ -94,6 +95,7 @@ void updatePrefsFile() {
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
   heater = server.arg("heater").toInt();
+  debug = server.arg("debug").toInt();
 
   // open file for writing
   File f = SPIFFS.open(pFile, "w");
@@ -112,6 +114,7 @@ void updatePrefsFile() {
   root["temp_min"] = temp_min;
   root["temp_max"] = temp_max;
   root["heater"] = heater;
+  root["debug"] = debug;
 
   // write JSON to file
   if (root.printTo(f) == 0) {
@@ -157,6 +160,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
+      debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println("Got Preferences from file");
     }
   }
@@ -186,6 +190,8 @@ void updateWebserver() {
   pathQuery += temp_max;
   pathQuery += "&heater=";
   pathQuery += heater;
+  pathQuery += "&debug=";
+  pathQuery += debug;
 
   Serial.print("Connecting to https://");
   Serial.print(host);
@@ -278,6 +284,8 @@ void debug_vars() {
   Serial.println(temp_max);
   Serial.print("- heater: ");
   Serial.println(heater);
+  Serial.print("- debug: ");
+  Serial.println("duh...");
   Serial.println("");
 }
 
@@ -356,7 +364,8 @@ void setup(void) {
   readPrefsFile();
   if (!emptyFile) {
     getTemperature();
-    debug_vars();
+    if (debug)
+      debug_vars();
     switchRelais();
   }
 
@@ -366,7 +375,8 @@ void setup(void) {
   server.on("/update", []() {
     updatePrefsFile();
     getTemperature();
-    debug_vars();
+    if (debug)
+      debug_vars();
   });
   server.on("/clear", []() {
     clearPrefsFile();
@@ -396,7 +406,8 @@ void loop(void) {
     } else {
       readPrefsFile();
       getTemperature();
-      debug_vars();
+      if (debug)
+        debug_vars();
       switchRelais();
       updateWebserver();
     }

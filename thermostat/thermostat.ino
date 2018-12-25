@@ -1,3 +1,8 @@
+//////// ESP8266/WeMos D1 Mini Pro - DS18B20 IoT Thermostat
+//// Copyright 2018 © Hugo
+//// https://github.com/netphantm/Arduino/tree/master/thermostat
+
+//// include third party libraries
 #include <WiFiManager.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
@@ -7,14 +12,12 @@
 #include <DallasTemperature.h>
 #include <ArduinoJson.h>
 
+//// initialize variables / hardware
 #define ONE_WIRE_BUS 2  // DS18B20 pin D4 = GPIO2
 #define RELAISPIN1 D1
 #define RELAISPIN2 D2
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 80
-
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature DS18B20(&oneWire);
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/prefs.json";
@@ -36,10 +39,13 @@ int interval;
 float temp_min;
 float temp_max;
 
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature DS18B20(&oneWire);
 ESP8266WebServer server(80);
 
+//// read temperature from sensor / switch relay on or off
 void getTemperature() {
-  Serial.println("= getTemperature");
+  Serial.println("= getTemperature: ");
 
   // read temperature from the sensor
   uptime = (millis() / 1000 ); // Set uptime
@@ -47,24 +53,42 @@ void getTemperature() {
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   temp_c = temp_c - 2.4; // calibrate your sensor, if needed
   delay(10);
+  Serial.print(temp_c);
 }
 
-void printProgress (unsigned long percentage) {
-  long val = (unsigned long) (percentage + 1);
-  unsigned long lpad = (unsigned long) (val * PBWIDTH /100);
-  unsigned long rpad = PBWIDTH - lpad;
-  printf ("\r%3d%% [%.*s%*s]", val, lpad, PBSTR, rpad, "");
-  fflush (stdout);
+void switchRelais() {
+  Serial.print("= switchRelais: ");
+
+  if (heater) {
+    if (temp_c <= temp_min) {
+      digitalWrite(RELAISPIN1, HIGH);
+      digitalWrite(RELAISPIN2, HIGH);
+      Serial.println("Turn both Relais ON");
+      relaisState = "ON";
+    } else if (temp_c >= temp_max) {
+      digitalWrite(RELAISPIN1, LOW);
+      digitalWrite(RELAISPIN2, LOW);
+      Serial.println("Turn both Relais OFF");
+      relaisState = "OFF";
+    }
+  } else {
+    if (temp_c >= temp_max) {
+      digitalWrite(RELAISPIN1, HIGH);
+      digitalWrite(RELAISPIN2, HIGH);
+      Serial.println("Turn both Relais ON");
+      relaisState = "ON";
+    } else if (temp_c <= temp_min) {
+      digitalWrite(RELAISPIN1, LOW);
+      digitalWrite(RELAISPIN2, LOW);
+      Serial.println("Turn both Relais OFF");
+      relaisState = "OFF";
+    }
+    Serial.print(relaisState);
+  }
+  delay(10);
 }
 
-void handle_root() {
-  server.send(200, "text/html", "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n");
-}
-
-void handleNotFound(){
-  server.send(404, "text/plain", "HTTP CODE 404: Not found\n");
-}
-
+//// preferences file clear / read / write
 void clearPrefsFile() {
   Serial.println("= clearPrefsFile");
 
@@ -75,6 +99,41 @@ void clearPrefsFile() {
   // mark file as empty
   emptyFile = true;
   server.send(200, "text/plain", "HTTP CODE 200: OK, SPIFFS formatted, preferences cleared\n");
+}
+
+void readPrefsFile() {
+  Serial.println("= readPrefsFile");
+
+  File f = SPIFFS.open(pFile, "r");
+  // open file for reading
+  if (!f) {
+    Serial.println(F("Preferences file read open failed"));
+    emptyFile = true;
+    return;
+  }
+  while (f.available()) {
+    // deserialize JSON
+    StaticJsonBuffer<512> jsonBuffer;
+    JsonObject &root = jsonBuffer.parseObject(f);
+    if (!root.success()) {
+      Serial.println(F("Error deserializing json, maybe you cleared the preferences file? Not updating logserver"));
+      emptyFile = true;
+      return;
+    } else {
+      emptyFile = false;
+      SHA1 = root["SHA1"].as<String>();
+      host = root["host"].as<String>(), sizeof(host);
+      httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
+      interval = root["interval"].as<long>(), sizeof(interval);
+      temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
+      temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
+      heater = root["heater"].as<bool>(), sizeof(heater);
+      debug = root["debug"].as<bool>(), sizeof(debug);
+      Serial.println(F("Got Preferences from file"));
+    }
+  }
+  f.close();
+  delay(10);
 }
 
 void updatePrefsFile() {
@@ -133,39 +192,13 @@ void updatePrefsFile() {
   server.send(200, "text/plain", webString);
 }
 
-void readPrefsFile() {
-  Serial.println("= readPrefsFile");
+//// local webserver handlers / send data to logserver
+void handle_root() {
+  server.send(200, "text/html", "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n");
+}
 
-  File f = SPIFFS.open(pFile, "r");
-  // open file for reading
-  if (!f) {
-    Serial.println("Preferences file read open failed");
-    emptyFile = true;
-    return;
-  }
-  while (f.available()) {
-    // deserialize JSON
-    StaticJsonBuffer<512> jsonBuffer;
-    JsonObject &root = jsonBuffer.parseObject(f);
-    if (!root.success()) {
-      Serial.println(F("Error deserializing json, maybe you cleared the preferences file? Not updating logserver"));
-      emptyFile = true;
-      return;
-    } else {
-      emptyFile = false;
-      SHA1 = root["SHA1"].as<String>();
-      host = root["host"].as<String>(), sizeof(host);
-      httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
-      interval = root["interval"].as<long>(), sizeof(interval);
-      temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
-      temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
-      heater = root["heater"].as<bool>(), sizeof(heater);
-      debug = root["debug"].as<bool>(), sizeof(debug);
-      Serial.println("Got Preferences from file");
-    }
-  }
-  f.close();
-  delay(10);
+void handleNotFound(){
+  server.send(404, "text/plain", "HTTP CODE 404: Not found\n");
 }
 
 void updateWebserver() {
@@ -193,7 +226,7 @@ void updateWebserver() {
   pathQuery += "&debug=";
   pathQuery += debug;
 
-  Serial.print("Connecting to https://");
+  Serial.print(F("Connecting to https://"));
   Serial.print(host);
   Serial.println(pathQuery);
 
@@ -206,89 +239,61 @@ void updateWebserver() {
     //Serial.println("HTTPS GET...");
     int httpCode = https.GET();
     if (httpCode > 0) {
-      Serial.print("HTTPS GET OK, code: ");
+      Serial.print(F("HTTPS GET OK, code: "));
       Serial.println(httpCode);
       if (httpCode == HTTP_CODE_OK) {
           String payload = https.getString();
           Serial.println(payload);
       }
     } else {
-      Serial.print("HTTPS GET failed! Error: ");
+      Serial.print(F("HTTPS GET failed! Error: "));
       Serial.println(https.errorToString(httpCode).c_str());
     }
     //Serial.println("closing connection");
     https.end();
   } else {
-    Serial.println("HTTPS Unable to connect");
+    Serial.println(F("HTTPS Unable to connect"));
   }
 }
 
-void switchRelais() {
-  Serial.println("= switchRelais");
-
-  if (heater) {
-    if (temp_c <= temp_min) {
-      digitalWrite(RELAISPIN1, HIGH);
-      digitalWrite(RELAISPIN2, HIGH);
-      Serial.println("Turn both Relais ON");
-      relaisState = "ON";
-    } else if (temp_c >= temp_max) {
-      digitalWrite(RELAISPIN1, LOW);
-      digitalWrite(RELAISPIN2, LOW);
-      Serial.println("Turn both Relais OFF");
-      relaisState = "OFF";
-    }
-  } else {
-    if (temp_c >= temp_max) {
-      digitalWrite(RELAISPIN1, HIGH);
-      digitalWrite(RELAISPIN2, HIGH);
-      Serial.println("Turn both Relais ON");
-      relaisState = "ON";
-    } else if (temp_c <= temp_min) {
-      digitalWrite(RELAISPIN1, LOW);
-      digitalWrite(RELAISPIN2, LOW);
-      Serial.println("Turn both Relais OFF");
-      relaisState = "OFF";
-    }
-  }
-  delay(10);
-}
-
+//// Miscellaneous stuff
+//// print variables for debug
 void debug_vars() {
   // write debug to serial port
-  Serial.println("- DEBUG -");
-  Serial.print("- IP: ");
+  Serial.println(F("- DEBUG -"));
+  Serial.print(F("- IP: "));
   Serial.println(buff_IP);
-  Serial.print("- uptime: ");
+  Serial.print(F("- uptime: "));
   Serial.println(uptime);
-  Serial.print("- Temperature: ");
+  Serial.print(F("- Temperature: "));
   Serial.println(temp_c);
-  Serial.print("- RelaisState: ");
+  Serial.print(F("- RelaisState: "));
   Serial.println(relaisState);
   if (emptyFile) {
-    Serial.print("- emptyFile: ");
+    Serial.print(F("- emptyFile: "));
     Serial.println(emptyFile);
     return;
   }
-  Serial.print("- SHA1: ");
+  Serial.print(F("- SHA1: "));
   Serial.println(SHA1);
-  Serial.print("- host: ");
+  Serial.print(F("- host: "));
   Serial.println(host);
-  Serial.print("- httpsPort: ");
+  Serial.print(F("- httpsPort: "));
   Serial.println(httpsPort);
-  Serial.print("- interval: ");
+  Serial.print(F("- interval: "));
   Serial.println(interval);
-  Serial.print("- temp_min: ");
+  Serial.print(F("- temp_min: "));
   Serial.println(temp_min);
-  Serial.print("- temp_max: ");
+  Serial.print(F("- temp_max: "));
   Serial.println(temp_max);
-  Serial.print("- heater: ");
+  Serial.print(F("- heater: "));
   Serial.println(heater);
-  Serial.print("- debug: ");
-  Serial.println("duh...");
+  Serial.print(F("- debug: "));
+  Serial.println(F("duh..."));
   Serial.println("");
 }
 
+//// transform SHA1 to binary
 void from_str() {
   int j = 0;
   for (int i = 0; i < 60; i = i + 3) {
@@ -298,6 +303,16 @@ void from_str() {
   }
 }
  
+//// print progress bar to console
+void printProgress (unsigned long percentage) {
+  long val = (unsigned long) (percentage + 1);
+  unsigned long lpad = (unsigned long) (val * PBWIDTH /100);
+  unsigned long rpad = PBWIDTH - lpad;
+  printf ("\r%3d%% [%.*s%*s]", val, lpad, PBSTR, rpad, "");
+  fflush (stdout);
+}
+
+//// WiFi config mode
 void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
@@ -305,6 +320,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println("Opening configuration portal");
 }
 
+//// setup / first run
 void setup(void) {
   Serial.begin(115200); // Start Serial 
  
@@ -315,19 +331,19 @@ void setup(void) {
   wifiManager.setAPCallback(configModeCallback);
   if(!wifiManager.autoConnect("Clamps","pass4esp")) {
     delay(5000);
-    Serial.println("Failed to connect and hit timeout, restarting...");
+    Serial.println(F("Failed to connect and hit timeout, restarting..."));
     ESP.reset();
   }
-  Serial.print("Seconds in void setup() WiFi connection: ");
+  Serial.print(F("Seconds in void setup() WiFi connection: "));
   int connRes = WiFi.waitForConnectResult();
   Serial.println(connRes);
   if (WiFi.status()!=WL_CONNECTED) {
-      Serial.println("Failed to connect to WiFi, resetting in 5 seconds");
+      Serial.println(F("Failed to connect to WiFi, resetting in 5 seconds"));
       delay(5000);
       ESP.reset();
   } else {
-    if (!MDNS.begin("esp8266"))   {  Serial.println("Error setting up mDNS responder");  }
-    else                          {  Serial.println("mDNS responder started");  }
+    if (!MDNS.begin("esp8266"))   { Serial.println(F("Error setting up mDNS responder")); }
+    else                          { Serial.println(F("mDNS responder started")); }
   }
   String WiFi_Name = WiFi.SSID();
   IPAddress ip = WiFi.localIP();
@@ -346,10 +362,10 @@ void setup(void) {
   if (!f) {
     // no data file, format SPIFFS
     if(! justFormatted) {
-      Serial.println("Please wait for SPIFFS to be formatted");
+      Serial.println(F("Please wait for SPIFFS to be formatted"));
       SPIFFS.format();
     }
-    Serial.println("SPIFFS formatted");
+    Serial.println(F("SPIFFS formatted"));
   }
   f.close();
 
@@ -384,26 +400,27 @@ void setup(void) {
   });
 
   server.begin();
-  Serial.println("HTTP Server started. Giving you 5 seconds to send data...");
+  Serial.println(F("HTTP Server started. Giving you 5 seconds to send data..."));
   delay(5000);
-  Serial.println("Starting loop...");
+  Serial.println(F("Starting loop..."));
   Serial.println("");
 } 
  
+// main loop
 void loop(void) {
   // start main loop
   unsigned long currentMillis = millis();
   unsigned long past = currentMillis - previousMillis;
   if (past > interval) {
-    Serial.println(" Interval passed");
+    Serial.println(F(" Interval passed"));
     // save the last time sensor was read
     previousMillis = currentMillis;
 
     if (emptyFile) {
-      Serial.println("Switching relais off, as no temp_min/temp_max was set");
+      Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));
       digitalWrite(RELAISPIN1, LOW);
       digitalWrite(RELAISPIN2, LOW);
-      Serial.println("Waiting for settings to be sent...");
+      Serial.println(F("Waiting for settings to be sent..."));
     } else {
       readPrefsFile();
       getTemperature();

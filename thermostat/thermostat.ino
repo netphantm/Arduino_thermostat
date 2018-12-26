@@ -330,8 +330,13 @@ void printProgress (unsigned long percentage) {
 
 //// switch relais
 void toggleRelais(uint8_t sw) {
-    digitalWrite(RELAISPIN1, sw);
-    digitalWrite(RELAISPIN2, sw);
+  if (sw == 1) {
+    relaisState = "ON";
+  } else {
+    relaisState = "OFF";
+  }
+  digitalWrite(RELAISPIN1, sw);
+  digitalWrite(RELAISPIN2, sw);
 }
 
 //// update display
@@ -457,6 +462,7 @@ void loop(void) {
       toggleRelais(1);
       manual = true;
       updatePrefsFile();
+      updateDisplay();
       if (debug)
         debug_vars();
       Serial.println("Manually switched Relais ON");
@@ -471,6 +477,7 @@ void loop(void) {
       toggleRelais(0);
       manual = true;
       updatePrefsFile();
+      updateDisplay();
       if (debug)
         debug_vars();
       Serial.println("Manually switched Relais OFF");

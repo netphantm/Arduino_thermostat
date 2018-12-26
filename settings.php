@@ -9,8 +9,8 @@ if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !em
   $temp_min = $_GET["temp_min"];
   $temp_max = $_GET["temp_max"];
   $heater = $_GET["heater"] == "true" ? true : false;
+  $manual = $_GET["manual"] == "true" ? true : false;
   $debug = $_GET["debug"] == "true" ? true : false;
-  print("HERE!");
   if($temp_min >= $temp_max) {
     print("<html>\n");
     print("<body>\n");

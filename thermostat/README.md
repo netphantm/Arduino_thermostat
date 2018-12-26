@@ -65,8 +65,9 @@ TODO: Add two capacitive touch sensors to manually override relay state. One wil
 - [x] Clean up code and add comments
 - [x] Add a progress bar to the serial console, so you can predict how much until the next log update
 - [ ] Change '192.168.178.104.php' to 'display.php' or something and select appliance from a drop-down menue if you have more than one
-- [ ] Add a small TFT display for temperature, relay status and LAN IP
-- [ ] Add manual override capacitive touch sensors
+- [x] Query internet IP from ipinfo.io
+- [x] Add a small TFT display for temperature, relay status, LAN and internet IP
+- [x] Add manual override capacitive touch sensors (press both to switch back to automatic mode)
 - [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [x] Add links to hardware (eBay) and software (inspiration sources)

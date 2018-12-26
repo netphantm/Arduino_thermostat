@@ -10,6 +10,7 @@
 #include <FS.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include "SSD1306Wire.h"
 #include <ArduinoJson.h>
 
 //// initialize variables / hardware
@@ -27,13 +28,18 @@ bool justFormatted = false;
 bool emptyFile = false;
 bool heater = false;
 bool debug = true;
-char buff_IP[16];
+char lanIP[16];
+String inetIP;
+String str_c;
+String str_last;
 uint8_t sha1[20];
 float temp_c;
+float temp_last;
 String webString;
 String relaisState;
 String SHA1;
 String host;
+String payload;
 int httpsPort;
 int interval;
 float temp_min;
@@ -42,18 +48,25 @@ float temp_max;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
 ESP8266WebServer server(80);
+SSD1306Wire  display(0x3c, D6, D5);
 
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
   Serial.println("= getTemperature: ");
-
+  str_last = str_c;
   // read temperature from the sensor
   uptime = (millis() / 1000 ); // Set uptime
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
-  temp_c = temp_c - 2.4; // calibrate your sensor, if needed
+  temp_c = temp_c - 1; // calibrate your sensor, if needed
+  str_c = String(temp_c, 2);
   delay(10);
   Serial.print(temp_c);
+  display.setColor(BLACK);
+  display.drawString(0, 50, str_last + "°C");
+  display.setColor(WHITE);
+  display.drawString(0, 50, str_c + "°C");
+  display.display();
 }
 
 void switchRelais() {
@@ -65,11 +78,21 @@ void switchRelais() {
       digitalWrite(RELAISPIN2, HIGH);
       Serial.println("Turn both Relais ON");
       relaisState = "ON";
+      display.setColor(BLACK);
+      display.drawString(0, 60, "Relais is OFF");
+      display.setColor(WHITE);
+      display.drawString(0, 60, "Relais is ON");
+      display.display();
     } else if (temp_c >= temp_max) {
       digitalWrite(RELAISPIN1, LOW);
       digitalWrite(RELAISPIN2, LOW);
       Serial.println("Turn both Relais OFF");
       relaisState = "OFF";
+      display.setColor(BLACK);
+      display.drawString(0, 60, "Relais is ON");
+      display.setColor(WHITE);
+      display.drawString(0, 60, "Relais is OFF");
+      display.display();
     }
   } else {
     if (temp_c >= temp_max) {
@@ -77,11 +100,21 @@ void switchRelais() {
       digitalWrite(RELAISPIN2, HIGH);
       Serial.println("Turn both Relais ON");
       relaisState = "ON";
+      display.setColor(BLACK);
+      display.drawString(0, 60, "Relais is OFF");
+      display.setColor(WHITE);
+      display.drawString(0, 60, "Relais is ON");
+      display.display();
     } else if (temp_c <= temp_min) {
       digitalWrite(RELAISPIN1, LOW);
       digitalWrite(RELAISPIN2, LOW);
       Serial.println("Turn both Relais OFF");
       relaisState = "OFF";
+      display.setColor(BLACK);
+      display.drawString(0, 60, "Relais is ON");
+      display.setColor(WHITE);
+      display.drawString(0, 60, "Relais is OFF");
+      display.display();
     }
     Serial.print(relaisState);
   }
@@ -216,7 +249,7 @@ void updateWebserver() {
   pathQuery += "&temperature=";
   pathQuery += temp_c;
   pathQuery += "&IP=";
-  pathQuery += buff_IP;
+  pathQuery += lanIP;
   pathQuery += "&temp_min=";
   pathQuery += temp_min;
   pathQuery += "&temp_max=";
@@ -261,8 +294,10 @@ void updateWebserver() {
 void debug_vars() {
   // write debug to serial port
   Serial.println(F("- DEBUG -"));
-  Serial.print(F("- IP: "));
-  Serial.println(buff_IP);
+  Serial.print(F("- LAN IP: "));
+  Serial.println(lanIP);
+  Serial.print(F("- Inet IP: "));
+  Serial.println(inetIP);
   Serial.print(F("- uptime: "));
   Serial.println(uptime);
   Serial.print(F("- Temperature: "));
@@ -318,6 +353,13 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(WiFi.softAPIP());
   Serial.println(myWiFiManager->getConfigPortalSSID());
   Serial.println("Opening configuration portal");
+  display.init();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(0, 10, "# Entered config mode #");
+  display.drawString(0, 30, "ID/pass: NDND/pass4esp");
+  display.drawString(0, 40, "Config IP: 10.0.1.1");
+  display.display();
 }
 
 //// setup / first run
@@ -347,9 +389,39 @@ void setup(void) {
   }
   String WiFi_Name = WiFi.SSID();
   IPAddress ip = WiFi.localIP();
-  sprintf(buff_IP, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+  sprintf(lanIP, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
   Serial.print("LAN IP: ");
-  Serial.println(buff_IP);
+  Serial.println(lanIP);
+
+  WiFiClient client;
+  HTTPClient http;
+  //Serial.println(F("HTTP begin..."));
+  if (http.begin(client, "http://ipinfo.io/ip")) { // GET Inet IP
+    http.addHeader("Content-Type", "application/json");
+    //Serial.println(F("HTTPS GET..."));
+    int httpCode = http.GET();
+    if(httpCode > 0) {
+      Serial.print(F("HTTP response code "));
+      Serial.println(httpCode);
+      inetIP = http.getString();
+      Serial.println("Inet IP: " + inetIP);
+      display.init();
+      display.setTextAlignment(TEXT_ALIGN_LEFT);
+      display.setFont(ArialMT_Plain_10);
+      display.drawString(0,  0, "Connected to WiFi");
+      display.drawString(0, 10, "WiFi AP SSID: " + WiFi_Name);
+      display.drawString(0, 20, "LAN IP: " + String("") + lanIP);
+      display.drawString(0, 30, "Inet IP: " + inetIP);
+      display.display();
+    } else {
+      Serial.print(F("HTTPS GET failed! Error: "));
+      Serial.println(http.errorToString(httpCode).c_str());
+    }
+    http.end();
+    delay(50);
+  } else {
+    Serial.println(F("[HTTPS] Unable to connect"));
+  }
 
   SPIFFS.begin(); // initialize SPIFFS
   /*

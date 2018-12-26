@@ -17,6 +17,8 @@
 #define ONE_WIRE_BUS 2  // DS18B20 pin D4 = GPIO2
 #define RELAISPIN1 D1
 #define RELAISPIN2 D2
+#define TOUCHPIN1 D7
+#define TOUCHPIN2 D8
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 80
 
@@ -24,18 +26,18 @@ const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/prefs.json";
 unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
-bool justFormatted = false;
 bool emptyFile = false;
 bool heater = false;
 bool manual = false;
 bool debug = true;
 char lanIP[16];
 String inetIP;
+String sw = "LOW";
 String str_c;
-String str_last;
+String mode;
+String WiFi_Name;
 uint8_t sha1[20];
 float temp_c;
-float temp_last;
 String webString;
 String relaisState;
 String SHA1;
@@ -54,70 +56,45 @@ SSD1306Wire  display(0x3c, D6, D5);
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
   Serial.println("= getTemperature: ");
-  str_last = str_c;
+  String str_last = str_c;
   // read temperature from the sensor
   uptime = (millis() / 1000 ); // Set uptime
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   temp_c = temp_c - 1; // calibrate your sensor, if needed
-  str_c = String(temp_c, 2);
   delay(10);
   Serial.print(temp_c);
-  display.setColor(BLACK);
-  display.drawString(0, 50, str_last + "°C");
-  display.setColor(WHITE);
-  display.drawString(0, 50, str_c + "°C");
-  display.display();
 }
 
 void switchRelais() {
   Serial.print("= switchRelais: ");
 
-  if (heater) {
-    if (temp_c <= temp_min) {
-      digitalWrite(RELAISPIN1, HIGH);
-      digitalWrite(RELAISPIN2, HIGH);
-      Serial.println("Turn both Relais ON");
-      relaisState = "ON";
-      display.setColor(BLACK);
-      display.drawString(0, 60, "Relais is OFF");
-      display.setColor(WHITE);
-      display.drawString(0, 60, "Relais is ON");
-      display.display();
-    } else if (temp_c >= temp_max) {
-      digitalWrite(RELAISPIN1, LOW);
-      digitalWrite(RELAISPIN2, LOW);
-      Serial.println("Turn both Relais OFF");
-      relaisState = "OFF";
-      display.setColor(BLACK);
-      display.drawString(0, 60, "Relais is ON");
-      display.setColor(WHITE);
-      display.drawString(0, 60, "Relais is OFF");
-      display.display();
-    }
+  if (manual) {
+    mode = "Manual";
+    return;
   } else {
-    if (temp_c >= temp_max) {
-      digitalWrite(RELAISPIN1, HIGH);
-      digitalWrite(RELAISPIN2, HIGH);
-      Serial.println("Turn both Relais ON");
-      relaisState = "ON";
-      display.setColor(BLACK);
-      display.drawString(0, 60, "Relais is OFF");
-      display.setColor(WHITE);
-      display.drawString(0, 60, "Relais is ON");
-      display.display();
-    } else if (temp_c <= temp_min) {
-      digitalWrite(RELAISPIN1, LOW);
-      digitalWrite(RELAISPIN2, LOW);
-      Serial.println("Turn both Relais OFF");
-      relaisState = "OFF";
-      display.setColor(BLACK);
-      display.drawString(0, 60, "Relais is ON");
-      display.setColor(WHITE);
-      display.drawString(0, 60, "Relais is OFF");
-      display.display();
+    mode = "Automatic";
+    if (heater) {
+      if (temp_c <= temp_min) {
+        Serial.println("Turn both Relais ON");
+        toggleRelais(1);
+        relaisState = "ON";
+      } else if (temp_c >= temp_max) {
+        Serial.println("Turn both Relais OFF");
+        toggleRelais(0);
+        relaisState = "OFF";
+      }
+    } else {
+      if (temp_c >= temp_max) {
+        Serial.println("Turn both Relais ON");
+        toggleRelais(1);
+        relaisState = "ON";
+      } else if (temp_c <= temp_min) {
+        Serial.println("Turn both Relais OFF");
+        toggleRelais(0);
+        relaisState = "OFF";
+      }
     }
-    Serial.print(relaisState);
   }
   delay(10);
 }
@@ -162,7 +139,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
-      manual = root["manual"].as<bool>(), sizeof(manual);
+      //manual = root["manual"].as<bool>(), sizeof(manual);
       debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println(F("Got Preferences from file"));
     }
@@ -189,7 +166,7 @@ void updatePrefsFile() {
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
   heater = server.arg("heater").toInt();
-  manual = server.arg("manual").toInt();
+  manual = server.arg("manual").toInt() | 0;
   debug = server.arg("debug").toInt();
 
   // open file for writing
@@ -298,7 +275,6 @@ void updateWebserver() {
 //// Miscellaneous stuff
 //// print variables for debug
 void debug_vars() {
-  // write debug to serial port
   Serial.println(F("- DEBUG -"));
   Serial.print(F("- LAN IP: "));
   Serial.println(lanIP);
@@ -310,6 +286,10 @@ void debug_vars() {
   Serial.println(temp_c);
   Serial.print(F("- RelaisState: "));
   Serial.println(relaisState);
+  Serial.print(F("- heater: "));
+  Serial.println(heater);
+  Serial.print(F("- manual: "));
+  Serial.println(manual);
   if (emptyFile) {
     Serial.print(F("- emptyFile: "));
     Serial.println(emptyFile);
@@ -327,11 +307,6 @@ void debug_vars() {
   Serial.println(temp_min);
   Serial.print(F("- temp_max: "));
   Serial.println(temp_max);
-  Serial.print(F("- heater: "));
-  Serial.println(heater);
-  Serial.print(F("- manual: "));
-  Serial.println(manual);
-  Serial.print(F("- debug: duh...\n"));
 }
 
 //// transform SHA1 to binary
@@ -353,6 +328,44 @@ void printProgress (unsigned long percentage) {
   fflush (stdout);
 }
 
+//// switch relais
+void toggleRelais(uint8_t sw) {
+    digitalWrite(RELAISPIN1, sw);
+    digitalWrite(RELAISPIN2, sw);
+}
+
+//// update display
+void updateDisplay() {
+  String state = "Relais: " + mode + " / " + relaisState;
+  display.init();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(0,  0, "Connected to WiFi");
+  display.drawString(0, 10, "WiFi AP SSID: " + WiFi_Name);
+  display.drawString(0, 20, "LAN IP: " + String("") + lanIP);
+  display.drawString(0, 30, "Inet IP: " + inetIP);
+  display.drawString(0, 40, "Temperature: " + String(temp_c, 2) + "°C");
+  display.drawString(0, 50, state);
+  display.display();
+}
+
+//// get internet IP
+void getInetIP() {
+  WiFiClient client;
+  HTTPClient http;
+  http.begin(client, "http://ipinfo.io/ip");
+  http.addHeader("Content-Type", "application/json");
+  int httpCode = http.GET();
+  if(httpCode > 0) {
+    inetIP = http.getString();
+  } else {
+    Serial.print(F("HTTPS GET failed getting internet IP! Error: "));
+    Serial.println(http.errorToString(httpCode).c_str());
+  }
+  http.end();
+  delay(50);
+}
+
 //// WiFi config mode
 void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println("Entered config mode");
@@ -370,6 +383,8 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 
 //// setup / first run
 void setup(void) {
+  pinMode(RELAISPIN1, OUTPUT);
+  pinMode(RELAISPIN2, OUTPUT);
   Serial.begin(115200); // Start Serial 
  
   WiFiManager wifiManager;
@@ -390,77 +405,29 @@ void setup(void) {
       delay(5000);
       ESP.reset();
   } else {
-    if (!MDNS.begin("esp8266"))   { Serial.println(F("Error setting up mDNS responder")); }
-    else                          { Serial.println(F("mDNS responder started")); }
+    if (!MDNS.begin("esp8266"))
+      Serial.println(F("Error setting up mDNS responder"));
   }
   String WiFi_Name = WiFi.SSID();
   IPAddress ip = WiFi.localIP();
   sprintf(lanIP, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
-  Serial.print("LAN IP: ");
-  Serial.println(lanIP);
-
-  WiFiClient client;
-  HTTPClient http;
-  //Serial.println(F("HTTP begin..."));
-  if (http.begin(client, "http://ipinfo.io/ip")) { // GET Inet IP
-    http.addHeader("Content-Type", "application/json");
-    //Serial.println(F("HTTPS GET..."));
-    int httpCode = http.GET();
-    if(httpCode > 0) {
-      Serial.print(F("HTTP response code "));
-      Serial.println(httpCode);
-      inetIP = http.getString();
-      Serial.println("Inet IP: " + inetIP);
-      display.init();
-      display.setTextAlignment(TEXT_ALIGN_LEFT);
-      display.setFont(ArialMT_Plain_10);
-      display.drawString(0,  0, "Connected to WiFi");
-      display.drawString(0, 10, "WiFi AP SSID: " + WiFi_Name);
-      display.drawString(0, 20, "LAN IP: " + String("") + lanIP);
-      display.drawString(0, 30, "Inet IP: " + inetIP);
-      display.display();
-    } else {
-      Serial.print(F("HTTPS GET failed! Error: "));
-      Serial.println(http.errorToString(httpCode).c_str());
-    }
-    http.end();
-    delay(50);
-  } else {
-    Serial.println(F("[HTTPS] Unable to connect"));
-  }
+  getInetIP();
 
   SPIFFS.begin(); // initialize SPIFFS
-  /*
-  Serial.println("Please wait for SPIFFS to be formatted");
-  SPIFFS.format(); // remove comment block to clear SPIFFS data on boot
-  justFormatted = true;
-  */
 
-  File f = SPIFFS.open(pFile, "r");
-  if (!f) {
-    // no data file, format SPIFFS
-    if(! justFormatted) {
-      Serial.println(F("Please wait for SPIFFS to be formatted"));
-      SPIFFS.format();
-    }
-    Serial.println(F("SPIFFS formatted"));
-  }
-  f.close();
-
-  pinMode(RELAISPIN1, OUTPUT);
-  pinMode(RELAISPIN2, OUTPUT);
-  // start with relais OFF
-  digitalWrite(RELAISPIN1, LOW);
-  digitalWrite(RELAISPIN2, LOW);
+  toggleRelais(0); // start with relais OFF
   relaisState = "OFF";
  
-  // turn on if needed
-  readPrefsFile();
+  readPrefsFile(); // read old preferences from SPIFFS
   if (!emptyFile) {
     getTemperature();
     switchRelais();
+    updateDisplay();
     if (debug)
       debug_vars();
+  } else {
+    Serial.println(F("HTTP Server started. Giving you 5 seconds to send data..."));
+    delay(5000);
   }
 
   // web client handlers
@@ -470,6 +437,7 @@ void setup(void) {
     updatePrefsFile();
     getTemperature();
     switchRelais();
+    updateDisplay();
     if (debug)
       debug_vars();
   });
@@ -477,27 +445,45 @@ void setup(void) {
     clearPrefsFile();
   });
 
+  updateDisplay();
   server.begin();
-  Serial.println(F("HTTP Server started. Giving you 5 seconds to send data..."));
-  delay(5000);
-  Serial.println(F("Starting loop..."));
-  Serial.println("");
 } 
  
-// main loop
+//// start main loop
 void loop(void) {
-  // start main loop
+  int hold1 = 1;
+  while (digitalRead(TOUCHPIN1) == 1) {
+    if ( hold1 == 1) {
+      manual = true;
+      toggleRelais(1);
+      Serial.println("Manually switched Relais ON");
+    }
+    hold1 = 0;
+    delay(100);
+  }
+
+  int hold2 = 1;
+  while (digitalRead(TOUCHPIN2) == 1) {
+    if ( hold2 == 1) {
+      manual = true;
+      toggleRelais(0);
+      Serial.println("Manually switched Relais OFF");
+    }
+    hold2 = 0;
+    delay(100);
+  }
+
   unsigned long currentMillis = millis();
   unsigned long past = currentMillis - previousMillis;
   if (past > interval) {
+    getInetIP();
     Serial.println(F(" Interval passed"));
     // save the last time sensor was read
     previousMillis = currentMillis;
 
     if (emptyFile) {
       Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));
-      digitalWrite(RELAISPIN1, LOW);
-      digitalWrite(RELAISPIN2, LOW);
+      toggleRelais(0);
       Serial.println(F("Waiting for settings to be sent..."));
     } else {
       readPrefsFile();
@@ -505,12 +491,12 @@ void loop(void) {
       if (debug)
         debug_vars();
       switchRelais();
+      updateDisplay();
       updateWebserver();
     }
 
-    // Failsafe interval
-    if (interval < 6) {
-      interval = 20;
+    if (interval < 4999) { // set a failsafe interval
+      interval = 10000;
     }
   } else {
     delay(100);

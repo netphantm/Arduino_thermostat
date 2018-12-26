@@ -9,6 +9,8 @@ The thermostat is made for a refrigerator, so it will fire up the relays if the 
 
 All variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated from the localhost certificate, to make sure the WeMos sends the data to the right server.
 
+TODO: Add two capacitive touch sensors to manually override relay state. One will turn them "ON" and the other one "OFF". If you press both, it switches back to auto mode. I don't have buttons, but it's way cooler with touch sensors. The other plus is that you don't have to bore holes in the inclosure for the buttons, just glue them on to the inner side and add stickers to the outside.
+
 ---
 
 ### Table of Contents

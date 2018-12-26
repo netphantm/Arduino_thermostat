@@ -55,47 +55,51 @@ SSD1306Wire  display(0x3c, D6, D5);
 
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
-  Serial.println("= getTemperature: ");
+  Serial.print("= getTemperature: ");
   String str_last = str_c;
   // read temperature from the sensor
-  uptime = (millis() / 1000 ); // Set uptime
+  uptime = (millis() / 1000 ); // Refresh uptime
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   temp_c = temp_c - 1; // calibrate your sensor, if needed
   delay(10);
-  Serial.print(temp_c);
+  Serial.println(temp_c);
 }
 
 void switchRelais() {
-  Serial.print("= switchRelais: ");
-
+  Serial.println("= switchRelais: ");
+  delay(200);
   if (manual) {
-    mode = "Manual";
     return;
   } else {
-    mode = "Automatic";
     if (heater) {
       if (temp_c <= temp_min) {
-        Serial.println("Turn both Relais ON");
+        Serial.println("Auto turned relais ON");
         toggleRelais(1);
-        relaisState = "ON";
       } else if (temp_c >= temp_max) {
-        Serial.println("Turn both Relais OFF");
+        Serial.println("Auto turned relais OFF");
         toggleRelais(0);
-        relaisState = "OFF";
       }
     } else {
       if (temp_c >= temp_max) {
-        Serial.println("Turn both Relais ON");
+        Serial.println("Auto turned relais ON");
         toggleRelais(1);
-        relaisState = "ON";
       } else if (temp_c <= temp_min) {
-        Serial.println("Turn both Relais OFF");
+        Serial.println("Auto turned relais OFF");
         toggleRelais(0);
-        relaisState = "OFF";
       }
     }
   }
+}
+
+void toggleRelais(uint8_t sw) {
+  if (sw == 1) {
+    relaisState = "ON";
+  } else {
+    relaisState = "OFF";
+  }
+  digitalWrite(RELAISPIN1, sw);
+  digitalWrite(RELAISPIN2, sw);
   delay(10);
 }
 
@@ -139,7 +143,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
-      manual = root["manual"].as<bool>(), sizeof(manual);
+      //manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual to the prefs file setting
       debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println(F("Got Preferences from file"));
     }
@@ -166,7 +170,7 @@ void updatePrefsFile() {
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
   heater = server.arg("heater").toInt();
-  manual = server.arg("manual").toInt() | 0;
+  manual = server.arg("manual").toInt();
   debug = server.arg("debug").toInt();
 
   // open file for writing
@@ -328,25 +332,19 @@ void printProgress (unsigned long percentage) {
   fflush (stdout);
 }
 
-//// switch relais
-void toggleRelais(uint8_t sw) {
-  if (sw == 1) {
-    relaisState = "ON";
-  } else {
-    relaisState = "OFF";
-  }
-  digitalWrite(RELAISPIN1, sw);
-  digitalWrite(RELAISPIN2, sw);
-}
-
 //// update display
 void updateDisplay() {
+  if (manual) {
+    mode = "Manual";
+  } else {
+    mode = "Automatic";
+  }
   String state = "Relais: " + mode + " / " + relaisState;
   display.init();
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.setFont(ArialMT_Plain_10);
   display.drawString(0,  0, "Connected to WiFi");
-  display.drawString(0, 10, "WiFi AP SSID: " + WiFi_Name);
+  display.drawString(0, 10, "SSID: " + WiFi.SSID());
   display.drawString(0, 20, "LAN IP: " + String("") + lanIP);
   display.drawString(0, 30, "Inet IP: " + inetIP);
   display.drawString(0, 40, "Temperature: " + String(temp_c, 2) + "°C");
@@ -413,7 +411,7 @@ void setup(void) {
     if (!MDNS.begin("esp8266"))
       Serial.println(F("Error setting up mDNS responder"));
   }
-  String WiFi_Name = WiFi.SSID();
+  //String WiFi_Name = WiFi.SSID();
   IPAddress ip = WiFi.localIP();
   sprintf(lanIP, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
   getInetIP();
@@ -456,34 +454,46 @@ void setup(void) {
  
 //// start main loop
 void loop(void) {
-  int hold1 = 1;
-  while (digitalRead(TOUCHPIN1) == 1) {
-    if ( hold1 == 1) {
+
+  int hold = 1;
+  while (digitalRead(TOUCHPIN1) == 1) { // hold here as long as sensor is touched
+    if ( hold == 1) { // avoid switching more than once (hangs up the device)
+      delay(200);
+      if (digitalRead(TOUCHPIN2) == 1) { // if both touch sensors are triggered, switch back to auto mode
+        manual = false;
+        delay(200);
+        hold = 0;
+        switchRelais();
+        updateDisplay();
+        break;
+      }
       toggleRelais(1);
       manual = true;
-      updatePrefsFile();
       updateDisplay();
-      if (debug)
-        debug_vars();
-      Serial.println("Manually switched Relais ON");
+      Serial.println(F("\nManually switched Relais ON"));
     }
-    hold1 = 0;
-    delay(100);
+    hold = 0;
+    delay(10);
   }
 
-  int hold2 = 1;
-  while (digitalRead(TOUCHPIN2) == 1) {
-    if ( hold2 == 1) {
+  while (digitalRead(TOUCHPIN2) == 1) { // hold here as long as sensor is touched
+    if ( hold == 1) { // avoid switching more than once (hangs up the device)
+      delay(200);
+      if (digitalRead(TOUCHPIN1) == 1) { // if both touch sensors are triggered, switch back to auto mode
+        manual = false;
+        delay(200);
+        hold = 0;
+        switchRelais();
+        updateDisplay();
+        break;
+      }
       toggleRelais(0);
       manual = true;
-      updatePrefsFile();
       updateDisplay();
-      if (debug)
-        debug_vars();
-      Serial.println("Manually switched Relais OFF");
+      Serial.println(F("\nManually switched Relais OFF"));
     }
-    hold2 = 0;
-    delay(100);
+    hold = 0;
+    delay(10);
   }
 
   unsigned long currentMillis = millis();
@@ -491,8 +501,7 @@ void loop(void) {
   if (past > interval) {
     getInetIP();
     Serial.println(F(" Interval passed"));
-    // save the last time sensor was read
-    previousMillis = currentMillis;
+    previousMillis = currentMillis; // save the last time sensor was read
 
     if (emptyFile) {
       Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));

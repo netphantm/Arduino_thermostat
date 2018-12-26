@@ -34,15 +34,18 @@ function readDataFile() {
       $uptime = $line[0];
       $state = $line[1];
       $temp = $line[2];
-      $date = $line[3];
-      $heater = $line[4];
+      $temp_min = $line[3];
+      $temp_max = $line[4];
+      $date = $line[5];
+      $heater = $line[6];
+      $manual = $line[7];
 
       //$retStr = $retStr."\n      [new Date(".$date."), ".$temp.", '<table><tr><td>".options.hAxis."</td></tr><tr><td>Temp: ".$temp."</td></tr><tr><td>State: ".$state."</td></tr></table>'], ";
       $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
     }
   }
   fclose($fp);
-  return array ($retStr,$date,$state,$temp,$heater);
+  return array ($retStr, $date, $state, $temp_min, $temp_max, $temp, $heater, $manual);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -103,16 +106,16 @@ function readDataFile() {
   print("    var data = google.visualization.arrayToDataTable([ \n");
   print("      ['Label', 'Value'], \n");
   print("      ['Temp °C', ");
-  print(readDataFile()[3]);
+  print(readDataFile()[5]);
   print("], ]); \n");
 
   // setup the google gauge options here
   print("    var options = { \n");
   print("      width: 250, height: 150, \n");
   print("      min: 0, max: 40, \n");
-  print("      greenFrom: 0, greenTo: 8, \n");
-  print("      yellowFrom: 8, yellowTo: 12, \n");
-  print("      redFrom: 12, redTo: 40, \n");
+  print("      greenFrom: 0, greenTo: $temp_min, \n");
+  print("      yellowFrom: ".$readDataFile()[3].", yellowTo: ".$readDataFile()[4].", \n");
+  print("      redFrom: ".$readDataFile()[4].", redTo: 40, \n");
   print("      minorTicks: 5, \n");
   print("      focusTarget: 'category', \n");
   print("    }; \n");
@@ -184,17 +187,22 @@ function readDataFile() {
   print("<table style=\"width:950px;\"><tr><td>\n");
   print("<div>Last Readings: ");
   print("<span id=\"displayMoment\"></span>");
-  print("</div><br>\n");
-  print("<div>Temperature: ".readDataFile()[3]." °C</div><br>\n");
-  if (readDataFile()[2] == "OFF") {
-    print("<div>Relais is: <font style=\"color:red\"><b>OFF</b></font></div><br>\n");
+  print("</div>\n");
+  print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div><br>\n");
+  if (readDataFile()[7] == "1") {
+    print("<div>Mode: <font style=\"color:red\"><b>Manual</b></font></div><br>\n");
   } else {
-    print("<div>Relais is: <font style=\"color:green\"><b>ON</b></font></div><br>\n");
+    print("<div>Mode: <font style=\"color:lightgreen\"><b>Automatic</b></font></div><br>\n");
   }
-  if (readDataFile()[4] == "1") {
-    print("<div>Appliance is a <font style=\"color:red\"><b>Heater</b></font></div><br>\n");
+  if (readDataFile()[2] == "OFF") {
+    print("<div>Relais is: <font style=\"color:red\"><b>OFF</b></font></div>\n");
   } else {
-    print("<div>Appliance is a <font style=\"color:blue\"><b>Cooler</b></font></div><br>\n");
+    print("<div>Relais is: <font style=\"color:green\"><b>ON</b></font></div>\n");
+  }
+  if (readDataFile()[6] == "1") {
+    print("<div>Appliance is a <font style=\"color:red\"><b>Heater</b></font></div>\n");
+  } else {
+    print("<div>Appliance is a <font style=\"color:blue\"><b>Cooler</b></font></div>\n");
   }
   print("<button id=\"change\">Change the date format</button>\n");
   print("</td><td>\n");

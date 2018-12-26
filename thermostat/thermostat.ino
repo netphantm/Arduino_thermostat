@@ -27,6 +27,7 @@ unsigned long previousMillis = 0;
 bool justFormatted = false;
 bool emptyFile = false;
 bool heater = false;
+bool manual = false;
 bool debug = true;
 char lanIP[16];
 String inetIP;
@@ -161,6 +162,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
+      manual = root["manual"].as<bool>(), sizeof(manual);
       debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println(F("Got Preferences from file"));
     }
@@ -187,6 +189,7 @@ void updatePrefsFile() {
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
   heater = server.arg("heater").toInt();
+  manual = server.arg("manual").toInt();
   debug = server.arg("debug").toInt();
 
   // open file for writing
@@ -206,6 +209,7 @@ void updatePrefsFile() {
   root["temp_min"] = temp_min;
   root["temp_max"] = temp_max;
   root["heater"] = heater;
+  root["manual"] = manual;
   root["debug"] = debug;
 
   // write JSON to file
@@ -256,6 +260,8 @@ void updateWebserver() {
   pathQuery += temp_max;
   pathQuery += "&heater=";
   pathQuery += heater;
+  pathQuery += "&manual=";
+  pathQuery += manual;
   pathQuery += "&debug=";
   pathQuery += debug;
 
@@ -323,9 +329,9 @@ void debug_vars() {
   Serial.println(temp_max);
   Serial.print(F("- heater: "));
   Serial.println(heater);
-  Serial.print(F("- debug: "));
-  Serial.println(F("duh..."));
-  Serial.println("");
+  Serial.print(F("- manual: "));
+  Serial.println(manual);
+  Serial.print(F("- debug: duh...\n"));
 }
 
 //// transform SHA1 to binary

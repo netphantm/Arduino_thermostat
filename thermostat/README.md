@@ -74,6 +74,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [ ] Change the horrible design (now I've added even more of it)
+- [ ] Write log to a local file if logserver is not reachable and resend it all when connectivity is restored (!)
 - [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below
 - [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then my letsencrypt signed certificate)
 - [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming)

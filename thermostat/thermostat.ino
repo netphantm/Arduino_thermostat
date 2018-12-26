@@ -151,7 +151,7 @@ void readPrefsFile() {
 void updatePrefsFile() {
   Serial.println("\n= updatePrefsFile");
 
-  if (server.args() < 1 || server.args() > 8) {
+  if (server.args() < 1 || server.args() > 9) {
     server.send(200, "text/plain", "HTTP CODE 400: Invalid Request\n");
     return;
   }

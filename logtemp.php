@@ -11,7 +11,7 @@ if(!empty($_GET["uptime"]) && !empty($_GET["status"]) && !empty($_GET["temperatu
      fputcsv($fcsv,$csvData);
      fclose($fcsv);
   } else {
-    error_log("[/var/www/temp/logtemp.php] - Something went wrong, could not append to file /var/www/temp/temp-log-".$_GET["IP"].".csv",1,"webmaster@hugo.ro");
+    error_log("[/var/www/temp/logtemp.php] - Something went wrong, could not append to file /var/www/temp/temp-log-".$_GET["IP"].".csv");
   }
 }
 ?>

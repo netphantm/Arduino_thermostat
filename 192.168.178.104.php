@@ -113,9 +113,9 @@ function readDataFile() {
   print("    var options = { \n");
   print("      width: 250, height: 150, \n");
   print("      min: 0, max: 40, \n");
-  print("      greenFrom: 0, greenTo: $temp_min, \n");
-  print("      yellowFrom: ".$readDataFile()[3].", yellowTo: ".$readDataFile()[4].", \n");
-  print("      redFrom: ".$readDataFile()[4].", redTo: 40, \n");
+  print("      greenFrom: 0, greenTo: ".readDataFile()[3].", \n");
+  print("      yellowFrom: ".readDataFile()[3].", yellowTo: ".readDataFile()[4].", \n");
+  print("      redFrom: ".readDataFile()[4].", redTo: 40, \n");
   print("      minorTicks: 5, \n");
   print("      focusTarget: 'category', \n");
   print("    }; \n");

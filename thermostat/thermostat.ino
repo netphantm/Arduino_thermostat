@@ -139,7 +139,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
-      //manual = root["manual"].as<bool>(), sizeof(manual);
+      manual = root["manual"].as<bool>(), sizeof(manual);
       debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println(F("Got Preferences from file"));
     }
@@ -454,8 +454,11 @@ void loop(void) {
   int hold1 = 1;
   while (digitalRead(TOUCHPIN1) == 1) {
     if ( hold1 == 1) {
-      manual = true;
       toggleRelais(1);
+      manual = true;
+      updatePrefsFile();
+      if (debug)
+        debug_vars();
       Serial.println("Manually switched Relais ON");
     }
     hold1 = 0;
@@ -465,8 +468,11 @@ void loop(void) {
   int hold2 = 1;
   while (digitalRead(TOUCHPIN2) == 1) {
     if ( hold2 == 1) {
-      manual = true;
       toggleRelais(0);
+      manual = true;
+      updatePrefsFile();
+      if (debug)
+        debug_vars();
       Serial.println("Manually switched Relais OFF");
     }
     hold2 = 0;

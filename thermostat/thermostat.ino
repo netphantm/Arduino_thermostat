@@ -1,6 +1,6 @@
-//////// ESP8266/WeMos D1 Mini Pro - DS18B20 IoT Thermostat
+//// ESP8266/WeMos D1 Mini Pro - DS18B20 IoT Thermostat
 //// Copyright 2018 © Hugo
-//// https://github.com/netphantm/Arduino/tree/master/thermostat
+//// https://github.com/netphantm/Arduino
 
 //// include third party libraries
 #include <WiFiManager.h>
@@ -143,7 +143,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
-      //manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual to the prefs file setting
+      //manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the prefs file
       debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println(F("Got Preferences from file"));
     }
@@ -211,7 +211,7 @@ void updatePrefsFile() {
 }
 
 //// local webserver handlers / send data to logserver
-void handle_root() {
+void handleRoot() {
   server.send(200, "text/html", "<html><head></head><body><div align=\"center\"><h1>Nothing to see here! Move along...</h1></div></body></html>\n");
 }
 
@@ -224,7 +224,7 @@ void updateWebserver() {
 
   // configure path + query for sending to logserver
   if (emptyFile) {
-    Serial.println(F("Error deserializing json, maybe you cleared the preferences file? Not updating logserver"));
+    Serial.println(F("Empty preferences file, maybe you cleared it? Not updating logserver"));
     return;
   }
   String pathQuery = "/logtemp.php?&status=";
@@ -276,7 +276,8 @@ void updateWebserver() {
   }
 }
 
-//// Miscellaneous stuff
+//// Miscellaneous functions
+
 //// print variables for debug
 void debug_vars() {
   Serial.println(F("- DEBUG -"));
@@ -313,7 +314,7 @@ void debug_vars() {
   Serial.println(temp_max);
 }
 
-//// transform SHA1 to binary
+//// transform SHA1 to hex format needed for setFingerprint (from aa:ab:etc. to 0xaa, 0xab, etc.)
 void from_str() {
   int j = 0;
   for (int i = 0; i < 60; i = i + 3) {
@@ -340,7 +341,7 @@ void updateDisplay() {
     mode = "Automatic";
   }
   String state = "Relais: " + mode + " / " + relaisState;
-  display.init();
+  display.init(); // init display (flashes the screen shortly, but I didn't find a better mode yet to clear text before writing new one. Overwriting with old text as black works, but sucks)
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.setFont(ArialMT_Plain_10);
   display.drawString(0,  0, "Connected to WiFi");
@@ -352,7 +353,7 @@ void updateDisplay() {
   display.display();
 }
 
-//// get internet IP
+//// get internet IP (for display)
 void getInetIP() {
   WiFiClient client;
   HTTPClient http;
@@ -435,7 +436,7 @@ void setup(void) {
 
   // web client handlers
   server.onNotFound(handleNotFound);
-  server.on("/", handle_root);
+  server.on("/", handleRoot);
   server.on("/update", []() {
     updatePrefsFile();
     getTemperature();
@@ -444,9 +445,7 @@ void setup(void) {
     if (debug)
       debug_vars();
   });
-  server.on("/clear", []() {
-    clearPrefsFile();
-  });
+  server.on("/clear", clearPrefsFile);
 
   updateDisplay();
   server.begin();
@@ -463,7 +462,7 @@ void loop(void) {
         manual = false;
         delay(200);
         hold = 0;
-        Serial.println.("= switched to Automatic mode");
+        Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
         break;
@@ -471,8 +470,7 @@ void loop(void) {
       toggleRelais(1);
       manual = true;
       updateDisplay();
-      Serial.println.("= switched to Manual mode");
-      Serial.println(F("\nManually switched Relais ON"));
+      Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
     }
     hold = 0;
     delay(10);
@@ -486,7 +484,7 @@ void loop(void) {
         manual = false;
         delay(200);
         hold = 0;
-        Serial.println.("= switched to Automatic mode");
+        Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
         break;
@@ -494,8 +492,7 @@ void loop(void) {
       toggleRelais(0);
       manual = true;
       updateDisplay();
-      Serial.println.("= switched to Manual mode");
-      Serial.println(F("\nManually switched Relais OFF"));
+      Serial.println(F("\nSwitched to Manual mode, manually switched Relais OFF"));
     }
     hold = 0;
     delay(10);

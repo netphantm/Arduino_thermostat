@@ -30,7 +30,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - **.96" TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
 - **Progress bar on the serial console, so you can estimate how much until the next log update**
 - **Manual relay override capacitive touch sensors (press both to switch back to automatic mode)**
-- **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp\_max` or `temp <= temp\_min`)**
+- **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or `temp <= temp_min`)**
 - **Draws a google graph from the logged data (including a gauge with hysteresis and a toggle button for the date/time format of the graph)**
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**

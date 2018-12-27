@@ -456,13 +456,14 @@ void setup(void) {
 void loop(void) {
 
   int hold = 1;
-  while (digitalRead(TOUCHPIN1) == 1) { // hold here as long as sensor is touched
+  while (digitalRead(TOUCHPIN1) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
     if ( hold == 1) { // avoid switching more than once (hangs up the device)
       delay(200);
       if (digitalRead(TOUCHPIN2) == 1) { // if both touch sensors are triggered, switch back to auto mode
         manual = false;
         delay(200);
         hold = 0;
+        Serial.println.("= switched to Automatic mode");
         switchRelais();
         updateDisplay();
         break;
@@ -470,19 +471,22 @@ void loop(void) {
       toggleRelais(1);
       manual = true;
       updateDisplay();
+      Serial.println.("= switched to Manual mode");
       Serial.println(F("\nManually switched Relais ON"));
     }
     hold = 0;
     delay(10);
   }
 
-  while (digitalRead(TOUCHPIN2) == 1) { // hold here as long as sensor is touched
-    if ( hold == 1) { // avoid switching more than once (hangs up the device)
+  // same comments as in previous 'while' apply here
+  while (digitalRead(TOUCHPIN2) == 1) {
+    if ( hold == 1) {
       delay(200);
-      if (digitalRead(TOUCHPIN1) == 1) { // if both touch sensors are triggered, switch back to auto mode
+      if (digitalRead(TOUCHPIN1) == 1) {
         manual = false;
         delay(200);
         hold = 0;
+        Serial.println.("= switched to Automatic mode");
         switchRelais();
         updateDisplay();
         break;
@@ -490,6 +494,7 @@ void loop(void) {
       toggleRelais(0);
       manual = true;
       updateDisplay();
+      Serial.println.("= switched to Manual mode");
       Serial.println(F("\nManually switched Relais OFF"));
     }
     hold = 0;

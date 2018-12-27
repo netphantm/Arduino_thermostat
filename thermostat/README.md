@@ -27,6 +27,10 @@ Two capacitive touch sensors can manually override relay state switching to manu
 ---
 
 ### Features
+- **.96" TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
+- **Progress bar on the serial console, so you can estimate how much until the next log update**
+- **Manual relay override capacitive touch sensors (press both to switch back to automatic mode)**
+- **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp\_max` or `temp <= temp\_min`)**
 - **Draws a google graph from the logged data (including a gauge with hysteresis and a toggle button for the date/time format of the graph)**
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**
@@ -59,19 +63,14 @@ Two capacitive touch sensors can manually override relay state switching to manu
 ---
 
 ### TODO
-- [ ] Move some of these to the actual features section...
+- [x] Move some of these to the actual features section...
 - [x] License, including links to the original inspiration sources (!ASAP!)
 - [x] Add links to hardware (eBay) and software (inspiration sources)
 - [x] Add some nice pictures
 - [x] Checking that `temp_min <= temp_max` when new settings are pushed
 - [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
 - [x] Clean up code and add comments
-- [x] Add a progress bar to the serial console, so you can estimate how much until the next log update (!)
 - [ ] Change '192.168.178.104.php' to 'display.php' (or something) and select appliance from a drop-down menue, if you have more than one
-- [x] Query internet IP from ipinfo.io
-- [x] Add a small TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status (!)
-- [x] Add manual override capacitive touch sensors (press both to switch back to automatic mode) (!)
-- [x] Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or on `temp <= temp_min`)
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [ ] Change the horrible design (now I've added even more of it)
 - [ ] Write log to a local file if logserver is not reachable and resend it all when connectivity is restored (!)

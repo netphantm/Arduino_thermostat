@@ -23,7 +23,7 @@
 #define PBWIDTH 79
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
-const static String pFile = "/prefs.json";
+const static String pFile = "/settings.txt";
 const static String bFile = "/buffer.txt";
 unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
@@ -33,7 +33,6 @@ bool manual;
 bool debug;
 char lanIP[16];
 String inetIP;
-String sw = "LOW";
 String str_c;
 String mode;
 String WiFi_Name;
@@ -93,7 +92,7 @@ void switchRelais() {
   }
 }
 
-void toggleRelais(uint8_t sw) {
+void toggleRelais(int sw) {
   if (sw == 1) {
     relaisState = "ON";
   } else {
@@ -104,9 +103,9 @@ void toggleRelais(uint8_t sw) {
   delay(10);
 }
 
-//// preferences file clear / read / write
-void clearPrefsFile() {
-  Serial.println("= clearPrefsFile");
+//// settings file clear / read / write
+void clearSettingsFile() {
+  Serial.println("= clearSettingsFile");
 
   Serial.println("Please wait for SPIFFS to be formatted");
   SPIFFS.format();
@@ -114,16 +113,16 @@ void clearPrefsFile() {
   delay(10);
   // mark file as empty
   emptyFile = true;
-  server.send(200, "text/plain", "HTTP CODE 200: OK, SPIFFS formatted, preferences cleared\n");
+  server.send(200, "text/plain", "HTTP CODE 200: OK, SPIFFS formatted, settings cleared\n");
 }
 
-void readPrefsFile() {
-  Serial.println("= readPrefsFile");
+void readSettingsFile() {
+  Serial.println("= readSettingsFile");
 
   File f = SPIFFS.open(pFile, "r");
   // open file for reading
   if (!f) {
-    Serial.println(F("Preferences file read open failed"));
+    Serial.println(F("Settings file read open failed"));
     emptyFile = true;
     return;
   }
@@ -132,7 +131,7 @@ void readPrefsFile() {
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(f);
     if (!root.success()) {
-      Serial.println(F("Error deserializing json, maybe you cleared the preferences file? Not updating logserver"));
+      Serial.println(F("Error deserializing json, maybe you cleared the settings file? Not updating logserver"));
       emptyFile = true;
       return;
     } else {
@@ -144,24 +143,24 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
-      manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the prefs file
+      manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the settings file
       debug = root["debug"].as<bool>(), sizeof(debug);
-      Serial.println(F("Got Preferences from file"));
+      Serial.println(F("Got Settings from file"));
     }
   }
   f.close();
   delay(10);
 }
 
-void updatePrefs() {
-  Serial.println("= updatePrefs");
+void updateSettings() {
+  Serial.println("= updateSettings");
 
   if (server.args() < 1 || server.args() > 9) {
     server.send(200, "text/plain", "HTTP CODE 400: Invalid Request\n");
     return;
   }
-  Serial.println("Got new preferences");
-  webString = "HTTP CODE 200: OK, Got new Preferences,\n";
+  Serial.println("Got new settings");
+  webString = "HTTP CODE 200: OK, Got new settings,\n";
 
   // get new settings from URL
   SHA1 = server.arg("SHA1");
@@ -178,18 +177,18 @@ void updatePrefs() {
   manual = server.arg("manual").toInt();
   debug = server.arg("debug").toInt();
 
-  writePrefsFile();
+  writeSettingsFile();
   server.send(200, "text/plain", webString);
 }
 
-void writePrefsFile() {
-  Serial.println("= writePrefsFile");
+void writeSettingsFile() {
+  Serial.println("= writeSettingsFile");
 
   // open file for writing
   File f = SPIFFS.open(pFile, "w");
   if (!f) {
-    Serial.println(F("Failed to create preferences file"));
-    server.send(200, "text/plain", "HTTP CODE 200: OK, File write open failed! preferences not saved\n");
+    Serial.println(F("Failed to create settings file"));
+    server.send(200, "text/plain", "HTTP CODE 200: OK, File write open failed! settings not saved\n");
     return;
   }
   // serialize JSON
@@ -210,8 +209,8 @@ void writePrefsFile() {
     Serial.println(F("Failed to write to file"));
     webString += "File write open failed\n";
   } else {
-    Serial.println("Preferences file updated");
-    webString += "Preferences file updated,\nJSON root: ";
+    Serial.println("Settings file updated");
+    webString += "Settings file updated,\nJSON root: ";
     String output;
     root.printTo(output);
     webString += output;
@@ -235,7 +234,7 @@ void updateWebserver() {
 
   // configure path + query for sending to logserver
   if (emptyFile) {
-    Serial.println(F("Empty preferences file, maybe you cleared it? Not updating logserver"));
+    Serial.println(F("Empty settings file, maybe you cleared it? Not updating logserver"));
     return;
   }
   String pathQuery = "/logtemp.php?&status=";
@@ -265,9 +264,7 @@ void updateWebserver() {
   from_str();
   webClient.setFingerprint(sha1);
   HTTPClient https;
-  //Serial.println("HTTPS begin...");
   if (https.begin(webClient, host, httpsPort, pathQuery)) {
-    //Serial.println("HTTPS GET...");
     int httpCode = https.GET();
     if (httpCode > 0) {
       Serial.print(F("HTTPS GET OK, code: "));
@@ -281,19 +278,17 @@ void updateWebserver() {
       Serial.print(F("HTTPS GET failed! Error: "));
       Serial.println(https.errorToString(httpCode).c_str());
       //Serial.print(F("Logging to buffer: "));
-      //logToBuffer();
+      //updateSettings(a);
     }
-    //Serial.println("closing connection");
     https.end();
   } else {
     Serial.println(F("HTTPS Unable to connect"));
     //Serial.print(F("Logging to buffer: "));
-    //updatePrefs(a);
+    //updateSettings(a);
   }
 }
 
 ////// Miscellaneous functions
-
 //// print variables for debug
 void debug_vars() {
   Serial.println(F("- DEBUG -"));
@@ -437,9 +432,8 @@ void setup(void) {
   SPIFFS.begin(); // initialize SPIFFS
 
   toggleRelais(0); // start with relais OFF
-  relaisState = "OFF";
  
-  readPrefsFile(); // read old preferences from SPIFFS
+  readSettingsFile(); // read old settings from SPIFFS
   if (!emptyFile) {
     getTemperature();
     switchRelais();
@@ -455,14 +449,14 @@ void setup(void) {
   server.onNotFound(handleNotFound);
   server.on("/", handleRoot);
   server.on("/update", []() {
-    updatePrefs();
+    updateSettings();
     getTemperature();
     switchRelais();
     updateDisplay();
     if (debug)
       debug_vars();
   });
-  server.on("/clear", clearPrefsFile);
+  server.on("/clear", clearSettingsFile);
 
   updateDisplay();
   server.begin();
@@ -482,13 +476,13 @@ void loop(void) {
         Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
-        writePrefsFile();
+        writeSettingsFile();
         break;
       }
       toggleRelais(1);
       manual = true;
       updateDisplay();
-      writePrefsFile();
+      writeSettingsFile();
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
     }
     hold = 0;
@@ -506,13 +500,13 @@ void loop(void) {
         Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
-        writePrefsFile();
+        writeSettingsFile();
         break;
       }
       toggleRelais(0);
       manual = true;
       updateDisplay();
-      writePrefsFile();
+      writeSettingsFile();
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais OFF"));
     }
     hold = 0;
@@ -531,7 +525,6 @@ void loop(void) {
       toggleRelais(0);
       Serial.println(F("Waiting for settings to be sent..."));
     } else {
-      //readPrefsFile();
       getTemperature();
       if (debug)
         debug_vars();

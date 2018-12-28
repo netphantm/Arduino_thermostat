@@ -29,8 +29,8 @@ unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
 bool emptyFile = false;
 bool heater = false;
-bool manual = false;
-bool debug = true;
+bool manual;
+bool debug;
 char lanIP[16];
 String inetIP;
 String sw = "LOW";
@@ -144,7 +144,7 @@ void readPrefsFile() {
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
       heater = root["heater"].as<bool>(), sizeof(heater);
-      //manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the prefs file
+      manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the prefs file
       debug = root["debug"].as<bool>(), sizeof(debug);
       Serial.println(F("Got Preferences from file"));
     }
@@ -153,8 +153,8 @@ void readPrefsFile() {
   delay(10);
 }
 
-void updatePrefsFile() {
-  Serial.println("\n= updatePrefsFile");
+void updatePrefs() {
+  Serial.println("= updatePrefs");
 
   if (server.args() < 1 || server.args() > 9) {
     server.send(200, "text/plain", "HTTP CODE 400: Invalid Request\n");
@@ -177,6 +177,13 @@ void updatePrefsFile() {
   heater = server.arg("heater").toInt();
   manual = server.arg("manual").toInt();
   debug = server.arg("debug").toInt();
+
+  writePrefsFile();
+  server.send(200, "text/plain", webString);
+}
+
+void writePrefsFile() {
+  Serial.println("= writePrefsFile");
 
   // open file for writing
   File f = SPIFFS.open(pFile, "w");
@@ -212,7 +219,6 @@ void updatePrefsFile() {
     emptyFile = false;
   }
   f.close();
-  server.send(200, "text/plain", webString);
 }
 
 //// local webserver handlers / send data to logserver
@@ -282,7 +288,7 @@ void updateWebserver() {
   } else {
     Serial.println(F("HTTPS Unable to connect"));
     //Serial.print(F("Logging to buffer: "));
-    //updatePrefsFile(a);
+    //updatePrefs(a);
   }
 }
 
@@ -371,7 +377,8 @@ void getInetIP() {
   http.addHeader("Content-Type", "application/json");
   int httpCode = http.GET();
   if(httpCode > 0) {
-    inetIP = http.getString();
+    inetIP = String(http.getString());
+    inetIP.trim();
   } else {
     Serial.print(F("HTTPS GET failed getting internet IP! Error: "));
     Serial.println(http.errorToString(httpCode).c_str());
@@ -448,7 +455,7 @@ void setup(void) {
   server.onNotFound(handleNotFound);
   server.on("/", handleRoot);
   server.on("/update", []() {
-    updatePrefsFile();
+    updatePrefs();
     getTemperature();
     switchRelais();
     updateDisplay();
@@ -475,11 +482,13 @@ void loop(void) {
         Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
+        writePrefsFile();
         break;
       }
       toggleRelais(1);
       manual = true;
       updateDisplay();
+      writePrefsFile();
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
     }
     hold = 0;
@@ -497,11 +506,13 @@ void loop(void) {
         Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
+        writePrefsFile();
         break;
       }
       toggleRelais(0);
       manual = true;
       updateDisplay();
+      writePrefsFile();
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais OFF"));
     }
     hold = 0;
@@ -520,7 +531,7 @@ void loop(void) {
       toggleRelais(0);
       Serial.println(F("Waiting for settings to be sent..."));
     } else {
-      readPrefsFile();
+      //readPrefsFile();
       getTemperature();
       if (debug)
         debug_vars();

@@ -28,14 +28,14 @@ Two capacitive touch sensors can manually override relay state switching to manu
 
 ### Features
 - **.96" TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
-- **Progress bar on the serial console, so you can estimate how much until the next log update**
-- **Manual relay override capacitive touch sensors (press both to switch back to automatic mode)**
-- **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or `temp <= temp_min`)**
-- **Draws a google graph from the logged data (including a gauge with hysteresis and a toggle button for the date/time format of the graph)**
+- **Uses WiFiManager library, so you don't have to hardcode the WiFi credentials**
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**
-- **Uses WiFiManager library, so you don't have to hardcode the WiFi credentials**
-- **Shows date/time in the browser's timezone**
+- **Progress bar on the serial console, showing time percentage until next log update**
+- **Manual relay override capacitive touch sensors; press both to switch back to automatic mode**
+- **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or `temp <= temp_min`)**
+- **Draws a google graph from the logged data and a gauge which shows hysteresis**
+- **Shows last update date/time in the browser's timezone**
 - **Provides a setup page for configuration variables that are sent to the WeMos, which then stores them as JSON to SPIFFS:**
     - WeMos D1 hostname (in case you have more than one device logging to the same webserver)
     - SHA1 fingerprint (calculated by the php script from localhosts certificate)
@@ -43,6 +43,8 @@ Two capacitive touch sensors can manually override relay state switching to manu
     - Logserver port (HTTPS)
     - Refresh/measuring interval
     - Minimum/maximum temperature values for the hysteresis
+    - Thermostat type (cooler/heater)
+    - Operation mode (manual/automatic)
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

@@ -20,10 +20,11 @@
 #define TOUCHPIN1 D7
 #define TOUCHPIN2 D8
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-#define PBWIDTH 80
+#define PBWIDTH 79
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/prefs.json";
+const static String bFile = "/buffer.txt";
 unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
 bool emptyFile = false;
@@ -42,7 +43,7 @@ String webString;
 String relaisState;
 String SHA1;
 String host;
-String payload;
+String epochTime;
 int httpsPort;
 int interval;
 float temp_min;
@@ -167,6 +168,10 @@ void updatePrefsFile() {
   host = server.arg("host");
   httpsPort = server.arg("httpsPort").toInt();
   interval = server.arg("interval").toInt();
+  epochTime = server.arg("epochTime").toInt();
+  uptime = server.arg("uptime").toInt();
+  temp_c = server.arg("temp_c").toInt();
+  relaisState = server.arg("relaisState");
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
   heater = server.arg("heater").toInt();
@@ -176,8 +181,8 @@ void updatePrefsFile() {
   // open file for writing
   File f = SPIFFS.open(pFile, "w");
   if (!f) {
-    Serial.println(F("Failed to create file"));
-    server.send(200, "text/plain", "HTTP CODE 200: OK, File write open failed, not updated\n");
+    Serial.println(F("Failed to create preferences file"));
+    server.send(200, "text/plain", "HTTP CODE 200: OK, File write open failed! preferences not saved\n");
     return;
   }
   // serialize JSON
@@ -262,21 +267,26 @@ void updateWebserver() {
       Serial.print(F("HTTPS GET OK, code: "));
       Serial.println(httpCode);
       if (httpCode == HTTP_CODE_OK) {
-          String payload = https.getString();
-          Serial.println(payload);
+          epochTime = https.getString();
+          Serial.print("Time on log update: ");
+          Serial.println(epochTime);
       }
     } else {
       Serial.print(F("HTTPS GET failed! Error: "));
       Serial.println(https.errorToString(httpCode).c_str());
+      //Serial.print(F("Logging to buffer: "));
+      //logToBuffer();
     }
     //Serial.println("closing connection");
     https.end();
   } else {
     Serial.println(F("HTTPS Unable to connect"));
+    //Serial.print(F("Logging to buffer: "));
+    //updatePrefsFile(a);
   }
 }
 
-//// Miscellaneous functions
+////// Miscellaneous functions
 
 //// print variables for debug
 void debug_vars() {
@@ -340,7 +350,7 @@ void updateDisplay() {
   } else {
     mode = "Automatic";
   }
-  String state = "Relais: " + mode + " / " + relaisState;
+  String state = "Relais: " + relaisState + " / " + mode;
   display.init(); // init display (flashes the screen shortly, but I didn't find a better mode yet to clear text before writing new one. Overwriting with old text as black works, but sucks)
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.setFont(ArialMT_Plain_10);

@@ -188,11 +188,12 @@ function readDataFile() {
   print("<div>Last Readings: ");
   print("<span id=\"displayMoment\"></span>");
   print("</div>\n");
-  print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div><br>\n");
+  print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
+  print("<div>Hysteresis: <b>".readDataFile()[3]." °C - ".readDataFile()[4]." °C</b></div>\n");
   if (readDataFile()[7] == "1") {
-    print("<div>Mode: <font style=\"color:red\"><b>Manual</b></font></div><br>\n");
+    print("<div>Mode: <font style=\"color:red\"><b>Manual</b></font></div>\n");
   } else {
-    print("<div>Mode: <font style=\"color:lightgreen\"><b>Automatic</b></font></div><br>\n");
+    print("<div>Mode: <font style=\"color:green\"><b>Automatic</b></font></div>\n");
   }
   if (readDataFile()[2] == "OFF") {
     print("<div>Relais is: <font style=\"color:red\"><b>OFF</b></font></div>\n");

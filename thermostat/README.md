@@ -66,7 +66,6 @@ Two capacitive touch sensors can manually override relay state switching to manu
 
 ### TODO
 - [x] Move some of these to the actual features section...
-- [x] License, including links to the original inspiration sources (!ASAP!)
 - [x] Add links to hardware (eBay) and software (inspiration sources)
 - [x] Add some nice pictures
 - [x] Checking that `temp_min <= temp_max` when new settings are pushed

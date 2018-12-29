@@ -227,8 +227,8 @@ function readDataFile() {
   } else {
     print("<div>Appliance is a <font style='color:blue'><b>Cooler</b></font></div>\n");
   }
-  print("<form id='device' method='POST'>\n");
-  print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='change()'>\n");
+  print("<form id='device' method='POST' style='margin: 0;'>\n");
+  print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
   print("<option>Select...</option>\n");
   print("<option value='Clamps'>Clamps</option>\n");
   print("<option value='Joey'>Joey</option>\n");
@@ -242,7 +242,7 @@ function readDataFile() {
   print("<div class='tooltip'><a href='mailto:mail@hugo.ro?subject=Thermostat IoT'>&copy;2018</a>\n");
   print("<span class='tooltiptext'>by Hugo (and others)</span></div>\n");
   print("<script type='text/javascript'>\n");
-  print("function change() {\n");
+  print("function dev_change() {\n");
   print("  document.getElementById('device').submit();\n");
   print("}\n");
   //print("</script>\n");

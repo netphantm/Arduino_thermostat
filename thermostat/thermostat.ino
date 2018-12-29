@@ -92,8 +92,8 @@ void switchRelais() {
   }
 }
 
-void toggleRelais(int sw) {
-  if (sw == 1) {
+void toggleRelais(bool sw) {
+  if (sw) {
     relaisState = "ON";
   } else {
     relaisState = "OFF";
@@ -173,9 +173,9 @@ void updateSettings() {
   relaisState = server.arg("relaisState");
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
-  heater = server.arg("heater").toInt();
-  manual = server.arg("manual").toInt();
-  debug = server.arg("debug").toInt();
+  heater = server.arg("heater").toInt() | 0;
+  manual = server.arg("manual").toInt() | 0;
+  debug = server.arg("debug").toInt() | 0;
 
   writeSettingsFile();
   server.send(200, "text/plain", webString);
@@ -218,6 +218,11 @@ void writeSettingsFile() {
     emptyFile = false;
   }
   f.close();
+  if (digitalRead(RELAISPIN1) == 1 && digitalRead(RELAISPIN2) == 1) {
+    relaisState = "ON";
+  } else {
+    relaisState = "OFF";
+  }
 }
 
 //// local webserver handlers / send data to logserver

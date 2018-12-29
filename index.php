@@ -7,10 +7,10 @@ if (session_status() == PHP_SESSION_NONE  || session_id() == '') {
   session_start();
 }
 
-if (empty($_POST['filename'])) {
-  $_SESSION['filename'] = 'temp-log-192.168.178.105.csv';
+if (empty($_POST['device'])) {
+  $_SESSION['device'] = 'Clamps';
 } else {
-  $_SESSION['filename'] = $_POST['filename'];
+  $_SESSION['device'] = $_POST['device'];
 }
 
 header("refresh:300; url=index.php", FALSE, 307);
@@ -25,7 +25,15 @@ function pr($var) {
 }
 
 function readDataFile() {
-  $filename = $_SESSION['filename'];
+  switch ($_SESSION['device']) {
+    case "Clamps":
+      $filename = 'temp-log-192.168.178.104.csv';
+      break;
+    case "Joey":
+      $filename = 'temp-log-192.168.178.105.csv';
+      break;
+  }
+
   $searchString = ',';
   $numLines = 60;
   $maxLineLength = 100;
@@ -219,11 +227,11 @@ function readDataFile() {
   } else {
     print("<div>Appliance is a <font style='color:blue'><b>Cooler</b></font></div>\n");
   }
-  print("<form id='sensor' method='POST'>\n");
-  print("Sensor device hostname <select name='filename' onchange='change()'>\n");
+  print("<form id='device' method='POST'>\n");
+  print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='change()'>\n");
   print("<option>Select...</option>\n");
-  print("<option value='temp-log-192.168.178.104.csv'>Clamps</option>\n");
-  print("<option value='temp-log-192.168.178.105.csv'>Joey</option>\n");
+  print("<option value='Clamps'>Clamps</option>\n");
+  print("<option value='Joey'>Joey</option>\n");
   print("</select></form>\t\n");
   print("<button id='change'>Change the date format</button>\n");
   print("</td><td>\n");
@@ -235,7 +243,7 @@ function readDataFile() {
   print("<span class='tooltiptext'>by Hugo (and others)</span></div>\n");
   print("<script type='text/javascript'>\n");
   print("function change() {\n");
-  print("  document.getElementById('sensor').submit();\n");
+  print("  document.getElementById('device').submit();\n");
   print("}\n");
   //print("</script>\n");
   //print("<script type='text/javascript'>\n");

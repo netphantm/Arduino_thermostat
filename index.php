@@ -200,13 +200,13 @@ function readDataFile() {
   print("</script> \n");
   //////////// HTML
   print("<link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico'/>\n");
-  print("<title>Thermostat IoT</title>\n");
+  print("<title>".$_SESSION['device']." - Thermostat IoT</title>\n");
   print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: auto; }</style>\n");
   print("</head><body>\n");
 
   print("\n<div class='content'>\n");
   print("<div align='center'><h2>ESP8266/WeMos D1 Mini Pro - DS18B20");
-  print("<br>IoT Thermostat</h2></div>\n");
+  print("<br>".$_SESSION['device']." - IoT Thermostat</h2></div>\n");
   print("<div align='center'><table style='width:950px;'><tr><td>");
   print("</td></tr></table>\n");
   print("<table style='width:950px;'><tr><td>\n");

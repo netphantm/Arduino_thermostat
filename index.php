@@ -80,6 +80,10 @@ function readDataFile() {
   print("<html><head>\n");
   #print(pr(readDataFile()));
   print("<style>\n");
+  print("  * {\n");
+  print("      margin: 0;\n");
+  print("      padding: 0;\n");
+  print("  }\n");
   print("  body {font-size:120%; } \n");
   print("  h2 {text-align:center; } \n");
   print("  .tooltip {\n");
@@ -239,7 +243,7 @@ function readDataFile() {
   print("</select></form>\t\n");
   print("<button id='change'>Change the date format</button>\n");
   print("</td><td>\n");
-  print("<div id='chart_divTemp' style='width: 137px;'></div>\n");
+  print("<div id='chart_divTemp' style='width: 140px;'></div>\n");
   print("</td></tr></table>\n");
   print("<style>div.google-visualization-tooltip { ; }</style>\n");
   print("<div id='curve_chart' style='width: 1000px; height: 600px'></div></div>\n");

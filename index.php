@@ -32,6 +32,9 @@ function readDataFile() {
     case "Joey":
       $filename = 'temp-log-192.168.178.105.csv';
       break;
+    case "Donbot":
+      $filename = 'temp-log-192.168.178.106.csv';
+      break;
   }
 
   $searchString = ',';
@@ -232,6 +235,7 @@ function readDataFile() {
   print("<option>Select...</option>\n");
   print("<option value='Clamps'>Clamps</option>\n");
   print("<option value='Joey'>Joey</option>\n");
+  print("<option value='Donbot'>Donbot</option>\n");
   print("</select></form>\t\n");
   print("<button id='change'>Change the date format</button>\n");
   print("</td><td>\n");

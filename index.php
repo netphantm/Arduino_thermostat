@@ -13,7 +13,7 @@ if (empty($_POST['device'])) {
   $_SESSION['device'] = $_POST['device'];
 }
 
-header("refresh:300; url=index.php", FALSE, 307);
+header("refresh:300; url=/", FALSE, 307);
 
 //pr($_SESSION);
 

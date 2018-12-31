@@ -71,7 +71,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - [x] Checking that `temp_min <= temp_max` when new settings are pushed
 - [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
 - [x] Clean up code and add comments
-- [x] Change '192.168.178.104.php' to 'display.php' (or something) and select appliance from a drop-down menue, if you have more than one
+- [x] Change '192.168.178.104.php' to 'index.php' and select appliance from a drop-down menue, if you have more than one
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [ ] Change the horrible design (now I've added even more of it)
 - [ ] \(Perhaps)Write log to a local file if logserver is not reachable and resend it all when connectivity is restored (!)

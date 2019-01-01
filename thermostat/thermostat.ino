@@ -24,7 +24,6 @@
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/settings.txt";
-const static String bFile = "/buffer.txt";
 unsigned long uptime = (millis() / 1000 );
 unsigned long previousMillis = 0;
 bool emptyFile = false;
@@ -328,6 +327,8 @@ void debug_vars() {
   Serial.println(temp_min);
   Serial.print(F("- temp_max: "));
   Serial.println(temp_max);
+  Serial.print(F("- MEM free heap: "));
+  Serial.println(system_get_free_heap_size());
 }
 
 //// transform SHA1 to hex format needed for setFingerprint (from aa:ab:etc. to 0xaa, 0xab, etc.)
@@ -387,6 +388,17 @@ void getInetIP() {
   delay(50);
 }
 
+//// convert sizes in bytes to KB and MB
+String formatBytes(size_t bytes) {
+  if (bytes < 1024) {
+    return String(bytes) + "B";
+  } else if (bytes < (1024 * 1024)) {
+    return String(bytes / 1024.0) + "KB";
+  } else if (bytes < (1024 * 1024 * 1024)) {
+    return String(bytes / 1024.0 / 1024.0) + "MB";
+  }
+}
+
 //// WiFi config mode
 void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println("Entered config mode");
@@ -435,6 +447,14 @@ void setup(void) {
   getInetIP();
 
   SPIFFS.begin(); // initialize SPIFFS
+  Serial.println("SPIFFS started. Contents:");
+  Dir dir = SPIFFS.openDir("/");
+  while (dir.next()) { // List the file system contents
+    String fileName = dir.fileName();
+    size_t fileSize = dir.fileSize();
+    Serial.printf("\tFS File: %s, size: %s\r\n", fileName.c_str(), formatBytes(fileSize).c_str());
+  }
+  Serial.printf("\n");
 
   toggleRelais(0); // start with relais OFF
  

@@ -52,14 +52,14 @@
       if ($pos = strpos($lines[$i], $searchString)) {
         #echo $lines[$i];
         $line = str_getcsv($lines[$i],",","\"");
-        $uptime = $line[0];
-        $state = $line[1];
-        $temp = $line[2];
-        $temp_min = $line[3];
-        $temp_max = $line[4];
-        $date = $line[5];
-        $heater = $line[6];
-        $manual = $line[7];
+        //$uptime = $line[0];
+        $state = $line[0];
+        $temp = $line[1];
+        $temp_min = $line[2];
+        $temp_max = $line[3];
+        $date = $line[4];
+        $heater = $line[5];
+        $manual = $line[6];
 
         //$retStr = $retStr."\n      [new Date(".$date."), ".$temp.", '<table><tr><td>".options.hAxis."</td></tr><tr><td>Temp: ".$temp."</td></tr><tr><td>State: ".$state."</td></tr></table>'], ";
         $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";

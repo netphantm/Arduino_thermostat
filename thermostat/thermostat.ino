@@ -243,8 +243,6 @@ void updateWebserver() {
   }
   String pathQuery = "/logtemp.php?&status=";
   pathQuery += relaisState;
-  pathQuery += "&uptime=";
-  pathQuery += uptime;
   pathQuery += "&temperature=";
   pathQuery += temp_c;
   pathQuery += "&IP=";

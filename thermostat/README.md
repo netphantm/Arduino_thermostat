@@ -126,6 +126,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-04.png" alt="pic-04" width="440px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-05.png" alt="pic-05" width="440px">
 
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-06.png" alt="pic-06" width="290px" height="210px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-07.png" alt="pic-07" width="290px" height="210px">
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-08.png" alt="pic-08" width="290px" height="310px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-09.png" alt="pic-09" width="290px" height="310px">
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 
@@ -142,6 +143,10 @@ Two capacitive touch sensors can manually override relay state switching to manu
 
 ### Screenshot device response
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-05.png" alt="screen-05">
+
+### Screenshots device WiFi configuration
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-06.png" alt="screen-06">
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-07.png" alt="screen-07">
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

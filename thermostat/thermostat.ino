@@ -10,8 +10,10 @@
 #include <FS.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include "SSD1306Wire.h"
 #include <ArduinoJson.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7735.h>
+#include <SPI.h>
 
 //// initialize variables / hardware
 #define ONE_WIRE_BUS 2  // DS18B20 pin D4 = GPIO2
@@ -21,6 +23,9 @@
 #define TOUCHPIN2 D8
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 79
+#define TFT_CS        D4
+#define TFT_RST       -1
+#define TFT_DC        D3
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/settings.txt";
@@ -50,7 +55,8 @@ float temp_max;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
 ESP8266WebServer server(80);
-SSD1306Wire  display(0x3c, D6, D5);
+//SSD1306Wire  display(0x3c, D6, D5);
+Adafruit_ST7735 display = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
@@ -60,7 +66,7 @@ void getTemperature() {
   uptime = (millis() / 1000 ); // Refresh uptime
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
-  temp_c = temp_c - 1; // calibrate your sensor, if needed
+  temp_c = temp_c - 7; // calibrate your sensor, if needed
   delay(10);
   Serial.println(temp_c);
 }
@@ -348,24 +354,61 @@ void printProgress (unsigned long percentage) {
   fflush (stdout);
 }
 
-//// update display
+//// update display ST7735R
 void updateDisplay() {
+  display.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
+  display.fillScreen(ST77XX_BLACK);
+  display.cp437(true);
+  display.setTextWrap(false);
+  display.setCursor(0, 0);
+  display.setTextColor(ST77XX_YELLOW);
+  display.setTextSize(1);
+  display.println("Connected to SSID:");
+  display.setTextSize(2);
+  display.println(WiFi.SSID());
+  display.setTextColor(ST77XX_WHITE);
+  display.setTextSize(1);
+  display.println("LAN:" + String("") + lanIP);
+  display.println("Inet:" + inetIP);
+  display.println("Temperature:\n");
+  display.drawRoundRect(0, 52, 128, 22, 3, ST77XX_WHITE);
+  if (temp_c < temp_min) {
+    display.setTextColor(ST77XX_BLUE);
+  } else if (temp_c > temp_max) {
+    display.setTextColor(ST77XX_RED);
+  } else {
+    display.setTextColor(ST77XX_YELLOW);
+  }
+  display.setTextSize(2);
+  display.println(" " + String(temp_c, 2) + " " + (char)248 + "C");
+  display.setTextSize(1);
+  display.println("");
+  display.setTextColor(ST77XX_WHITE);
+  display.setTextSize(1);
+  display.println("MIN: " + String(temp_min, 1) + " " + (char)45 + " MAX: " + String(temp_max, 1) + "\n");
+  display.setTextSize(2);
+  if (heater) {
+    display.setTextColor(ST77XX_RED);
+    display.print("Heater:");
+  } else {
+    display.setTextColor(ST77XX_BLUE);
+    display.print("Cooler:");
+  }
+  if (relaisState == "ON") {
+    display.setTextColor(ST77XX_RED);
+    display.println(relaisState);
+  } else {
+    display.setTextColor(ST77XX_GREEN);
+    display.println(relaisState);
+  }
   if (manual) {
     mode = "Manual";
+    display.setTextColor(ST77XX_ORANGE);
   } else {
     mode = "Automatic";
+    display.setTextColor(ST77XX_GREEN);
   }
-  String state = "Relais: " + relaisState + " / " + mode;
-  display.init(); // init display (flashes the screen shortly, but I didn't find a better mode yet to clear text before writing new one. Overwriting with old text as black works, but sucks)
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(0,  0, "Connected to WiFi");
-  display.drawString(0, 10, "SSID: " + WiFi.SSID());
-  display.drawString(0, 20, "LAN IP: " + String("") + lanIP);
-  display.drawString(0, 30, "Inet IP: " + inetIP);
-  display.drawString(0, 40, "Temperature: " + String(temp_c, 2) + "°C");
-  display.drawString(0, 50, state);
-  display.display();
+  display.println(mode);
 }
 
 //// get internet IP (for display)
@@ -403,27 +446,33 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(WiFi.softAPIP());
   Serial.println(myWiFiManager->getConfigPortalSSID());
   Serial.println("Opening configuration portal");
-  display.init();
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(0, 10, "# Entered config mode #");
-  display.drawString(0, 30, "ID/pass: NDND/pass4esp");
-  display.drawString(0, 40, "Config IP: 10.0.1.1");
-  display.display();
+  display.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
+  display.fillScreen(ST77XX_BLACK);
+  display.cp437(true);
+  display.setTextWrap(false);
+  display.setCursor(0, 0);
+  display.setTextColor(ST77XX_YELLOW);
+  display.setTextSize(2);
+  display.println("WiFi Config\n");
+  display.setTextColor(ST77XX_ORANGE);
+  display.println("IP:10.0.1.1");
+  display.println("ID:\n Joey");
+  display.println("Pass:\n pass4esp");
 }
 
 //// setup / first run
 void setup(void) {
   pinMode(RELAISPIN1, OUTPUT);
   pinMode(RELAISPIN2, OUTPUT);
-  Serial.begin(115200); // Start Serial 
+  display.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
+  Serial.begin(115200);
  
   WiFiManager wifiManager;
   wifiManager.setTimeout(300);
   wifiManager.setAPStaticIPConfig(IPAddress(10,0,1,1), IPAddress(10,0,1,1), IPAddress(255,255,255,0));
   wifiManager.setDebugOutput(false);
   wifiManager.setAPCallback(configModeCallback);
-  if(!wifiManager.autoConnect("Clamps","pass4esp")) {
+  if(!wifiManager.autoConnect("Joey","pass4esp")) {
     delay(5000);
     Serial.println(F("Failed to connect and hit timeout, restarting..."));
     ESP.reset();
@@ -483,7 +532,7 @@ void setup(void) {
 
   updateDisplay();
   server.begin();
-} 
+}
  
 //// start main loop
 void loop(void) {

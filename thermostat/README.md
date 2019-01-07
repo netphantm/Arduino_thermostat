@@ -59,6 +59,10 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - OneWire
 - DallasTemperature
 - ArduinoJson
+- Adafruit\_GFX
+- Adafruit\_ST7735
+- SPI
+
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

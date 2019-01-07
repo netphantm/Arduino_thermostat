@@ -145,8 +145,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-05.png" alt="screen-05">
 
 ### Screenshots device WiFi configuration
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-06.png" alt="screen-06" width="320px">
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-07.png" alt="screen-07" width="320px">
+<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-06.png" alt="screen-06" width="320px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-07.png" alt="screen-07" width="320px">
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

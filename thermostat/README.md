@@ -17,11 +17,11 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - [Features](#features)
 - [Libraries](#Libraries-needed)
 - [TODO](#TODO)
+- [Bugs](#Bugs)
 - [Links](#Links)
 - [Images](#Images)
 - [Screenshots](#Screenshot-graph-page)
 - [License](#License)
-
 [↑ goto top](#DS18B20-thermostat-with-logging)
 
 ---
@@ -81,6 +81,13 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then a letsencrypt signed certificate)
 - [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming)
 - [ ] \(Perhaps) switching to syslog on port 514 (UDP?)
+
+[↑ goto top](#DS18B20-thermostat-with-logging)
+
+---
+
+### Bugs
+- [ ] Display won't work if not initialized just before use (in the library examples, the init happens once in the setup() portion).
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

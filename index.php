@@ -3,9 +3,7 @@
     session_start();
   }
 
-  if (empty($_POST['device'])) {
-    $_SESSION['device'] = 'Clamps';
-  } else {
+  if (!empty($_POST['device'])) {
     $_SESSION['device'] = $_POST['device'];
   }
 
@@ -73,8 +71,8 @@
 <html><head>
 <style>
   * {
-      margin: 0;
-      padding: 0;
+    margin: 0;
+    padding: 0;
   }
   body {font-size:120%; }
   h2 {text-align:center; }
@@ -114,6 +112,14 @@
     background-color: lightcyan;
     width: 1000px;
     margin: auto;
+  }
+  .nobr {
+    white-space: nowrap;
+  }
+  span.nobreak {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 </style>
 <meta http-equiv='refresh' content='60'>
@@ -211,11 +217,11 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
 ?>
 <div align='center'><table style='width:950px;'><tr><td>
 </td></tr></table>
-<table style='width:950px;'><tr><td>
+<table style='width:950px;'><tr><td class=nobr>
 <div>Last Readings: <span id="displayMoment"></span></div>
 <?php
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
-  print("<div>Hysteresis: <b>".readDataFile()[3]." °C - ".readDataFile()[4]." °C</b></div>\n");
+  print("<div>Hysteresis: <b>".readDataFile()[3]." °C > ".readDataFile()[4]." °C</b></div>\n");
   if (readDataFile()[7] == "1") {
     print("<div>Mode: <font style='color:red'><b>Manual</b></font></div>\n");
   } else {
@@ -231,7 +237,7 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
   } else {
     print("<div>Appliance is a <font style='color:blue'><b>Cooler</b></font></div>\n");
   }
-  print("<form id='device' method='POST' style='margin: 0;'>\n");
+  print("<span style='nobreak'><form id='device' method='POST'>\n");
   print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
 ?>
 <option>Select...</option>
@@ -239,6 +245,10 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
 <option value='Joey'>Joey</option>
 <option value='Donbot'>Donbot</option>
 </select></form>
+<form id='settings' method='POST' action='/settings.php'>
+<?php
+  print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button></form></span>\n");
+?>
 <button id='change'>Change the date format</button>
 </td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>
@@ -253,7 +263,7 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
   }
   (function()
 <?php
-      print("  { var Moment = moment.unix(".readDataFile()[1]."/1000).format('dddd, MMMM Do, YYYY HH:mm:ss');\n");
+print("    { var Moment = moment.unix(".readDataFile()[1]."/1000).format('dddd, MMMM Do, YYYY HH:mm:ss');\n");
 ?>
       var eDisplayMoment = document.getElementById('displayMoment')
       eDisplayMoment.innerHTML = Moment;

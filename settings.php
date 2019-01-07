@@ -1,5 +1,14 @@
 <?php
 
+//pr($_POST);
+
+// needed for DEBUG
+function pr($var) {
+  print '<pre>';
+  print_r($var);
+  print '</pre>';
+}
+
 if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
   $IP = $_GET["IP"];
   $SHA1 = $_GET["SHA1"];
@@ -66,15 +75,17 @@ $debug = 1;
 
 print("<html><head>\n");
 print("</head><body>\n");
-print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
+print("<link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico'/>\n");
 print("<title>'Clamps' IoT Thermostat - Settings</title>\n");
 print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: auto; }</style>\n");
-print("</head><body>\n<div class=\"content\">\n");
+print("</head><body>\n<div class='content'>\n");
 print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
 print("IoT Thermostat - Settings</h2></div>\n");
-print("<form method=\"GET\">\n");
-print("Sensor hostname <select name=\"IP\">\n");
-print("<option value=\"http://192.168.178.104/\">Clamps</option></select>\n");
+print("<form method='GET'>\n");
+print("Sensor hostname <select id='IP' name='IP'>\n");
+print("<option value='http://192.168.178.104/'>Clamps</option>\n");
+print("<option value='http://192.168.178.105/'>Joey</option>\n");
+print("<option value='http://192.168.178.106/'>Donbot</option></select>\n");
 print("<br>Certificate SHA1 fingerprint <input type='text' name='SHA1' maxlength=60 size=40 value=$SHA1>\n");
 print("<br>Loghost <input type='text' name='host' size=11 value=$host>\n");
 print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></tr><tr><td>\n");
@@ -85,5 +96,16 @@ print("<br>It's a Heater\t<input type='checkbox' name='heater' value='true'>\n")
 print("<br>Manual mode\t<input type='checkbox' name='manual' value='true'>\n");
 print("<br>DEBUG\t<input type='checkbox' name='debug' value='true'>\n");
 print("<br><input type='submit' value='Submit' >\n");
-print("</form></div></body>");
+print("</form></div></body>\n");
+print("<script>\n");
+print("function setSelectedIndex(s, v) {\n");
+print("  for ( var i = 0; i < s.options.length; i++ ) {\n");
+print("    if ( s.options[i].text == v ) {\n");
+print("      s.options[i].selected = true;\n");
+print("      return;\n");
+print("    }\n");
+print("  }\n");
+print("}\n");
+print("setSelectedIndex(document.getElementById('IP'),'".$_POST['device']."');\n");
+print("</script>\n");
 ?>

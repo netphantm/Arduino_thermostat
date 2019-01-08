@@ -113,13 +113,8 @@
     width: 1000px;
     margin: auto;
   }
-  .nobr {
-    white-space: nowrap;
-  }
-  span.nobreak {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  form {
+    display: inline;
   }
 </style>
 <meta http-equiv='refresh' content='60'>
@@ -217,7 +212,7 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
 ?>
 <div align='center'><table style='width:950px;'><tr><td>
 </td></tr></table>
-<table style='width:950px;'><tr><td class=nobr>
+<table style='width:950px;'><tr><td>
 <div>Last Readings: <span id="displayMoment"></span></div>
 <?php
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
@@ -237,7 +232,7 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
   } else {
     print("<div>Appliance is a <font style='color:blue'><b>Cooler</b></font></div>\n");
   }
-  print("<span style='nobreak'><form id='device' method='POST'>\n");
+  print("<form id='device' method='POST'>\n");
   print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
 ?>
 <option>Select...</option>
@@ -247,14 +242,14 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
 </select></form>
 <form id='settings' method='POST' action='/settings.php'>
 <?php
-  print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button></form></span>\n");
+  print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button></form>\n");
 ?>
-<button id='change'>Change the date format</button>
 </td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>
 </td></tr></table>
 <style>div.google-visualization-tooltip { ; }</style>
 <div id='curve_chart' style='width: 1000px; height: 600px'></div></div>
+<button id='change'>Change the date format</button>
 <div class='tooltip'><a href='mailto:mail@hugo.ro?subject=Thermostat IoT'>&copy;2018</a>
 <span class='tooltiptext'>by Hugo (and others)</span></div>
 <script type='text/javascript'>

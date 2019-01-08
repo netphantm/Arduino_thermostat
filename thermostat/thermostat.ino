@@ -66,7 +66,7 @@ void getTemperature() {
   uptime = (millis() / 1000 ); // Refresh uptime
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
-  temp_c = temp_c - 7; // calibrate your sensor, if needed
+  temp_c = temp_c - 6; // calibrate your sensor, if needed
   delay(10);
   Serial.println(temp_c);
 }

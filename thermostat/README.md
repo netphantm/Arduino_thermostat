@@ -69,6 +69,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 ---
 
 ### TODO
+- [ ] store settings also on server (if the device is not in the same network, the server cannot push the settings to it)
 - [x] Move some of these to the actual features section...
 - [x] Add links to hardware (eBay) and software (inspiration sources)
 - [x] Add some nice pictures

@@ -5,6 +5,8 @@
 
   if (!empty($_POST['device'])) {
     $_SESSION['device'] = $_POST['device'];
+  } else {
+    $_SESSION['device'] = "Clamps";
   }
 
   header("refresh:300; url=/", FALSE, 307);
@@ -21,7 +23,7 @@
   function readDataFile() {
     switch ($_SESSION['device']) {
       case "Clamps":
-        $filename = 'temp-log-192.168.178.104.csv';
+        $filename = 'temp-log-10.150.0.96.csv';
         break;
       case "Joey":
         $filename = 'temp-log-192.168.178.105.csv';

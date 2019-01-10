@@ -9,10 +9,10 @@ function pr($var) {
   print '</pre>';
 }
 
-if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
+if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
   $IP = $_GET["IP"];
   $SHA1 = $_GET["SHA1"];
-  $host = $_GET["host"];
+  $loghost = $_GET["loghost"];
   $httpsPort = $_GET["httpsPort"];
   $interval = $_GET["interval"];
   $temp_min = $_GET["temp_min"];
@@ -31,7 +31,7 @@ if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["host"]) && !em
     print("</body>");
     exit();
   } else {
-    header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&host=".$host."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+    header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
     exit;
   }
 }
@@ -64,7 +64,7 @@ $pem = preg_replace( '/\-+(BEGIN|END) CERTIFICATE\-+/', '', $x509_cert);
 
 $SHA1 = str_replace("SHA1 Fingerprint=", '', x509_fingerprint($pem,$hash='sha1'));
 $SHA1 = wordwrap($SHA1 , 2 , ':' , true );
-$host = "temperature.hugo.ro";
+$loghost = "temperature.hugo.ro";
 $httpsPort = "443";
 $interval = 120000;
 $temp_min = 6;
@@ -87,7 +87,7 @@ print("<option value='http://192.168.178.104/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
 print("<option value='http://192.168.178.106/'>Donbot</option></select>\n");
 print("<br>Certificate SHA1 fingerprint <input type='text' name='SHA1' maxlength=60 size=40 value=$SHA1>\n");
-print("<br>Loghost <input type='text' name='host' size=11 value=$host>\n");
+print("<br>Loghost <input type='text' name='loghost' size=11 value=$loghost>\n");
 print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></tr><tr><td>\n");
 print("<br>Refresh interval <input type='text' name='interval' size=2 value=$interval> Milliseconds\n");
 print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C / \n");

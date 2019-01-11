@@ -385,9 +385,9 @@ void updateDisplay() {
   tft.setTextSize(1);
   tft.print(" ");
   tft.setTextSize(2);
-  int cursorX = tft.getCursorX() + 3;
-  int cursorY = tft.getCursorY() + 4;
-  tft.drawCircle(cursorX, cursorY, 3, color);
+  int cursorX = tft.getCursorX() + 5;
+  int cursorY = tft.getCursorY() + 2;
+  tft.drawCircle(cursorX, cursorY, 2.5, color);
   //tft.print((char)247);
   tft.println(" C");
   tft.setTextSize(1);

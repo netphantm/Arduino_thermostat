@@ -21,6 +21,8 @@
   }
 
   function readDataFile() {
+
+    /*
     switch ($_SESSION['device']) {
       case "Clamps":
         $filename = 'temp-log-10.150.0.96.csv';
@@ -32,6 +34,9 @@
         $filename = 'temp-log-192.168.178.106.csv';
         break;
     }
+    */
+
+    $filename = $_SESSION['device'].".csv";
 
     $searchString = ',';
     $numLines = 60;

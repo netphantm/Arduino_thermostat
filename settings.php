@@ -9,8 +9,8 @@ function pr($var) {
   print '</pre>';
 }
 
-if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
-  $IP = $_GET["IP"];
+if( !empty($_GET["hostname"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
+  $hostname = $_GET["hostname"];
   $SHA1 = $_GET["SHA1"];
   $loghost = $_GET["loghost"];
   $httpsPort = $_GET["httpsPort"];
@@ -31,7 +31,7 @@ if( !empty($_GET["IP"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && 
     print("</body>");
     exit();
   } else {
-    header('Location: '.$_GET["IP"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+    header('Location: '.$_GET["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
     exit;
   }
 }
@@ -82,7 +82,7 @@ print("</head><body>\n<div class='content'>\n");
 print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
 print("IoT Thermostat - Settings</h2></div>\n");
 print("<form method='GET'>\n");
-print("Sensor hostname <select id='IP' name='IP'>\n");
+print("Sensor hostname <select id='URL' name='URL'>\n");
 print("<option value='http://192.168.178.104/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
 print("<option value='http://192.168.178.106/'>Donbot</option></select>\n");
@@ -106,6 +106,6 @@ print("      return;\n");
 print("    }\n");
 print("  }\n");
 print("}\n");
-print("setSelectedIndex(document.getElementById('IP'),'".$_POST['device']."');\n");
+print("setSelectedIndex(document.getElementById('hostname'),'".$_POST['device']."');\n");
 print("</script>\n");
 ?>

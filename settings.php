@@ -17,9 +17,9 @@ if( !empty($_GET["URL"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) &&
   $interval = $_GET["interval"];
   $temp_min = $_GET["temp_min"];
   $temp_max = $_GET["temp_max"];
-  $heater = $_GET["heater"] == "true" ? true : false;
-  $manual = $_GET["manual"] == "true" ? true : false;
-  $debug = $_GET["debug"] == "true" ? true : false;
+  $heater = isset($_GET["heater"]) ? true : false;
+  $manual = isset($_GET["manual"]) ? true : false;
+  $debug = isset($_GET["debug"]) ? true : false;
   if($temp_min >= $temp_max) {
     print("<html>\n");
     print("<body>\n");

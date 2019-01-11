@@ -204,20 +204,20 @@
 <?php
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
   print("<div>Hysteresis: <b>".readDataFile()[3]." °C > ".readDataFile()[4]." °C</b></div>\n");
-  if (readDataFile()[7] == "1") {
-    print("<div>Mode: <font style='color:red'><b>Manual</b></font></div>\n");
+  if (readDataFile()[6] == "1") {
+    print("<div>Appliance is a <font style='color:red'><b>Heater</b></font></div>\n");
   } else {
-    print("<div>Mode: <font style='color:green'><b>Automatic</b></font></div>\n");
+    print("<div>Appliance is a <font style='color:blue'><b>Cooler</b></font></div>\n");
   }
   if (readDataFile()[2] == "OFF") {
     print("<div>Relais is: <font style='color:red'><b>OFF</b></font></div>\n");
   } else {
     print("<div>Relais is: <font style='color:green'><b>ON</b></font></div>\n");
   }
-  if (readDataFile()[6] == "1") {
-    print("<div>Appliance is a <font style='color:red'><b>Heater</b></font></div>\n");
+  if (readDataFile()[7] == "1") {
+    print("<div>Mode: <font style='color:red'><b>Manual</b></font></div>\n");
   } else {
-    print("<div>Appliance is a <font style='color:blue'><b>Cooler</b></font></div>\n");
+    print("<div>Mode: <font style='color:green'><b>Automatic</b></font></div>\n");
   }
   print("<form id='device' method='POST'>\n");
   print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");

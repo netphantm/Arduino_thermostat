@@ -50,8 +50,6 @@
         $date = $line[4];
         $heater = $line[5];
         $manual = $line[6];
-
-        //$retStr = $retStr."\n      [new Date(".$date."), ".$temp.", '<table><tr><td>".options.hAxis."</td></tr><tr><td>Temp: ".$temp."</td></tr><tr><td>State: ".$state."</td></tr></table>'], ";
         $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
       }
     }

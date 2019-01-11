@@ -248,8 +248,8 @@ void updateWebserver() {
   pathQuery += relaisState;
   pathQuery += "&temperature=";
   pathQuery += temp_c;
-  pathQuery += "&IP=";
-  pathQuery += lanIP;
+  pathQuery += "&hostname=";
+  pathQuery += hostname;
   pathQuery += "&temp_min=";
   pathQuery += temp_min;
   pathQuery += "&temp_max=";

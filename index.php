@@ -36,7 +36,7 @@
     }
     */
 
-    $filename = $_SESSION['device'].".csv";
+    $filename = "temp-log-".$_SESSION['device'].".csv";
 
     $searchString = ',';
     $numLines = 60;

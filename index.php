@@ -22,22 +22,7 @@
 
   function readDataFile() {
 
-    /*
-    switch ($_SESSION['device']) {
-      case "Clamps":
-        $filename = 'temp-log-10.150.0.96.csv';
-        break;
-      case "Joey":
-        $filename = 'temp-log-192.168.178.105.csv';
-        break;
-      case "Donbot":
-        $filename = 'temp-log-192.168.178.106.csv';
-        break;
-    }
-    */
-
     $filename = "temp-log-".$_SESSION['device'].".csv";
-
     $searchString = ',';
     $numLines = 60;
     $maxLineLength = 100;
@@ -49,7 +34,7 @@
     while (!feof($fp)) {
       $lines[] = fgets($fp);
     }
-    #print pr($lines);
+    //print pr($lines);
 
     $c = count($lines);
     $i = $c >= $numLines? $c-$numLines: 0;
@@ -136,19 +121,16 @@
   function drawTempChart() {
     var data = google.visualization.arrayToDataTable([
       ['Label', 'Value'],
-      ['Temp °C',
 <?php
-      print(readDataFile()[5]);
+  print("      ['Temp °C', ".readDataFile()[5]."], ]);\n");
 ?>
-    ], ]);
-
     var options = {
       width: 250, height: 150,
       min: 0, max: 40,
 <?php
-print("      greenFrom: 0, greenTo: ".readDataFile()[3].",\n");
-print("      yellowFrom: ".readDataFile()[3].", yellowTo: ".readDataFile()[4].",\n");
-print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
+  print("      greenFrom: 0, greenTo: ".readDataFile()[3].",\n");
+  print("      yellowFrom: ".readDataFile()[3].", yellowTo: ".readDataFile()[4].",\n");
+  print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
 ?>
       minorTicks: 5,
       focusTarget: 'category',
@@ -162,11 +144,9 @@ print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
       [{label: 'Date', type: 'datetime', role: 'domain'},
       {label: 'State', type: 'string', role: 'tooltip', 'p': {'html': true}},
       {label: 'Temperature', type: 'number', role: 'data'}],
-
 <?php
-      print(readDataFile()[0]);
+  print(readDataFile()[0]);
 ?>
-
     ]);
     var options = {
       hAxis: {

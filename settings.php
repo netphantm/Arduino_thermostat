@@ -9,8 +9,8 @@ function pr($var) {
   print '</pre>';
 }
 
-if( !empty($_GET["hostname"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
-  $hostname = $_GET["hostname"];
+if( !empty($_GET["URL"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
+  $URL = $_GET["URL"];
   $SHA1 = $_GET["SHA1"];
   $loghost = $_GET["loghost"];
   $httpsPort = $_GET["httpsPort"];
@@ -24,7 +24,7 @@ if( !empty($_GET["hostname"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"
     print("<html>\n");
     print("<body>\n");
     print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
-    print("<title>Clamps Thermostat IoT Settings</title>\n");
+    print("<title>Thermostat IoT Settings</title>\n");
     print("<style>\n.content { background-color: red; width: 1000px; margin: auto; }</style>\n");
     print("</head><body>\n<div class=\"content\">\n");
     print("<div align=\"center\"><h2><p>Temperature MIN must be SMALLER then Temperature MAX!</p></h2><h1><p>Try again!</p></h1></div>");
@@ -76,7 +76,7 @@ $debug = 1;
 print("<html><head>\n");
 print("</head><body>\n");
 print("<link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico'/>\n");
-print("<title>'Clamps' IoT Thermostat - Settings</title>\n");
+print("<title>IoT Thermostat - Settings</title>\n");
 print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: auto; }</style>\n");
 print("</head><body>\n<div class='content'>\n");
 print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
@@ -94,7 +94,7 @@ print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp
 print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C\n");
 print("<br>It's a Heater\t<input type='checkbox' name='heater' value='true'>\n");
 print("<br>Manual mode\t<input type='checkbox' name='manual' value='true'>\n");
-print("<br>DEBUG\t<input type='checkbox' name='debug' value='true'>\n");
+print("<br>[debug]\t<input type='checkbox' name='debug' value='true'>\n");
 print("<br><input type='submit' value='Submit' >\n");
 print("</form></div></body>\n");
 print("<script>\n");
@@ -106,6 +106,6 @@ print("      return;\n");
 print("    }\n");
 print("  }\n");
 print("}\n");
-print("setSelectedIndex(document.getElementById('hostname'),'".$_POST['device']."');\n");
+print("setSelectedIndex(document.getElementById('URL'),'".$_POST['device']."');\n");
 print("</script>\n");
 ?>

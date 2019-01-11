@@ -11,21 +11,18 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <ArduinoJson.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_ST7735.h>
+#include <TFT_eSPI.h>
 #include <SPI.h>
+#include "Free_Fonts.h" // Include the header file attached to this sketch
 
 //// initialize variables / hardware
-#define ONE_WIRE_BUS 2  // DS18B20 pin D4 = GPIO2
+#define ONE_WIRE_BUS D3
 #define RELAISPIN1 D1
 #define RELAISPIN2 D2
 #define TOUCHPIN1 D7
 #define TOUCHPIN2 D8
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 79
-#define TFT_CS        D4
-#define TFT_RST       -1
-#define TFT_DC        D3
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/settings.txt";
@@ -45,8 +42,10 @@ float temp_c;
 String webString;
 String relaisState;
 String SHA1;
-String host;
+String loghost;
 String epochTime;
+String hostname = "Joey";
+uint16_t color;
 int httpsPort;
 int interval;
 float temp_min;
@@ -55,8 +54,7 @@ float temp_max;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
 ESP8266WebServer server(80);
-//SSD1306Wire  display(0x3c, D6, D5);
-Adafruit_ST7735 display = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+TFT_eSPI tft = TFT_eSPI();  // Create object "tft"
 
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
@@ -66,6 +64,7 @@ void getTemperature() {
   uptime = (millis() / 1000 ); // Refresh uptime
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
+  yield();
   temp_c = temp_c - 6; // calibrate your sensor, if needed
   delay(10);
   Serial.println(temp_c);
@@ -73,7 +72,6 @@ void getTemperature() {
 
 void switchRelais() {
   Serial.println("= switchRelais: ");
-  delay(200);
   if (manual) {
     return;
   } else {
@@ -105,7 +103,7 @@ void toggleRelais(bool sw) {
   }
   digitalWrite(RELAISPIN1, sw);
   digitalWrite(RELAISPIN2, sw);
-  delay(10);
+  yield();
 }
 
 //// settings file clear / read / write
@@ -115,7 +113,7 @@ void clearSettingsFile() {
   Serial.println("Please wait for SPIFFS to be formatted");
   SPIFFS.format();
   Serial.println("SPIFFS formatted");
-  delay(10);
+  yield();
   // mark file as empty
   emptyFile = true;
   server.send(200, "text/plain", "HTTP CODE 200: OK, SPIFFS formatted, settings cleared\n");
@@ -142,7 +140,7 @@ void readSettingsFile() {
     } else {
       emptyFile = false;
       SHA1 = root["SHA1"].as<String>();
-      host = root["host"].as<String>(), sizeof(host);
+      loghost = root["loghost"].as<String>(), sizeof(loghost);
       httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
       interval = root["interval"].as<long>(), sizeof(interval);
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
@@ -154,7 +152,6 @@ void readSettingsFile() {
     }
   }
   f.close();
-  delay(10);
 }
 
 void updateSettings() {
@@ -169,7 +166,7 @@ void updateSettings() {
 
   // get new settings from URL
   SHA1 = server.arg("SHA1");
-  host = server.arg("host");
+  loghost = server.arg("loghost");
   httpsPort = server.arg("httpsPort").toInt();
   interval = server.arg("interval").toInt();
   epochTime = server.arg("epochTime").toInt();
@@ -200,7 +197,7 @@ void writeSettingsFile() {
   StaticJsonBuffer<256> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
   root["SHA1"] = SHA1;
-  root["host"] = host;
+  root["loghost"] = loghost;
   root["httpsPort"] = httpsPort;
   root["interval"] = interval;
   root["temp_min"] = temp_min;
@@ -265,14 +262,14 @@ void updateWebserver() {
   pathQuery += debug;
 
   Serial.print(F("Connecting to https://"));
-  Serial.print(host);
+  Serial.print(loghost);
   Serial.println(pathQuery);
 
   BearSSL::WiFiClientSecure webClient;
   from_str();
   webClient.setFingerprint(sha1);
   HTTPClient https;
-  if (https.begin(webClient, host, httpsPort, pathQuery)) {
+  if (https.begin(webClient, loghost, httpsPort, pathQuery)) {
     int httpCode = https.GET();
     if (httpCode > 0) {
       Serial.print(F("HTTPS GET OK, code: "));
@@ -300,6 +297,8 @@ void updateWebserver() {
 //// print variables for debug
 void debug_vars() {
   Serial.println(F("- DEBUG -"));
+  Serial.print(F("- hostname: "));
+  Serial.println(hostname);
   Serial.print(F("- LAN IP: "));
   Serial.println(lanIP);
   Serial.print(F("- Inet IP: "));
@@ -321,8 +320,8 @@ void debug_vars() {
   }
   Serial.print(F("- SHA1: "));
   Serial.println(SHA1);
-  Serial.print(F("- host: "));
-  Serial.println(host);
+  Serial.print(F("- loghost: "));
+  Serial.println(loghost);
   Serial.print(F("- httpsPort: "));
   Serial.println(httpsPort);
   Serial.print(F("- interval: "));
@@ -354,64 +353,73 @@ void printProgress (unsigned long percentage) {
   fflush (stdout);
 }
 
-//// update display ST7735R
+//// write to tft display
 void updateDisplay() {
-  display.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
-  display.fillScreen(ST77XX_BLACK);
-  display.cp437(true);
-  display.setTextWrap(false);
-  display.setCursor(0, 0);
-  display.setTextColor(ST77XX_YELLOW);
-  display.setTextSize(1);
-  display.println("Connected to SSID:");
-  display.setTextSize(2);
-  display.println(WiFi.SSID());
-  display.setTextColor(ST77XX_WHITE);
-  display.setTextSize(1);
-  display.println("LAN:" + String("") + lanIP);
-  display.println("Inet:" + inetIP);
-  display.println("Temperature:\n");
-  display.drawRoundRect(0, 52, 128, 22, 3, ST77XX_WHITE);
+  tft.fillScreen(TFT_BLACK); // Black screen fill
+  tft.setCursor(0, 0);
+  tft.setTextFont(0);
+  //tft.setFreeFont(0);
+  tft.setTextColor(TFT_YELLOW);
+  tft.setTextSize(1);
+  tft.println("Connected to SSID:");
+  tft.setTextSize(2);
+  tft.println(WiFi.SSID());
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.println("LAN:" + String("") + lanIP);
+  tft.println("Inet:" + inetIP);
+  tft.println("Temperature:\n");
+  tft.drawRoundRect(1, 52, 127, 22, 3, TFT_WHITE);
   if (temp_c < temp_min) {
-    display.setTextColor(ST77XX_BLUE);
+    color = 0x001F;
   } else if (temp_c > temp_max) {
-    display.setTextColor(ST77XX_RED);
+    color = 0xF800;
   } else {
-    display.setTextColor(ST77XX_YELLOW);
+    color = 0xFFE0;
   }
-  display.setTextSize(2);
-  display.println(" " + String(temp_c, 2) + " " + (char)248 + "C");
-  display.setTextSize(1);
-  display.println("");
-  display.setTextColor(ST77XX_WHITE);
-  display.setTextSize(1);
-  display.println("MIN: " + String(temp_min, 1) + " " + (char)45 + " MAX: " + String(temp_max, 1) + "\n");
-  display.setTextSize(2);
+  tft.setTextColor(color);
+  tft.setTextSize(1);
+  tft.print(" ");
+  tft.setTextSize(2);
+  tft.print(String(temp_c, 2));
+  tft.setTextSize(1);
+  tft.print(" ");
+  tft.setTextSize(2);
+  int cursorX = tft.getCursorX() + 3;
+  int cursorY = tft.getCursorY() + 4;
+  tft.drawCircle(cursorX, cursorY, 3, color);
+  //tft.print((char)247);
+  tft.println(" C");
+  tft.setTextSize(1);
+  tft.println("");
+  tft.setTextColor(TFT_WHITE);
+  tft.println("MIN: " + String(temp_min, 1) + " " + (char)45 + " MAX: " + String(temp_max, 1) + "\n");
+  tft.setTextSize(2);
   if (heater) {
-    display.setTextColor(ST77XX_RED);
-    display.print("Heater:");
+    tft.setTextColor(TFT_RED);
+    tft.print("Heater:");
   } else {
-    display.setTextColor(ST77XX_BLUE);
-    display.print("Cooler:");
+    tft.setTextColor(TFT_BLUE);
+    tft.print("Cooler:");
   }
   if (relaisState == "ON") {
-    display.setTextColor(ST77XX_RED);
-    display.println(relaisState);
+    tft.setTextColor(TFT_RED);
+    tft.println(relaisState);
   } else {
-    display.setTextColor(ST77XX_GREEN);
-    display.println(relaisState);
+    tft.setTextColor(TFT_GREEN);
+    tft.println(relaisState);
   }
   if (manual) {
     mode = "Manual";
-    display.setTextColor(ST77XX_ORANGE);
+    tft.setTextColor(TFT_ORANGE);
   } else {
     mode = "Automatic";
-    display.setTextColor(ST77XX_GREEN);
+    tft.setTextColor(TFT_GREEN);
   }
-  display.println(mode);
+  tft.println(mode);
 }
 
-//// get internet IP (for display)
+//// get internet IP (for tft.
 void getInetIP() {
   WiFiClient client;
   HTTPClient http;
@@ -442,38 +450,40 @@ String formatBytes(size_t bytes) {
 
 //// WiFi config mode
 void configModeCallback (WiFiManager *myWiFiManager) {
-  Serial.println("Entered config mode");
-  Serial.println(WiFi.softAPIP());
-  Serial.println(myWiFiManager->getConfigPortalSSID());
   Serial.println("Opening configuration portal");
-  display.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
-  display.fillScreen(ST77XX_BLACK);
-  display.cp437(true);
-  display.setTextWrap(false);
-  display.setCursor(0, 0);
-  display.setTextColor(ST77XX_YELLOW);
-  display.setTextSize(2);
-  display.println("WiFi Config\n");
-  display.setTextColor(ST77XX_ORANGE);
-  display.println("IP:10.0.1.1");
-  display.println("ID:\n Joey");
-  display.println("Pass:\n pass4esp");
+  tft.fillScreen(TFT_BLACK); // Black screen fill
+  tft.setTextColor(TFT_YELLOW);
+  tft.setTextSize(1);
+  tft.println("WiFi Config\n");
+  tft.setTextColor(TFT_RED);
+  tft.print("IP:");
+  tft.setTextSize(2);
+  tft.println("10.0.1.1");
+  tft.setTextSize(1);
+  tft.print("ID:");
+  tft.setTextSize(2);
+  tft.println("Joey");
+  tft.setTextSize(1);
+  tft.print("Pwd: ");
+  tft.setTextSize(2);
+  tft.print("pass4esp");
 }
 
 //// setup / first run
 void setup(void) {
+  DS18B20.begin();
+  Serial.begin(115200);
+  tft.init();
   pinMode(RELAISPIN1, OUTPUT);
   pinMode(RELAISPIN2, OUTPUT);
-  display.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
-  Serial.begin(115200);
- 
+
   WiFiManager wifiManager;
   wifiManager.setTimeout(300);
   wifiManager.setAPStaticIPConfig(IPAddress(10,0,1,1), IPAddress(10,0,1,1), IPAddress(255,255,255,0));
   wifiManager.setDebugOutput(false);
   wifiManager.setAPCallback(configModeCallback);
   if(!wifiManager.autoConnect("Joey","pass4esp")) {
-    delay(5000);
+    delay(3000);
     Serial.println(F("Failed to connect and hit timeout, restarting..."));
     ESP.reset();
   }
@@ -506,16 +516,11 @@ void setup(void) {
   toggleRelais(0); // start with relais OFF
  
   readSettingsFile(); // read old settings from SPIFFS
-  if (!emptyFile) {
-    getTemperature();
-    switchRelais();
-    updateDisplay();
-    if (debug)
-      debug_vars();
-  } else {
-    Serial.println(F("HTTP Server started. Giving you 5 seconds to send data..."));
-    delay(5000);
-  }
+  getTemperature();
+  switchRelais();
+  updateDisplay();
+  if (debug)
+    debug_vars();
 
   // web client handlers
   server.onNotFound(handleNotFound);
@@ -536,7 +541,6 @@ void setup(void) {
  
 //// start main loop
 void loop(void) {
-
   int hold = 1;
   while (digitalRead(TOUCHPIN1) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
     if ( hold == 1) { // avoid switching more than once (hangs up the device)
@@ -558,7 +562,6 @@ void loop(void) {
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
     }
     hold = 0;
-    delay(10);
   }
 
   // same comments as in previous 'while' apply here
@@ -582,13 +585,11 @@ void loop(void) {
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais OFF"));
     }
     hold = 0;
-    delay(10);
   }
 
   unsigned long currentMillis = millis();
   unsigned long past = currentMillis - previousMillis;
   if (past > interval) {
-    getInetIP();
     Serial.println(F(" Interval passed"));
     previousMillis = currentMillis; // save the last time sensor was read
 
@@ -598,9 +599,10 @@ void loop(void) {
       Serial.println(F("Waiting for settings to be sent..."));
     } else {
       getTemperature();
+      switchRelais();
+      getInetIP();
       if (debug)
         debug_vars();
-      switchRelais();
       updateDisplay();
       updateWebserver();
     }
@@ -609,7 +611,6 @@ void loop(void) {
       interval = 10000;
     }
   } else {
-    delay(100);
     printProgress(past * 100 / interval);
   }
   server.handleClient();

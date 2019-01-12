@@ -16,9 +16,9 @@
 #include "Free_Fonts.h" // Include the header file attached to this sketch
 
 //// initialize variables / hardware
-#define ONE_WIRE_BUS D3
-#define RELAISPIN1 D1
-#define RELAISPIN2 D2
+#define ONE_WIRE_BUS D1
+#define RELAISPIN1 D5
+#define RELAISPIN2 D6
 #define TOUCHPIN1 D7
 #define TOUCHPIN2 D8
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
@@ -65,8 +65,7 @@ void getTemperature() {
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
-  temp_c = temp_c - 6; // calibrate your sensor, if needed
-  delay(10);
+  temp_c = temp_c - 2; // calibrate your sensor, if needed
   Serial.println(temp_c);
 }
 
@@ -103,7 +102,6 @@ void toggleRelais(bool sw) {
   }
   digitalWrite(RELAISPIN1, sw);
   digitalWrite(RELAISPIN2, sw);
-  yield();
 }
 
 //// settings file clear / read / write
@@ -434,7 +432,6 @@ void getInetIP() {
     Serial.println(http.errorToString(httpCode).c_str());
   }
   http.end();
-  delay(50);
 }
 
 //// convert sizes in bytes to KB and MB
@@ -471,11 +468,11 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 
 //// setup / first run
 void setup(void) {
-  DS18B20.begin();
   Serial.begin(115200);
-  tft.init();
+  DS18B20.begin();
   pinMode(RELAISPIN1, OUTPUT);
   pinMode(RELAISPIN2, OUTPUT);
+  tft.init();
 
   WiFiManager wifiManager;
   wifiManager.setTimeout(300);
@@ -596,6 +593,7 @@ void loop(void) {
     if (emptyFile) {
       Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));
       toggleRelais(0);
+      debug_vars();
       Serial.println(F("Waiting for settings to be sent..."));
     } else {
       getTemperature();

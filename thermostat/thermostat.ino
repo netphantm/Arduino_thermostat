@@ -15,7 +15,7 @@
 #include <SPI.h>
 #include "Free_Fonts.h" // Include the header file attached to this sketch
 
-//// initialize variables / hardware
+//// define variables / hardware
 #define ONE_WIRE_BUS D1
 #define RELAISPIN1 D5
 #define RELAISPIN2 D6
@@ -178,7 +178,7 @@ void updateSettings() {
   debug = server.arg("debug").toInt() | 0;
 
   writeSettingsFile();
-  server.send(200, "text/plain", webString);
+  server.send(200, "text/html", webString);
 }
 
 void writeSettingsFile() {
@@ -214,6 +214,7 @@ void writeSettingsFile() {
     String output;
     root.printTo(output);
     webString += output;
+    webString += "<p>Go back to the <a href='https://temperature.hugo.ro'>graphs</a></p>";
     // mark file as not empty
     emptyFile = false;
   }
@@ -417,7 +418,7 @@ void updateDisplay() {
   tft.println(mode);
 }
 
-//// get internet IP (for tft.
+//// get internet IP (for tft)
 void getInetIP() {
   WiFiClient client;
   HTTPClient http;
@@ -470,6 +471,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 void setup(void) {
   Serial.begin(115200);
   DS18B20.begin();
+  delay(10);
   pinMode(RELAISPIN1, OUTPUT);
   pinMode(RELAISPIN2, OUTPUT);
   tft.init();

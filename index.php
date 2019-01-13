@@ -227,6 +227,10 @@
 </select></form>
 <form id='settings' method='POST' action='/settings.php'>
 <?php
+  print("<input type='hidden' name='temp_min' value=".readDataFile()[3]." />\n");
+  print("<input type='hidden' name='temp_max' value=".readDataFile()[4]." />\n");
+  print("<input type='hidden' name='heater' value=".readDataFile()[6]." />\n");
+  print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
   print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button></form>\n");
 ?>
 </td><td>

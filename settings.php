@@ -1,6 +1,6 @@
 <?php
 
-//pr($_POST);
+//print "GET data: \n"; pr($_GET);
 
 // needed for DEBUG
 function pr($var) {
@@ -9,17 +9,17 @@ function pr($var) {
   print '</pre>';
 }
 
-if( !empty($_GET["URL"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) && !empty($_GET["httpsPort"]) && !empty($_GET["interval"]) && !empty($_GET["temp_min"]) && !empty($_GET["temp_max"]) ) {
-  $URL = $_GET["URL"];
-  $SHA1 = $_GET["SHA1"];
-  $loghost = $_GET["loghost"];
-  $httpsPort = $_GET["httpsPort"];
-  $interval = $_GET["interval"];
-  $temp_min = $_GET["temp_min"];
-  $temp_max = $_GET["temp_max"];
-  $heater = isset($_GET["heater"]) ? true : false;
-  $manual = isset($_GET["manual"]) ? true : false;
-  $debug = isset($_GET["debug"]) ? true : false;
+if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"]) && !empty($_POST["httpsPort"]) && !empty($_POST["interval"]) && !empty($_POST["temp_min"]) && !empty($_POST["temp_max"]) ) {
+  $URL = $_POST["URL"];
+  $SHA1 = $_POST["SHA1"];
+  $loghost = $_POST["loghost"];
+  $httpsPort = $_POST["httpsPort"];
+  $interval = $_POST["interval"];
+  $temp_min = $_POST["temp_min"];
+  $temp_max = $_POST["temp_max"];
+  $heater = isset($_POST["heater"]) ? $_POST["heater"] : false;
+  $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
+  $debug = isset($_POST["debug"]) ? $_POST["debug"] : false;
   if($temp_min >= $temp_max) {
     print("<html>\n");
     print("<body>\n");
@@ -31,7 +31,7 @@ if( !empty($_GET["URL"]) && !empty($_GET["SHA1"]) && !empty($_GET["loghost"]) &&
     print("</body>");
     exit();
   } else {
-    header('Location: '.$_GET["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+    header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
     exit;
   }
 }
@@ -67,11 +67,11 @@ $SHA1 = wordwrap($SHA1 , 2 , ':' , true );
 $loghost = "temperature.hugo.ro";
 $httpsPort = "443";
 $interval = 120000;
-$temp_min = 6;
-$temp_max = 12;
-$heater = 1;
-$manual = 1;
-$debug = 1;
+$temp_min = isset($_POST["temp_min"]) ? $_POST["temp_min"]: 7;
+$temp_max = isset($_POST["temp_max"]) ? $_POST["temp_max"]: 10;
+$heater = isset($_POST["heater"]) ? $_POST["heater"] : 0;
+$manual = isset($_POST["manual"]) ? $_POST["manual"] : 0;
+$debug = isset($_POST["debug"]) ? $_POST["debug"] : 0;
 
 print("<html><head>\n");
 print("</head><body>\n");
@@ -81,7 +81,7 @@ print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: a
 print("</head><body>\n<div class='content'>\n");
 print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
 print("IoT Thermostat - Settings</h2></div>\n");
-print("<form method='GET'>\n");
+print("<form method='POST'>\n");
 print("Sensor hostname <select id='URL' name='URL'>\n");
 print("<option value='http://192.168.178.104/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
@@ -92,9 +92,9 @@ print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></t
 print("<br>Refresh interval <input type='text' name='interval' size=2 value=$interval> Milliseconds\n");
 print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C / \n");
 print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C\n");
-print("<br>It's a Heater\t<input type='checkbox' name='heater' value='true'>\n");
-print("<br>Manual mode\t<input type='checkbox' name='manual' value='true'>\n");
-print("<br>[debug]\t<input type='checkbox' name='debug' value='true'>\n");
+print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if($heater) print(" checked=1"); print(">\n");
+print("<br>Manual mode\t<input type='checkbox' name='manual' value=1"); if ($manual) print(" checked=1"); print(">\n");
+print("<br>[debug]\t<input type='checkbox' name='debug' value=1\n"); if ($debug) print(" checked=1"); print(">\n");
 print("<br><input type='submit' value='Submit' >\n");
 print("</form></div></body>\n");
 print("<script>\n");

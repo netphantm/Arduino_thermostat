@@ -202,7 +202,7 @@
 <?php
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
   print("<div>Hysteresis: <b>".readDataFile()[3]." °C > ".readDataFile()[4]." °C</b></div>\n");
-  print("<div>Interval: <b>".readDataFile()[8]."</b> seconds</div>\n");
+  print("<div>Refresh interval: <b>".readDataFile()[8]."</b> seconds</div>\n");
   if (readDataFile()[6] == "1") {
     print("<div>Appliance is a <font style='color:red'><b>Heater</b></font></div>\n");
   } else {

@@ -66,9 +66,9 @@ $SHA1 = str_replace("SHA1 Fingerprint=", '', x509_fingerprint($pem,$hash='sha1')
 $SHA1 = wordwrap($SHA1 , 2 , ':' , true );
 $loghost = "temperature.hugo.ro";
 $httpsPort = "443";
-$interval = 120000;
 $temp_min = isset($_POST["temp_min"]) ? $_POST["temp_min"]: 7;
 $temp_max = isset($_POST["temp_max"]) ? $_POST["temp_max"]: 10;
+$interval = isset($_POST["interval"]) ? $_POST["interval"] * 1000: 120000;
 $heater = isset($_POST["heater"]) ? $_POST["heater"] : 0;
 $manual = isset($_POST["manual"]) ? $_POST["manual"] : 0;
 $debug = isset($_POST["debug"]) ? $_POST["debug"] : 0;

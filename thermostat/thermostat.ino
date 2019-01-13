@@ -17,10 +17,8 @@
 
 //// define variables / hardware
 #define ONE_WIRE_BUS D1
-#define RELAISPIN1 D5
-#define RELAISPIN2 D6
-#define TOUCHPIN1 D7
-#define TOUCHPIN2 D8
+#define RELAISPIN D2 // or D0?
+#define TOUCHPIN D8
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 79
 
@@ -65,8 +63,29 @@ void getTemperature() {
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
-  temp_c = temp_c - 2; // calibrate your sensor, if needed
   Serial.println(temp_c);
+  temp_c = temp_c - 2; // calibrate your sensor, if needed
+}
+
+void toggleRelais(String sw = "TOGGLE") {
+  if (sw == "TOGGLE") {
+    if (digitalRead(RELAISPIN) == 1) {
+      relaisState = "OFF";
+      digitalWrite(RELAISPIN, 0);
+    } else {
+      relaisState = "ON";
+      digitalWrite(RELAISPIN, 1);
+    }
+    return;
+  } else {
+    if (sw == "ON") {
+    relaisState = "ON";
+    digitalWrite(RELAISPIN, 1);
+    } else {
+      relaisState = "OFF";
+      digitalWrite(RELAISPIN, 0);
+    }
+  }
 }
 
 void switchRelais() {
@@ -77,31 +96,21 @@ void switchRelais() {
     if (heater) {
       if (temp_c <= temp_min) {
         Serial.println("Auto turned relais ON");
-        toggleRelais(1);
+        toggleRelais("ON");
       } else if (temp_c >= temp_max) {
         Serial.println("Auto turned relais OFF");
-        toggleRelais(0);
+        toggleRelais("OFF");
       }
     } else {
       if (temp_c >= temp_max) {
         Serial.println("Auto turned relais ON");
-        toggleRelais(1);
+        toggleRelais("ON");
       } else if (temp_c <= temp_min) {
         Serial.println("Auto turned relais OFF");
-        toggleRelais(0);
+        toggleRelais("OFF");
       }
     }
   }
-}
-
-void toggleRelais(bool sw) {
-  if (sw) {
-    relaisState = "ON";
-  } else {
-    relaisState = "OFF";
-  }
-  digitalWrite(RELAISPIN1, sw);
-  digitalWrite(RELAISPIN2, sw);
 }
 
 //// settings file clear / read / write
@@ -219,7 +228,7 @@ void writeSettingsFile() {
     emptyFile = false;
   }
   f.close();
-  if (digitalRead(RELAISPIN1) == 1 && digitalRead(RELAISPIN2) == 1) {
+  if (digitalRead(RELAISPIN) == 1) {
     relaisState = "ON";
   } else {
     relaisState = "OFF";
@@ -472,8 +481,7 @@ void setup(void) {
   Serial.begin(115200);
   DS18B20.begin();
   delay(10);
-  pinMode(RELAISPIN1, OUTPUT);
-  pinMode(RELAISPIN2, OUTPUT);
+  pinMode(RELAISPIN, OUTPUT);
   tft.init();
 
   WiFiManager wifiManager;
@@ -512,7 +520,7 @@ void setup(void) {
   }
   Serial.printf("\n");
 
-  toggleRelais(0); // start with relais OFF
+  toggleRelais("OFF"); // start with relais OFF
  
   readSettingsFile(); // read old settings from SPIFFS
   getTemperature();
@@ -541,47 +549,24 @@ void setup(void) {
 //// start main loop
 void loop(void) {
   int hold = 1;
-  while (digitalRead(TOUCHPIN1) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
+  while (digitalRead(TOUCHPIN) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
     if ( hold == 1) { // avoid switching more than once (hangs up the device)
-      delay(200);
-      if (digitalRead(TOUCHPIN2) == 1) { // if both touch sensors are triggered, switch back to auto mode
+      delay(1000);
+      if (digitalRead(TOUCHPIN) == 1) { // if both touch sensors are triggered, switch back to auto mode
         manual = false;
-        delay(200);
         hold = 0;
         Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
         writeSettingsFile();
+        delay(1000);
         break;
       }
-      toggleRelais(1);
+      toggleRelais();
       manual = true;
       updateDisplay();
       writeSettingsFile();
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
-    }
-    hold = 0;
-  }
-
-  // same comments as in previous 'while' apply here
-  while (digitalRead(TOUCHPIN2) == 1) {
-    if ( hold == 1) {
-      delay(200);
-      if (digitalRead(TOUCHPIN1) == 1) {
-        manual = false;
-        delay(200);
-        hold = 0;
-        Serial.println(F("\nSwitched to Automatic mode"));
-        switchRelais();
-        updateDisplay();
-        writeSettingsFile();
-        break;
-      }
-      toggleRelais(0);
-      manual = true;
-      updateDisplay();
-      writeSettingsFile();
-      Serial.println(F("\nSwitched to Manual mode, manually switched Relais OFF"));
     }
     hold = 0;
   }
@@ -594,7 +579,7 @@ void loop(void) {
 
     if (emptyFile) {
       Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));
-      toggleRelais(0);
+      toggleRelais("OFF");
       debug_vars();
       Serial.println(F("Waiting for settings to be sent..."));
     } else {

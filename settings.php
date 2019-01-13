@@ -94,7 +94,7 @@ print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp
 print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C\n");
 print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if($heater) print(" checked=1"); print(">\n");
 print("<br>Manual mode\t<input type='checkbox' name='manual' value=1"); if ($manual) print(" checked=1"); print(">\n");
-print("<br>[debug]\t<input type='checkbox' name='debug' value=1\n"); if ($debug) print(" checked=1"); print(">\n");
+print("<br>[debug]\t<input type='checkbox' name='debug' value=1 checked=1>\n");
 print("<br><input type='submit' value='Submit' >\n");
 print("</form></div></body>\n");
 print("<script>\n");

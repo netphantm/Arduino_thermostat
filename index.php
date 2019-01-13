@@ -40,7 +40,6 @@
     $i = $c >= $numLines? $c-$numLines: 0;
     for (; $i<$c; ++$i) {
       if ($pos = strpos($lines[$i], $searchString)) {
-        #echo $lines[$i];
         $line = str_getcsv($lines[$i],",","\"");
         //$uptime = $line[0];
         $state = $line[0];
@@ -202,6 +201,7 @@
 <?php
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
   print("<div>Hysteresis: <b>".readDataFile()[3]." °C > ".readDataFile()[4]." °C</b></div>\n");
+  print("<div>Interval: <b>".readDataFile()[8]." °C</b></div>\n");
   if (readDataFile()[6] == "1") {
     print("<div>Appliance is a <font style='color:red'><b>Heater</b></font></div>\n");
   } else {
@@ -231,9 +231,9 @@
   print("<input type='hidden' name='temp_max' value=".readDataFile()[4]." />\n");
   print("<input type='hidden' name='heater' value=".readDataFile()[6]." />\n");
   print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
-  print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button></form>\n");
+  print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button>\n");
 ?>
-</td><td>
+</form></td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>
 </td></tr></table>
 <style>div.google-visualization-tooltip { ; }</style>

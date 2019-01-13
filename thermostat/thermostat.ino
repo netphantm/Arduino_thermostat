@@ -223,7 +223,11 @@ void writeSettingsFile() {
     String output;
     root.printTo(output);
     webString += output;
-    webString += "<p>Go back to the <a href='https://temperature.hugo.ro'>graphs</a></p>";
+    webString += "<p><form method='POST' action='https://temperature.hugo.ro'>";
+    webString += "<button name='device' value='";
+    webString += hostname;
+    webString += "'>Graph</button>";
+    webString += "</form></p>";
     // mark file as not empty
     emptyFile = false;
   }
@@ -262,6 +266,8 @@ void updateWebserver() {
   pathQuery += temp_min;
   pathQuery += "&temp_max=";
   pathQuery += temp_max;
+  pathQuery += "&interval=";
+  pathQuery += interval;
   pathQuery += "&heater=";
   pathQuery += heater;
   pathQuery += "&manual=";

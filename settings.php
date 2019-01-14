@@ -1,6 +1,6 @@
 <?php
 
-//print "GET data: \n"; pr($_GET);
+//print "POST data: \n"; pr($_POST);
 
 // needed for DEBUG
 function pr($var) {

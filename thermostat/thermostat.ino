@@ -60,6 +60,7 @@ void getTemperature() {
   String str_last = str_c;
   // read temperature from the sensor
   uptime = (millis() / 1000 ); // Refresh uptime
+  delay(100);
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();

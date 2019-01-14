@@ -1,24 +1,29 @@
 <?php
-  if (session_status() == PHP_SESSION_NONE  || session_id() == '') {
-    session_start();
+
+  if (session_id() == "") {
+    session_name("foo");
+    session_start([
+      'cookie_lifetime' => 86400,
+      ]);
   }
 
-  if (!empty($_POST['device'])) {
+  if (isset($_POST['device'])) {
     $_SESSION['device'] = $_POST['device'];
-  } else {
+  }
+
+  if ($_POST['device'] == "") {
     $_SESSION['device'] = "Clamps";
   }
 
-  header("refresh:300; url=/", FALSE, 307);
-
-  //pr($_SESSION);
-
-  // needed for DEBUG
+  //// needed for DEBUG
+  //print("POST data: \n"); pr($_POST);
+  //print("SESSION data: \n"); print(session_name()); pr($_SESSION);
   function pr($var) {
     print '<pre>';
     print_r($var);
     print '</pre>';
   }
+  ////
 
   function readDataFile() {
 
@@ -107,9 +112,7 @@
     display: inline;
   }
 </style>
-<meta http-equiv='refresh' content='60'>
 <script src='moment.min.js' type='text/javascript'></script>
-
 <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
 <script type='text/javascript'>
   google.charts.load('current', {'packages':['corechart','gauge']});
@@ -189,6 +192,7 @@
 <?php
   print("<title>".$_SESSION['device']." - Thermostat IoT</title>");
 ?>
+<meta http-equiv='refresh' content='120'>
 </head><body>
 <div class='content'>
 <div align='center'><h2>ESP8266/WeMos D1 Mini Pro - DS18B20
@@ -218,7 +222,9 @@
   } else {
     print("<div>Mode: <font style='color:green'><b>Automatic</b></font></div>\n");
   }
-  print("<form id='device' method='POST'>\n");
+?>
+  <form id='device' method='POST'>
+<?php
   print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
 ?>
 <option>Select...</option>
@@ -233,7 +239,7 @@
   print("<input type='hidden' name='heater' value=".readDataFile()[6]." />\n");
   print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
   print("<input type='hidden' name='interval' value=".readDataFile()[8]." />\n");
-  print("<button id='settings' name='device' value=".$_SESSION['device'].">Settings</button>\n");
+  print("<button name='device' value=".$_SESSION['device'].">Settings</button>\n");
 ?>
 </form></td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>

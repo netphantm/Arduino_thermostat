@@ -55,11 +55,12 @@
         $heater = $line[5];
         $manual = $line[6];
         $interval = ($line[7] / 1000);
+        $temp_dev = isset($line[8]) ? floatval($line[8]) : 0;
         $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
       }
     }
     fclose($fp);
-    return array ($retStr, $date, $state, $temp_min, $temp_max, $temp, $heater, $manual, $interval);
+    return array ($retStr, $date, $state, $temp_min, $temp_max, $temp, $heater, $manual, $interval, $temp_dev);
   }
 ?>
 
@@ -205,6 +206,7 @@
 <div>Last Readings: <span id="displayMoment"></span></div>
 <?php
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
+  print("<div>Sensor deviation: <b>".readDataFile()[9]." °C</b></div>\n");
   print("<div>Hysteresis: <b>".readDataFile()[3]." °C > ".readDataFile()[4]." °C</b></div>\n");
   print("<div>Refresh interval: <b>".readDataFile()[8]."</b> seconds</div>\n");
   if (readDataFile()[6] == "1") {
@@ -225,7 +227,7 @@
 ?>
   <form id='device' method='POST'>
 <?php
-  print("Sensor device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
+  print("Device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
 ?>
 <option>Select...</option>
 <option value='Clamps'>Clamps</option>
@@ -236,6 +238,7 @@
 <?php
   print("<input type='hidden' name='temp_min' value=".readDataFile()[3]." />\n");
   print("<input type='hidden' name='temp_max' value=".readDataFile()[4]." />\n");
+  print("<input type='hidden' name='temp_dev' value=".readDataFile()[9]." />\n");
   print("<input type='hidden' name='heater' value=".readDataFile()[6]." />\n");
   print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
   print("<input type='hidden' name='interval' value=".readDataFile()[8]." />\n");

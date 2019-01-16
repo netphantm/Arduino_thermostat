@@ -1,6 +1,6 @@
 <?php
 
-//print "POST data: \n"; pr($_POST);
+print "POST data: \n"; pr($_POST);
 
 // needed for DEBUG
 function pr($var) {
@@ -17,6 +17,7 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
   $interval = $_POST["interval"];
   $temp_min = $_POST["temp_min"];
   $temp_max = $_POST["temp_max"];
+  $temp_dev = isset($_POST["temp_dev"]) ? floatval($_POST["temp_dev"]) : 0;
   $heater = isset($_POST["heater"]) ? $_POST["heater"] : false;
   $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
   $debug = isset($_POST["debug"]) ? $_POST["debug"] : false;
@@ -31,7 +32,7 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
     print("</body>");
     exit();
   } else {
-    header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+    header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug);
     exit;
   }
 }
@@ -68,6 +69,7 @@ $loghost = "temperature.hugo.ro";
 $httpsPort = "443";
 $temp_min = isset($_POST["temp_min"]) ? $_POST["temp_min"]: 7;
 $temp_max = isset($_POST["temp_max"]) ? $_POST["temp_max"]: 10;
+$temp_dev = isset($_POST["temp_dev"]) ? $_POST["temp_dev"]: 0;
 $interval = isset($_POST["interval"]) ? $_POST["interval"] * 1000: 120000;
 $heater = isset($_POST["heater"]) ? $_POST["heater"] : 0;
 $manual = isset($_POST["manual"]) ? $_POST["manual"] : 0;
@@ -91,7 +93,8 @@ print("<br>Loghost <input type='text' name='loghost' size=11 value=$loghost>\n")
 print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></tr><tr><td>\n");
 print("<br>Refresh interval <input type='text' name='interval' size=2 value=$interval> Milliseconds\n");
 print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C / \n");
-print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C\n");
+print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C / \n");
+print("Sensor deviation <input type='text' name='temp_dev' size=1 value=$temp_dev> &deg;C\n");
 print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if($heater) print(" checked=1"); print(">\n");
 print("<br>Manual mode\t<input type='checkbox' name='manual' value=1"); if ($manual) print(" checked=1"); print(">\n");
 print("<br>[debug]\t<input type='checkbox' name='debug' value=1 checked=1>\n");

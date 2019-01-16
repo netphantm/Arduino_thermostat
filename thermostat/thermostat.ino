@@ -17,8 +17,8 @@
 
 //// define variables / hardware
 #define ONE_WIRE_BUS D1
-#define RELAISPIN D2 // or D0?
-#define TOUCHPIN D8
+#define RELAISPIN D4 // or D0?
+#define TOUCHPIN D0
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 79
 
@@ -48,6 +48,7 @@ int httpsPort;
 int interval;
 float temp_min;
 float temp_max;
+float temp_dev;
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
@@ -65,7 +66,7 @@ void getTemperature() {
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
   Serial.println(temp_c);
-  temp_c = temp_c - 2; // calibrate your sensor, if needed
+  temp_c = temp_c + temp_dev; // temperature deviation to calibrate your sensor
 }
 
 void toggleRelais(String sw = "TOGGLE") {
@@ -153,6 +154,7 @@ void readSettingsFile() {
       interval = root["interval"].as<long>(), sizeof(interval);
       temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
       temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
+      temp_dev = root["temp_dev"].as<float>(), sizeof(temp_dev);
       heater = root["heater"].as<bool>(), sizeof(heater);
       manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the settings file
       debug = root["debug"].as<bool>(), sizeof(debug);
@@ -165,12 +167,12 @@ void readSettingsFile() {
 void updateSettings() {
   Serial.println("= updateSettings");
 
-  if (server.args() < 1 || server.args() > 9) {
+  if (server.args() < 1 || server.args() > 10) {
     server.send(200, "text/plain", "HTTP CODE 400: Invalid Request\n");
     return;
   }
   Serial.println("Got new settings");
-  webString = "HTTP CODE 200: OK, Got new settings,\n";
+  webString = "HTTP CODE 200: OK, Got new settings<br>\n";
 
   // get new settings from URL
   SHA1 = server.arg("SHA1");
@@ -183,6 +185,7 @@ void updateSettings() {
   relaisState = server.arg("relaisState");
   temp_min = server.arg("temp_min").toInt();
   temp_max = server.arg("temp_max").toInt();
+  temp_dev = server.arg("temp_dev").toFloat();
   heater = server.arg("heater").toInt() | 0;
   manual = server.arg("manual").toInt() | 0;
   debug = server.arg("debug").toInt() | 0;
@@ -210,6 +213,7 @@ void writeSettingsFile() {
   root["interval"] = interval;
   root["temp_min"] = temp_min;
   root["temp_max"] = temp_max;
+  root["temp_dev"] = temp_dev;
   root["heater"] = heater;
   root["manual"] = manual;
   root["debug"] = debug;
@@ -220,11 +224,11 @@ void writeSettingsFile() {
     webString += "File write open failed\n";
   } else {
     Serial.println("Settings file updated");
-    webString += "Settings file updated,\nJSON root: ";
+    webString += "<p>Settings file updated</p><p>JSON root: ";
     String output;
     root.printTo(output);
     webString += output;
-    webString += "<p><form method='POST' action='https://temperature.hugo.ro'>";
+    webString += "</p><p><form method='POST' action='https://temperature.hugo.ro'>";
     webString += "<button name='device' value='";
     webString += hostname;
     webString += "'>Graph</button>";
@@ -267,6 +271,8 @@ void updateWebserver() {
   pathQuery += temp_min;
   pathQuery += "&temp_max=";
   pathQuery += temp_max;
+  pathQuery += "&temp_dev=";
+  pathQuery += temp_dev;
   pathQuery += "&interval=";
   pathQuery += interval;
   pathQuery += "&heater=";
@@ -345,6 +351,8 @@ void debug_vars() {
   Serial.println(temp_min);
   Serial.print(F("- temp_max: "));
   Serial.println(temp_max);
+  Serial.print(F("- temp_dev: "));
+  Serial.println(temp_dev);
   Serial.print(F("- MEM free heap: "));
   Serial.println(system_get_free_heap_size());
 }

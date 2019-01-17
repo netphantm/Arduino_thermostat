@@ -10,17 +10,19 @@
 #include <FS.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include "SSD1306Wire.h"
 #include <ArduinoJson.h>
 #include <TFT_eSPI.h>
 #include <SPI.h>
 #include "Free_Fonts.h" // Include the header file attached to this sketch
 
 //// define variables / hardware
-#define ONE_WIRE_BUS D1
-#define RELAISPIN D4 // or D0?
+#define ONE_WIRE_BUS D4 // DS18B20 pin D4 = GPIO2
+#define RELAISPIN D1 // or D0?
 #define TOUCHPIN D0
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 79
+//#define dsp_small
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String pFile = "/settings.txt";
@@ -42,7 +44,6 @@ String relaisState;
 String SHA1;
 String loghost;
 String epochTime;
-String hostname = "Joey";
 uint16_t color;
 int httpsPort;
 int interval;
@@ -50,10 +51,17 @@ float temp_min;
 float temp_max;
 float temp_dev;
 
+#if defined (dsp_small)
+  String hostname = "Clamps";
+  SSD1306Wire  tft(0x3c, D6, D5);
+#else
+  String hostname = "Joey";
+  TFT_eSPI tft = TFT_eSPI();
+#endif
+
 OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature DS18B20(&oneWire);
 ESP8266WebServer server(80);
-TFT_eSPI tft = TFT_eSPI();  // Create object "tft"
+DallasTemperature DS18B20(&oneWire);
 
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
@@ -224,11 +232,11 @@ void writeSettingsFile() {
     webString += "File write open failed\n";
   } else {
     Serial.println("Settings file updated");
-    webString += "<p>Settings file updated</p><p>JSON root: ";
+    webString += "<p>Settings file updated</p><p>JSON root: <pre><code>";
     String output;
     root.printTo(output);
     webString += output;
-    webString += "</p><p><form method='POST' action='https://temperature.hugo.ro'>";
+    webString += "</code></pre></p><p><form method='POST' action='https://temperature.hugo.ro'>";
     webString += "<button name='device' value='";
     webString += hostname;
     webString += "'>Graph</button>";
@@ -297,7 +305,7 @@ void updateWebserver() {
       Serial.println(httpCode);
       if (httpCode == HTTP_CODE_OK) {
           epochTime = https.getString();
-          Serial.print("Time on log update: ");
+          Serial.print("Timestamp on log update: ");
           Serial.println(epochTime);
       }
     } else {
@@ -378,71 +386,90 @@ void printProgress (unsigned long percentage) {
 
 //// write to tft display
 void updateDisplay() {
-  tft.fillScreen(TFT_BLACK); // Black screen fill
-  tft.setCursor(0, 0);
-  tft.setTextFont(0);
-  //tft.setFreeFont(0);
-  tft.setTextColor(TFT_YELLOW);
-  tft.setTextSize(1);
-  tft.println("Connected to SSID:");
-  tft.setTextSize(2);
-  tft.println(WiFi.SSID());
-  tft.setTextColor(TFT_WHITE);
-  tft.setTextSize(1);
-  tft.println("LAN:" + String("") + lanIP);
-  tft.println("Inet:" + inetIP);
-  tft.println("Temperature:\n");
-  tft.drawRoundRect(1, 52, 127, 22, 3, TFT_WHITE);
-  if (temp_c < temp_min) {
-    color = 0x001F;
-  } else if (temp_c > temp_max) {
-    color = 0xF800;
-  } else {
-    color = 0xFFE0;
-  }
-  tft.setTextColor(color);
-  tft.setTextSize(1);
-  tft.print(" ");
-  tft.setTextSize(2);
-  tft.print(String(temp_c, 2));
-  tft.setTextSize(1);
-  tft.print(" ");
-  tft.setTextSize(2);
-  int cursorX = tft.getCursorX() + 5;
-  int cursorY = tft.getCursorY() + 2;
-  tft.drawCircle(cursorX, cursorY, 2.5, color);
-  //tft.print((char)247);
-  tft.println(" C");
-  tft.setTextSize(1);
-  tft.println("");
-  tft.setTextColor(TFT_WHITE);
-  tft.println("MIN: " + String(temp_min, 1) + " " + (char)45 + " MAX: " + String(temp_max, 1) + "\n");
-  tft.setTextSize(2);
-  if (heater) {
-    tft.setTextColor(TFT_RED);
-    tft.print("Heater:");
-  } else {
-    tft.setTextColor(TFT_BLUE);
-    tft.print("Cooler:");
-  }
-  if (relaisState == "ON") {
-    tft.setTextColor(TFT_RED);
-    tft.println(relaisState);
-  } else {
-    tft.setTextColor(TFT_GREEN);
-    tft.println(relaisState);
-  }
-  if (manual) {
-    mode = "Manual";
-    tft.setTextColor(TFT_ORANGE);
-  } else {
-    mode = "Automatic";
-    tft.setTextColor(TFT_GREEN);
-  }
-  tft.println(mode);
+#if defined (dsp_small)
+    if (manual) {
+      mode = "Manual";
+    } else {
+      mode = "Automatic";
+    }
+    String state = "Relais: " + relaisState + " / " + mode;
+    tft.init();
+    tft.setTextAlignment(TEXT_ALIGN_LEFT);
+    tft.setFont(ArialMT_Plain_10);
+    tft.drawString(0,  0, "Connected to WiFi");
+    tft.drawString(0, 10, "SSID: " + WiFi.SSID());
+    tft.drawString(0, 20, "LAN IP: " + String("") + lanIP);
+    tft.drawString(0, 30, "Inet IP: " + inetIP);
+    tft.drawString(0, 40, "Temperature: " + String(temp_c, 2) + "°C");
+    tft.drawString(0, 50, state);
+    tft.display();
+#else
+    tft.fillScreen(TFT_BLACK);
+    tft.setCursor(0, 0);
+    tft.setTextFont(0);
+    //tft.setFreeFont(0);
+    tft.setTextColor(TFT_YELLOW);
+    tft.setTextSize(1);
+    tft.println("Connected to SSID:");
+    tft.setTextSize(2);
+    tft.println(WiFi.SSID());
+    tft.setTextColor(TFT_WHITE);
+    tft.setTextSize(1);
+    tft.println("LAN:" + String("") + lanIP);
+    tft.println("Inet:" + inetIP);
+    tft.println("Temperature:\n");
+    tft.drawRoundRect(1, 52, 127, 22, 3, TFT_WHITE);
+    if (temp_c < temp_min) {
+      color = 0x001F;
+    } else if (temp_c > temp_max) {
+      color = 0xF800;
+    } else {
+      color = 0xFFE0;
+    }
+    tft.setTextColor(color);
+    tft.setTextSize(1);
+    tft.print(" ");
+    tft.setTextSize(2);
+    tft.print(String(temp_c, 2));
+    tft.setTextSize(1);
+    tft.print(" ");
+    tft.setTextSize(2);
+    int cursorX = tft.getCursorX() + 5;
+    int cursorY = tft.getCursorY() + 2;
+    tft.drawCircle(cursorX, cursorY, 2.5, color);
+    //tft.print((char)247);
+    tft.println(" C");
+    tft.setTextSize(1);
+    tft.println("");
+    tft.setTextColor(TFT_WHITE);
+    tft.println("MIN: " + String(temp_min, 1) + " " + (char)45 + " MAX: " + String(temp_max, 1) + "\n");
+    tft.setTextSize(2);
+    if (heater) {
+      tft.setTextColor(TFT_RED);
+      tft.print("Heater:");
+    } else {
+      tft.setTextColor(TFT_BLUE);
+      tft.print("Cooler:");
+    }
+    if (relaisState == "ON") {
+      tft.setTextColor(TFT_RED);
+      tft.println(relaisState);
+    } else {
+      tft.setTextColor(TFT_GREEN);
+      tft.println(relaisState);
+    }
+    if (manual) {
+      mode = "Manual";
+      tft.setTextColor(TFT_ORANGE);
+    } else {
+      mode = "Automatic";
+      tft.setTextColor(TFT_GREEN);
+    }
+    tft.println(mode);
+#endif
 }
 
-//// get internet IP (for tft)
+//// get internet IP (for display)
 void getInetIP() {
   WiFiClient client;
   HTTPClient http;
@@ -473,22 +500,32 @@ String formatBytes(size_t bytes) {
 //// WiFi config mode
 void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println("Opening configuration portal");
-  tft.fillScreen(TFT_BLACK); // Black screen fill
-  tft.setTextColor(TFT_YELLOW);
-  tft.setTextSize(1);
-  tft.println("WiFi Config\n");
-  tft.setTextColor(TFT_RED);
-  tft.print("IP:");
-  tft.setTextSize(2);
-  tft.println("10.0.1.1");
-  tft.setTextSize(1);
-  tft.print("ID:");
-  tft.setTextSize(2);
-  tft.println("Joey");
-  tft.setTextSize(1);
-  tft.print("Pwd: ");
-  tft.setTextSize(2);
-  tft.print("pass4esp");
+#if defined (dsp_small)
+    tft.init();
+    tft.setTextAlignment(TEXT_ALIGN_LEFT);
+    tft.setFont(ArialMT_Plain_10);
+    tft.drawString(0, 10, "# Entered config mode #");
+    tft.drawString(0, 30, "ID/pass: NDND/pass4esp");
+    tft.drawString(0, 40, "Config IP: 10.0.1.1");
+    tft.display();
+#else
+    tft.fillScreen(TFT_BLACK); // Black screen fill
+    tft.setTextColor(TFT_YELLOW);
+    tft.setTextSize(1);
+    tft.println("WiFi Config\n");
+    tft.setTextColor(TFT_RED);
+    tft.print("IP:");
+    tft.setTextSize(2);
+    tft.println("10.0.1.1");
+    tft.setTextSize(1);
+    tft.print("ID:");
+    tft.setTextSize(2);
+    tft.println("Joey");
+    tft.setTextSize(1);
+    tft.print("Pwd: ");
+    tft.setTextSize(2);
+    tft.print("pass4esp");
+#endif
 }
 
 //// setup / first run
@@ -566,7 +603,7 @@ void loop(void) {
   int hold = 1;
   while (digitalRead(TOUCHPIN) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
     if ( hold == 1) { // avoid switching more than once (hangs up the device)
-      delay(1000);
+      delay(500);
       if (digitalRead(TOUCHPIN) == 1) { // if both touch sensors are triggered, switch back to auto mode
         manual = false;
         hold = 0;
@@ -574,7 +611,7 @@ void loop(void) {
         switchRelais();
         updateDisplay();
         writeSettingsFile();
-        delay(1000);
+        delay(500);
         break;
       }
       toggleRelais();
@@ -584,11 +621,13 @@ void loop(void) {
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
     }
     hold = 0;
+    yield();
   }
 
   unsigned long currentMillis = millis();
   unsigned long past = currentMillis - previousMillis;
   if (past > interval) {
+    getInetIP();
     Serial.println(F(" Interval passed"));
     previousMillis = currentMillis; // save the last time sensor was read
 
@@ -600,7 +639,6 @@ void loop(void) {
     } else {
       getTemperature();
       switchRelais();
-      getInetIP();
       if (debug)
         debug_vars();
       updateDisplay();

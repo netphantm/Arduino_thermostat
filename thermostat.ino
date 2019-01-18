@@ -251,7 +251,7 @@ void writeSettingsFile() {
     String output;
     root.printTo(output);
     webString += output;
-    webString += ";\n\tvar tbl = prettyPrint(root, {\n\t\tmaxArray: 40,\n\t\texpanded: true,\n\t\tmaxDepth: 5\n\t});\n";
+    webString += ";\n\tvar tbl = prettyPrint(root);\n";
     webString += "\tdocument.getElementById('debug').appendChild(tbl);\n</script>\n";
     webString += "</body>\n";
     emptyFile = false; // mark file as not empty

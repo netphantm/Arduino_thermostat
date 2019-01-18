@@ -176,11 +176,10 @@ void updateSettings() {
   Serial.println("= updateSettings");
 
   if (server.args() < 1 || server.args() > 10) {
-    server.send(200, "text/plain", "HTTP CODE 400: Invalid Request\n");
+    server.send(200, "text/html", "HTTP CODE 400: Invalid Request\n");
     return;
   }
   Serial.println("Got new settings");
-  webString = "HTTP CODE 200: OK, Got new settings<br>\n";
 
   // get new settings from URL
   SHA1 = server.arg("SHA1");
@@ -209,7 +208,7 @@ void writeSettingsFile() {
   File f = SPIFFS.open(pFile, "w");
   if (!f) {
     Serial.println(F("Failed to create settings file"));
-    server.send(200, "text/plain", "HTTP CODE 200: OK, File write open failed! settings not saved\n");
+    server.send(200, "text/html", "HTTP CODE 200: OK, File write open failed! settings not saved\n");
     return;
   }
   // serialize JSON
@@ -232,17 +231,29 @@ void writeSettingsFile() {
     webString += "File write open failed\n";
   } else {
     Serial.println("Settings file updated");
-    webString += "<p>Settings file updated</p><p>JSON root: <pre><code>";
+    webString = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">";
+    webString += "<head>\n<style>\n";
+    webString += "\tbody { \n\t\tpadding: 3rem; \n\t\tfont-size: 16px;\n\t}\n";
+    webString += "\tform { \n\t\tdisplay: inline; \n\t}\n</style>\n";
+    webString += "</head>\n<body>\n";
+    webString += "HTTP CODE 200: OK, Got new settings<br>\n";
+    webString += "Settings file updated.\n<br>\nBack to \n";
+    webString += "<form method='POST' action='https://temperature.hugo.ro'>";
+    webString += "\n<button name='device' value='";
+    webString += hostname;
+    webString += "'>Graph</button>\n";
+    webString += "</form>\n<br>\n";
+    webString += "JSON root: \n<br>\n";
+    webString += "<div id='debug'></div>\n";
+    webString += "<script src='prettyprint.js'></script>\n";
+    webString += "<script>\n\tvar myData = ";
     String output;
     root.printTo(output);
     webString += output;
-    webString += "</code></pre></p><p><form method='POST' action='https://temperature.hugo.ro'>";
-    webString += "<button name='device' value='";
-    webString += hostname;
-    webString += "'>Graph</button>";
-    webString += "</form></p>";
-    // mark file as not empty
-    emptyFile = false;
+    webString += ";\n\tvar tbl = prettyPrint( myData );\n";
+    webString += "\tdocument.getElementById('debug').appendChild(tbl);\n</script>\n";
+    webString += "</body>\n";
+    emptyFile = false; // mark file as not empty
   }
   f.close();
   if (digitalRead(RELAISPIN) == 1) {
@@ -311,14 +322,10 @@ void updateWebserver() {
     } else {
       Serial.print(F("HTTPS GET failed! Error: "));
       Serial.println(https.errorToString(httpCode).c_str());
-      //Serial.print(F("Logging to buffer: "));
-      //updateSettings(a);
     }
     https.end();
   } else {
     Serial.println(F("HTTPS Unable to connect"));
-    //Serial.print(F("Logging to buffer: "));
-    //updateSettings(a);
   }
 }
 

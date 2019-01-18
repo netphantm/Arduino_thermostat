@@ -1,6 +1,6 @@
 <?php
 
-print "POST data: \n"; pr($_POST);
+//print "POST data: \n"; pr($_POST);
 
 // needed for DEBUG
 function pr($var) {

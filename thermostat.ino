@@ -231,8 +231,9 @@ void writeSettingsFile() {
     webString += "File write open failed\n";
   } else {
     Serial.println("Settings file updated");
-    webString = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">";
-    webString += "<head>\n<style>\n";
+    webString = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n";
+    webString += "<head>\n";
+    webString += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<style>\n";
     webString += "\tbody { \n\t\tpadding: 3rem; \n\t\tfont-size: 16px;\n\t}\n";
     webString += "\tform { \n\t\tdisplay: inline; \n\t}\n</style>\n";
     webString += "</head>\n<body>\n";
@@ -245,12 +246,12 @@ void writeSettingsFile() {
     webString += "</form>\n<br>\n";
     webString += "JSON root: \n<br>\n";
     webString += "<div id='debug'></div>\n";
-    webString += "<script src='prettyprint.js'></script>\n";
-    webString += "<script>\n\tvar myData = ";
+    webString += "<script src='https://temperature.hugo.ro/prettyprint.js'></script>\n";
+    webString += "<script>\n\tvar root = ";
     String output;
     root.printTo(output);
     webString += output;
-    webString += ";\n\tvar tbl = prettyPrint( myData );\n";
+    webString += ";\n\tvar tbl = prettyPrint(root, {\n\t\tmaxArray: 40,\n\t\texpanded: true,\n\t\tmaxDepth: 5\n\t});\n";
     webString += "\tdocument.getElementById('debug').appendChild(tbl);\n</script>\n";
     webString += "</body>\n";
     emptyFile = false; // mark file as not empty

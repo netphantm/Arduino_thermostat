@@ -118,6 +118,8 @@ A capacitive touch sensor toggles the relais if you press it once (<1s) and chan
 
 - [Moment.js](https://momentjs.com/)
 
+- [prettyprint.js](https://github.com/padolsey-archive/prettyprint.js)
+
 - [Adding WiFiManager](http://www.martyncurrey.com/esp8266-and-the-arduino-ide-part-5-adding-wifimanager/#more-7245)
 
 - [ESP8266-12E-DHT-Thermostat](https://github.com/dmainmon/ESP8266-12E-DHT-Thermostat)

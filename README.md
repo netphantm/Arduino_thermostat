@@ -1,15 +1,15 @@
 ## DS18B20 thermostat with logging
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/header.png" alt="header">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/header.png" alt="header">
 
 > ESP8266 thermostat with DS18B20 oneWire sensor
 
-This is a 'simple' thermostat controller, using a DS18B20 oneWire temperature sensor on a WeMos D1 Mini Pro. It uses two relays (for safety reasons, to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except perhaps if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
+This is a 'simple' thermostat controller, using a DS18B20 oneWire temperature sensor on a WeMos D1 Mini Pro. It uses two relays which I soldered together on pin D1 (for safety reasons, to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except perhaps if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
 
-The thermostat ~~is made for a refrigerator, so it~~ will fire up the relays if the temperature is greater than temp\_max and power them off if temperature falls below temp\_min if set as a _cooler_, and accordingly, fire up relays if temperature falls below temp\_min and power them off if the temperature is greater than temp\_max if set as a _heater_.
+The thermostat will power up the relays if the temperature is greater than temp\_max and power off if temperature falls below temp\_min if the appliance is set as a _cooler_, and accordingly, power them up if temperature falls below temp\_min and power off if the temperature is greater than temp\_max if set as a _heater_.
 
-All necessary variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated from the localhost certificate (to make sure the WeMos sends the data to the right logserver).
+All necessary variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated on the webserver from it's certificate (to make sure the WeMos sends the data to the right logserver).
 
-Two capacitive touch sensors can manually override relay state switching to manual mode. If you press both simultaneously, it switches back to auto mode and toggles relais status accordingly. I don't have buttons, but it's way cooler with touch sensors anyway. The other advantage is, you don't have to bore holes in the inclosure for the buttons. Just glue them to the inner side of the enclosure and add appropriate stickers to the outside.
+A capacitive touch sensor toggles the relais if you press it once (<1s) and changes to manual mode. If you hold it (>1s), it switches back to automatic mode. I don't have buttons, but it's way cooler with touch sensors anyway. The other advantage is, you don't have to bore holes in the inclosure for the buttons. Just glue them to the inner side of the enclosure and add appropriate stickers to the outside.
 
 ---
 
@@ -27,12 +27,12 @@ Two capacitive touch sensors can manually override relay state switching to manu
 ---
 
 ### Features
-- **.96" TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
+- **.96" or 1.44" TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
 - **Uses WiFiManager library, so you don't have to hardcode the WiFi credentials**
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**
 - **Progress bar on the serial console, showing time percentage until next log update**
-- **Manual relay override capacitive touch sensors; press both to switch back to automatic mode**
+- **Manual relay override capacitive touch sensor; press longer than 1s to switch back to automatic mode**
 - **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or `temp <= temp_min`)**
 - **Draws a google graph from the logged data and a gauge which shows hysteresis**
 - **Shows last update date/time in the browser's timezone**
@@ -43,8 +43,10 @@ Two capacitive touch sensors can manually override relay state switching to manu
     - Logserver port (HTTPS)
     - Refresh/measuring interval
     - Minimum/maximum temperature values for the hysteresis
+    - Temperature deviation for calibrating the sensor
     - Thermostat type (cooler/heater)
     - Operation mode (manual/automatic)
+    - Time interval between measurements
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 
@@ -62,6 +64,7 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - Adafruit\_GFX
 - Adafruit\_ST7735
 - SPI
+- TFT\_eSPI
 
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
@@ -69,11 +72,9 @@ Two capacitive touch sensors can manually override relay state switching to manu
 ---
 
 ### TODO
-- [ ] store settings also on server (if the device is not in the same network, the server cannot push the settings to it)
-- [ ] Enable OTA (!)
-- [x] Move some of these to the actual features section...
-- [x] Add links to hardware (eBay) and software (inspiration sources)
-- [x] Add some nice pictures
+- [ ] Store settings also on server (if the device is not in the same network, the server cannot push the settings to it)
+- [x] Change code for both .96" and 1.44" displays that I used
+- [x] Change to only one touch sensor for switching relais on/off and manual/auto
 - [x] Checking that `temp_min <= temp_max` when new settings are pushed
 - [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
 - [x] Clean up code and add comments
@@ -82,6 +83,8 @@ Two capacitive touch sensors can manually override relay state switching to manu
 - [x] Change display to ST7735, this one is bigger and in color
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [ ] Change the horrible design (now I've added even more of it)
+- [ ] Move more of these points to the features section...
+- [ ] \(Perhaps) Enable OTA
 - [ ] \(Perhaps)Write log to a local file if logserver is not reachable and resend it all when connectivity is restored (!)
 - [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below
 - [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then a letsencrypt signed certificate)
@@ -127,31 +130,31 @@ Two capacitive touch sensors can manually override relay state switching to manu
 
 ### Images
 
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-01.png" alt="pic-01" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-02.png" alt="pic-02" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-03.png" alt="pic-03" width="290px" height="210px">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-01.png" alt="pic-01" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-02.png" alt="pic-02" width="290px" height="210px"> <img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-03.png" alt="pic-03" width="290px" height="210px">
 
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-04.png" alt="pic-04" width="440px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-05.png" alt="pic-05" width="440px">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-04.png" alt="pic-04" width="440px"><img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-05.png" alt="pic-05" width="440px">
 
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-06.png" alt="pic-06" width="290px" height="210px" padding="10px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-07.png" alt="pic-07" width="290px" height="210px" padding="10px"><br>
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-08.png" alt="pic-08" width="290px" height="310px" padding="10px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/pic-09.png" alt="pic-09" width="290px" height="310px" padding="10px">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-06.png" alt="pic-06" width="290px" height="210px" padding="10px"><img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-07.png" alt="pic-07" width="290px" height="210px" padding="10px"><br>
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-08.png" alt="pic-08" width="290px" height="310px" padding="10px"><img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-09.png" alt="pic-09" width="290px" height="310px" padding="10px">
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 
 ### Screenshot graph page
 
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-01.png" alt="screen-01">
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-02.png" alt="screen-02">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-01.png" alt="screen-01">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-02.png" alt="screen-02">
 
 ### Screenshot settings page
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-03.png" alt="screen-03">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-03.png" alt="screen-03">
 
 ### Screenshot console log
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-04.png" alt="screen-04">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-04.png" alt="screen-04">
 
 ### Screenshot device response
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-05.png" alt="screen-05">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-05.png" alt="screen-05">
 
 ### Screenshots device WiFi configuration
-<img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-06.png" alt="screen-06" width="320px"><img src="https://github.com/netphantm/Arduino/raw/master/thermostat/pics/screen-07.png" alt="screen-07" width="320px">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-06.png" alt="screen-06" width="320px"><img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/screen-07.png" alt="screen-07" width="320px">
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

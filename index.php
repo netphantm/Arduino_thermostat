@@ -191,7 +191,7 @@
 <?php
   print("<title>".$_SESSION['device']." - Thermostat IoT</title>");
 ?>
-<meta http-equiv='refresh' content='120'>
+<meta http-equiv='refresh' content='60'>
 </head><body>
 <div class='content'>
 <div align='center'><h2>ESP8266/WeMos D1 Mini Pro - DS18B20

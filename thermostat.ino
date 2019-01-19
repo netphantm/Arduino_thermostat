@@ -175,7 +175,7 @@ void readSettingsFile() {
 void updateSettings() {
   Serial.println("= updateSettings");
 
-  if (server.args() < 1 || server.args() > 10) {
+  if (server.args() < 1 || server.args() > 10 || !server.arg("SHA1") || !server.arg("loghost")) {
     server.send(200, "text/html", "HTTP CODE 400: Invalid Request\n");
     return;
   }
@@ -186,12 +186,8 @@ void updateSettings() {
   loghost = server.arg("loghost");
   httpsPort = server.arg("httpsPort").toInt();
   interval = server.arg("interval").toInt();
-  epochTime = server.arg("epochTime").toInt();
-  uptime = server.arg("uptime").toInt();
-  temp_c = server.arg("temp_c").toInt();
-  relaisState = server.arg("relaisState");
-  temp_min = server.arg("temp_min").toInt();
-  temp_max = server.arg("temp_max").toInt();
+  temp_min = server.arg("temp_min").toFloat();
+  temp_max = server.arg("temp_max").toFloat();
   temp_dev = server.arg("temp_dev").toFloat();
   heater = server.arg("heater").toInt() | 0;
   manual = server.arg("manual").toInt() | 0;
@@ -224,6 +220,12 @@ void writeSettingsFile() {
   root["heater"] = heater;
   root["manual"] = manual;
   root["debug"] = debug;
+  String outputJson;
+  root.printTo(outputJson);
+  if (debug) {
+    Serial.print(F("- outputJson: "));
+    Serial.println(outputJson);
+  }
 
   // write JSON to file
   if (root.printTo(f) == 0) {
@@ -248,9 +250,7 @@ void writeSettingsFile() {
     webString += "<div id='debug'></div>\n";
     webString += "<script src='https://temperature.hugo.ro/prettyprint.js'></script>\n";
     webString += "<script>\n\tvar root = ";
-    String output;
-    root.printTo(output);
-    webString += output;
+    webString += outputJson;
     webString += ";\n\tvar tbl = prettyPrint(root);\n";
     webString += "\tdocument.getElementById('debug').appendChild(tbl);\n</script>\n";
     webString += "</body>\n";
@@ -608,18 +608,19 @@ void setup(void) {
  
 //// start main loop
 void loop(void) {
-  int hold = 1;
+  bool hold = true;
+  delay(200);
   while (digitalRead(TOUCHPIN) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
-    if ( hold == 1) { // avoid switching more than once (hangs up the device)
+    if (hold) { // avoid switching more than once (hangs up the device)
       delay(500);
-      if (digitalRead(TOUCHPIN) == 1) { // if both touch sensors are triggered, switch back to auto mode
+      if (digitalRead(TOUCHPIN) == 1) { // if touch sensor is still triggered, switch back to auto mode
         manual = false;
-        hold = 0;
         Serial.println(F("\nSwitched to Automatic mode"));
         switchRelais();
         updateDisplay();
         writeSettingsFile();
         delay(500);
+        hold = false;
         break;
       }
       toggleRelais();
@@ -628,8 +629,7 @@ void loop(void) {
       writeSettingsFile();
       Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
     }
-    hold = 0;
-    yield();
+    hold = false;
   }
 
   unsigned long currentMillis = millis();

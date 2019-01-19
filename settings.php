@@ -10,6 +10,7 @@ function pr($var) {
 }
 
 if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"]) && !empty($_POST["httpsPort"]) && !empty($_POST["interval"]) && !empty($_POST["temp_min"]) && !empty($_POST["temp_max"]) ) {
+  // gather data
   $URL = $_POST["URL"];
   $SHA1 = $_POST["SHA1"];
   $loghost = $_POST["loghost"];
@@ -21,7 +22,9 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
   $heater = isset($_POST["heater"]) ? $_POST["heater"] : false;
   $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
   $debug = isset($_POST["debug"]) ? $_POST["debug"] : false;
+
   if($temp_min >= $temp_max) {
+    // check if data is correct
     print("<html>\n");
     print("<body>\n");
     print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
@@ -32,6 +35,28 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
     print("</body>");
     exit();
   } else {
+    // write JSON to file
+    $array = Array (
+      "SHA1" => $SHA1,
+      "loghost" => $loghost,
+      "httpsPort" => $httpsPort,
+      "interval" => $interval,
+      "temp_min" => $temp_min,
+      "temp_max" => $temp_max,
+      "temp_dev" => $temp_dev,
+      "heater" => $heater,
+      "manual" => $manual,
+      "debug" => $debug
+    );
+    $json = json_encode(array('data' => $array));
+    $fjson = "/var/www/temp/settings-".$_POST["device"].".json";
+    if ($json) {
+      file_put_contents($fjson, $json);
+    } else {
+      error_log("[/var/www/temp/logtemp.php] - Something went wrong, could not append to file /var/www/temp/temp-log-".$_GET["hostname"].".csv");
+    }
+
+    // send data to device
     header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug);
     exit;
   }
@@ -74,6 +99,7 @@ $interval = isset($_POST["interval"]) ? $_POST["interval"] * 1000: 120000;
 $heater = isset($_POST["heater"]) ? $_POST["heater"] : 0;
 $manual = isset($_POST["manual"]) ? $_POST["manual"] : 0;
 $debug = isset($_POST["debug"]) ? $_POST["debug"] : 0;
+$device = $_POST["device"];
 
 print("<html><head>\n");
 print("</head><body>\n");
@@ -88,6 +114,7 @@ print("Sensor hostname <select id='URL' name='URL'>\n");
 print("<option value='http://192.168.178.104/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
 print("<option value='http://192.168.178.106/'>Donbot</option></select>\n");
+print("<input type='hidden' name='device' value=".$device." />\n");
 print("<br>Certificate SHA1 fingerprint <input type='text' name='SHA1' maxlength=60 size=40 value=$SHA1>\n");
 print("<br>Loghost <input type='text' name='loghost' size=11 value=$loghost>\n");
 print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></tr><tr><td>\n");

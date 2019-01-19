@@ -8,11 +8,9 @@
   }
 
   if (isset($_POST['device'])) {
-    $_SESSION['device'] = $_POST['device'];
-  }
-
-  if ($_POST['device'] == "") {
-    $_SESSION['device'] = "Clamps";
+    $device = $_POST['device'];
+  } else {
+    $device = "Clamps";
   }
 
   //// needed for DEBUG
@@ -227,7 +225,7 @@
 ?>
   <form id='device' method='POST'>
 <?php
-  print("Device hostname: ".$_SESSION['device']." <select name='device' onchange='dev_change()'>\n");
+  print("Device hostname: ".$device." <select name='device' onchange='dev_change()'>\n");
 ?>
 <option>Select...</option>
 <option value='Clamps'>Clamps</option>
@@ -242,7 +240,8 @@
   print("<input type='hidden' name='heater' value=".readDataFile()[6]." />\n");
   print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
   print("<input type='hidden' name='interval' value=".readDataFile()[8]." />\n");
-  print("<button name='device' value=".$_SESSION['device'].">Settings</button>\n");
+  print("<input type='hidden' name='device' value=".$device." />\n");
+  print("<button name='device' value=".$device.">Settings</button>\n");
 ?>
 </form></td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>

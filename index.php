@@ -1,31 +1,30 @@
 <?php
-
-  if (session_id() == "") {
-    session_name("foo");
-    session_start([
-      'cookie_lifetime' => 86400,
-      ]);
-  }
-
   if (isset($_POST['device'])) {
     $device = $_POST['device'];
   } else {
     $device = "Clamps";
   }
 
-  //// needed for DEBUG
+  // DEBUG
   //print("POST data: \n"); pr($_POST);
-  //print("SESSION data: \n"); print(session_name()); pr($_SESSION);
+  //print("device= ".$device);
   function pr($var) {
     print '<pre>';
     print_r($var);
     print '</pre>';
   }
-  ////
 
   function readDataFile() {
-
-    $filename = "temp-log-".$_SESSION['device'].".csv";
+    if (isset($_POST['device'])) {
+      $device = $_POST['device'];
+    } else {
+      $device = "Clamps";
+    }
+    if (empty($device)) {
+      error_log("no \$device defined!");
+      exit();
+    }
+    $filename = "temp-log-".$device.".csv";
     $searchString = ',';
     $numLines = 60;
     $maxLineLength = 100;
@@ -62,7 +61,8 @@
   }
 ?>
 
-<html><head>
+<html>
+<head>
 <style>
   * {
     margin: 0;
@@ -189,14 +189,15 @@
 
 <link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico' />
 <?php
-  print("<title>".$_SESSION['device']." - Thermostat IoT</title>");
+  print("<title>".$device." - Thermostat IoT</title>");
 ?>
 <meta http-equiv='refresh' content='60'>
-</head><body>
+</head>
+<body>
 <div class='content'>
 <div align='center'><h2>ESP8266/WeMos D1 Mini Pro - DS18B20
 <?php
-  print("<br>".$_SESSION['device']." - IoT Thermostat</h2></div>\n");
+  print("<br>".$device." - IoT Thermostat</h2></div>\n");
 ?>
 <div align='center'><table style='width:950px;'><tr><td>
 </td></tr></table>
@@ -223,15 +224,17 @@
     print("<div>Mode: <font style='color:green'><b>Automatic</b></font></div>\n");
   }
 ?>
-  <form id='device' method='POST'>
+<form id='dev' method='POST'>
 <?php
-  print("Device hostname: ".$device." <select name='device' onchange='dev_change()'>\n");
+  print("Device hostname: ".$device."\n");
 ?>
-<option>Select...</option>
-<option value='Clamps'>Clamps</option>
-<option value='Joey'>Joey</option>
-<option value='Donbot'>Donbot</option>
-</select></form>
+  <select name='device' onchange='dev_change()'>
+    <option>Select...</option>
+    <option value='Clamps'>Clamps</option>
+    <option value='Joey'>Joey</option>
+    <option value='Donbot'>Donbot</option>
+  </select>
+</form>
 <form id='settings' method='POST' action='/settings.php'>
 <?php
   print("<input type='hidden' name='temp_min' value=".readDataFile()[3]." />\n");
@@ -253,7 +256,7 @@
 <span class='tooltiptext'>by Hugo (and others)</span></div>
 <script type='text/javascript'>
   function dev_change() {
-    document.getElementById('device').submit()
+    document.getElementById('dev').submit()
   }
   (function()
 <?php
@@ -264,4 +267,5 @@ print("    { var Moment = moment.unix(".readDataFile()[1]."/1000).format('dddd, 
     }
   )()
 </script>
-</body></html>
+</body>
+</html>

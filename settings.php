@@ -48,7 +48,7 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
       "manual" => $manual,
       "debug" => $debug
     );
-    $json = json_encode(array('data' => $array));
+    $json = json_encode($array);
     $fjson = "/var/www/temp/settings-".$_POST["device"].".json";
     if ($json) {
       file_put_contents($fjson, $json);

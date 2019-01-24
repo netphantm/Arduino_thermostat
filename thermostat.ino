@@ -25,13 +25,15 @@
 //#define dsp_small
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
-const static String pFile = "/settings.txt";
+const static String sFile = "/settings.txt";
+const static String configHost = "http://temperature.hugo.ro"; // chicken/egg situation, you have to get initial config somewhere
 unsigned long uptime = (millis() / 1000 );
-unsigned long previousMillis = 0;
+unsigned long prevTime = 0;
+unsigned long prevTimeIP = 0;
 bool emptyFile = false;
-bool heater = false;
-bool manual;
-bool debug;
+bool heater = true;
+bool manual = false;
+bool debug = true;
 char lanIP[16];
 String inetIP;
 String str_c;
@@ -60,8 +62,8 @@ float temp_dev;
 #endif
 
 OneWire oneWire(ONE_WIRE_BUS);
-ESP8266WebServer server(80);
 DallasTemperature DS18B20(&oneWire);
+ESP8266WebServer server(80);
 
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
@@ -78,6 +80,7 @@ void getTemperature() {
 }
 
 void toggleRelais(String sw = "TOGGLE") {
+  Serial.print("= toggleRelais: ");
   if (sw == "TOGGLE") {
     if (digitalRead(RELAISPIN) == 1) {
       relaisState = "OFF";
@@ -96,10 +99,10 @@ void toggleRelais(String sw = "TOGGLE") {
       digitalWrite(RELAISPIN, 0);
     }
   }
+  Serial.println(relaisState);
 }
 
 void switchRelais() {
-  Serial.println("= switchRelais: ");
   if (manual) {
     return;
   } else {
@@ -123,9 +126,9 @@ void switchRelais() {
   }
 }
 
-//// settings file clear / read / write
-void clearSettingsFile() {
-  Serial.println("= clearSettingsFile");
+//// settings read / write / clear SPIFFS
+void clearSpiffs() {
+  Serial.println("= clearSpiffs");
 
   Serial.println("Please wait for SPIFFS to be formatted");
   SPIFFS.format();
@@ -136,10 +139,43 @@ void clearSettingsFile() {
   server.send(200, "text/plain", "HTTP CODE 200: OK, SPIFFS formatted, settings cleared\n");
 }
 
+int readSettingsWeb() {
+  Serial.println("= readSettingsWeb");
+  String pathQuery = "/settings-";
+  pathQuery += hostname;
+  pathQuery += ".json";
+  if (debug) {
+    Serial.print(F("Getting settings from http://"));
+    Serial.print(configHost);
+    Serial.print(pathQuery);
+  }
+  WiFiClient client;
+  HTTPClient http;
+  http.begin(client, configHost + pathQuery);
+  http.addHeader("Content-Type", "application/json");
+  int httpCode = http.GET();
+  if(httpCode > 0) {
+    String webJson = String(http.getString());
+    //webJson.trim();
+    if (debug) {
+      Serial.print(F(": "));
+      Serial.println(httpCode);
+      Serial.print(F("Settings JSON from webserver: "));
+      Serial.println(webJson);
+    }
+    deserializeJson(webJson);
+  } else {
+    Serial.print(F("HTTP GET failed getting settings from web! Error: "));
+    Serial.println(http.errorToString(httpCode).c_str());
+  }
+  http.end();
+  return httpCode;
+}
+
 void readSettingsFile() {
   Serial.println("= readSettingsFile");
 
-  File f = SPIFFS.open(pFile, "r");
+  File f = SPIFFS.open(sFile, "r"); // open file for reading
   // open file for reading
   if (!f) {
     Serial.println(F("Settings file read open failed"));
@@ -147,33 +183,39 @@ void readSettingsFile() {
     return;
   }
   while (f.available()) {
-    // deserialize JSON
-    StaticJsonBuffer<512> jsonBuffer;
-    JsonObject &root = jsonBuffer.parseObject(f);
-    if (!root.success()) {
-      Serial.println(F("Error deserializing json, maybe you cleared the settings file? Not updating logserver"));
-      emptyFile = true;
-      return;
-    } else {
-      emptyFile = false;
-      SHA1 = root["SHA1"].as<String>();
-      loghost = root["loghost"].as<String>(), sizeof(loghost);
-      httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
-      interval = root["interval"].as<long>(), sizeof(interval);
-      temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
-      temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
-      temp_dev = root["temp_dev"].as<float>(), sizeof(temp_dev);
-      heater = root["heater"].as<bool>(), sizeof(heater);
-      manual = root["manual"].as<bool>(), sizeof(manual); // this overrides manual mode setting from the settings file
-      debug = root["debug"].as<bool>(), sizeof(debug);
-      Serial.println(F("Got Settings from file"));
-    }
+    String fileJson = f.readStringUntil('\n');
+    deserializeJson(fileJson);
   }
   f.close();
 }
 
+void deserializeJson(String json) {
+  // deserialize JSON
+  StaticJsonBuffer<512> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(json);
+  if (!root.success()) {
+    Serial.println(F("Error deserializing json!"));
+    emptyFile = true;
+    return;
+  } else {
+    emptyFile = false;
+    SHA1 = root["SHA1"].as<String>();
+    loghost = root["loghost"].as<String>(), sizeof(loghost);
+    httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
+    interval = root["interval"].as<long>(), sizeof(interval);
+    temp_min = root["temp_min"].as<float>(), sizeof(temp_min);
+    temp_max = root["temp_max"].as<float>(), sizeof(temp_max);
+    temp_dev = root["temp_dev"].as<float>(), sizeof(temp_dev);
+    heater = root["heater"].as<bool>(), sizeof(heater);
+    manual = root["manual"].as<bool>(), sizeof(manual);
+    debug = root["debug"].as<bool>(), sizeof(debug);
+    if (debug)
+      Serial.println(F("Deserialized JSON"));
+  }
+}
+
 void updateSettings() {
-  Serial.println("= updateSettings");
+  Serial.println("\n= updateSettings");
 
   if (server.args() < 1 || server.args() > 10 || !server.arg("SHA1") || !server.arg("loghost")) {
     server.send(200, "text/html", "HTTP CODE 400: Invalid Request\n");
@@ -198,15 +240,15 @@ void updateSettings() {
 }
 
 void writeSettingsFile() {
-  Serial.println("= writeSettingsFile");
+  Serial.print("= writeSettingsFile: ");
 
-  // open file for writing
-  File f = SPIFFS.open(pFile, "w");
+  File f = SPIFFS.open(sFile, "w"); // open file for writing
   if (!f) {
     Serial.println(F("Failed to create settings file"));
     server.send(200, "text/html", "HTTP CODE 200: OK, File write open failed! settings not saved\n");
     return;
   }
+
   // serialize JSON
   StaticJsonBuffer<256> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
@@ -232,7 +274,9 @@ void writeSettingsFile() {
     Serial.println(F("Failed to write to file"));
     webString += "File write open failed\n";
   } else {
-    Serial.println("Settings file updated");
+    Serial.println("OK");
+
+    // prepare webpage for output
     webString = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n";
     webString += "<head>\n";
     webString += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<style>\n";
@@ -257,11 +301,13 @@ void writeSettingsFile() {
     emptyFile = false; // mark file as not empty
   }
   f.close();
+  /*
   if (digitalRead(RELAISPIN) == 1) {
     relaisState = "ON";
   } else {
     relaisState = "OFF";
   }
+  */
 }
 
 //// local webserver handlers / send data to logserver
@@ -273,8 +319,8 @@ void handleNotFound(){
   server.send(404, "text/plain", "HTTP CODE 404: Not found\n");
 }
 
-void updateWebserver() {
-  Serial.println("= updateWebserver");
+void logToWebserver() {
+  Serial.println("= logToWebserver");
 
   // configure path + query for sending to logserver
   if (emptyFile) {
@@ -302,9 +348,11 @@ void updateWebserver() {
   pathQuery += "&debug=";
   pathQuery += debug;
 
-  Serial.print(F("Connecting to https://"));
-  Serial.print(loghost);
-  Serial.println(pathQuery);
+  if (debug) {
+    Serial.print(F("Connecting to https://"));
+    Serial.print(loghost);
+    Serial.println(pathQuery);
+  }
 
   BearSSL::WiFiClientSecure webClient;
   from_str();
@@ -313,8 +361,10 @@ void updateWebserver() {
   if (https.begin(webClient, loghost, httpsPort, pathQuery)) {
     int httpCode = https.GET();
     if (httpCode > 0) {
-      Serial.print(F("HTTPS GET OK, code: "));
-      Serial.println(httpCode);
+      if (debug) {
+        Serial.print(F("HTTPS GET OK, code: "));
+        Serial.println(httpCode);
+      }
       if (httpCode == HTTP_CODE_OK) {
           epochTime = https.getString();
           Serial.print("Timestamp on log update: ");
@@ -331,9 +381,10 @@ void updateWebserver() {
 }
 
 ////// Miscellaneous functions
+
 //// print variables for debug
 void debug_vars() {
-  Serial.println(F("- DEBUG -"));
+  Serial.println(F("# DEBUG:"));
   Serial.print(F("- hostname: "));
   Serial.println(hostname);
   Serial.print(F("- LAN IP: "));
@@ -415,7 +466,6 @@ void updateDisplay() {
     tft.fillScreen(TFT_BLACK);
     tft.setCursor(0, 0);
     tft.setTextFont(0);
-    //tft.setFreeFont(0);
     tft.setTextColor(TFT_YELLOW);
     tft.setTextSize(1);
     tft.println("Connected to SSID:");
@@ -479,19 +529,28 @@ void updateDisplay() {
 
 //// get internet IP (for display)
 void getInetIP() {
-  WiFiClient client;
-  HTTPClient http;
-  http.begin(client, "http://ipinfo.io/ip");
-  http.addHeader("Content-Type", "application/json");
-  int httpCode = http.GET();
-  if(httpCode > 0) {
-    inetIP = String(http.getString());
-    inetIP.trim();
-  } else {
-    Serial.print(F("HTTPS GET failed getting internet IP! Error: "));
-    Serial.println(http.errorToString(httpCode).c_str());
+  Serial.print(F("= getInetIP"));
+  unsigned long presTimeIP = millis();
+  unsigned long pastIP = presTimeIP - prevTimeIP;
+  if (presTimeIP < 60000 || pastIP > 600000) {
+    WiFiClient client;
+    HTTPClient http;
+    http.begin(client, "http://ipinfo.io/ip");
+    http.addHeader("Content-Type", "application/text");
+    int httpCode = http.GET();
+    if(httpCode > 0) {
+      inetIP = String(http.getString());
+      inetIP.trim();
+      Serial.print(F(": "));
+      Serial.print(inetIP);
+      prevTimeIP = presTimeIP; // save the last time Ip was updated
+    } else {
+      Serial.print(F("HTTPS GET failed getting internet IP! Error: "));
+      Serial.println(http.errorToString(httpCode).c_str());
+    }
+    http.end();
   }
-  http.end();
+  Serial.println();
 }
 
 //// convert sizes in bytes to KB and MB
@@ -568,7 +627,6 @@ void setup(void) {
   //String WiFi_Name = WiFi.SSID();
   IPAddress ip = WiFi.localIP();
   sprintf(lanIP, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
-  getInetIP();
 
   SPIFFS.begin(); // initialize SPIFFS
   Serial.println("SPIFFS started. Contents:");
@@ -582,14 +640,14 @@ void setup(void) {
 
   toggleRelais("OFF"); // start with relais OFF
  
-  readSettingsFile(); // read old settings from SPIFFS
+  if (readSettingsWeb() != 200) // first, try reading settings from webserver
+    readSettingsFile(); // if failed, read settings from SPIFFS
+  getInetIP();
   getTemperature();
   switchRelais();
   updateDisplay();
-  if (debug)
-    debug_vars();
 
-  // web client handlers
+  // local webserver client handlers
   server.onNotFound(handleNotFound);
   server.on("/", handleRoot);
   server.on("/update", []() {
@@ -600,9 +658,7 @@ void setup(void) {
     if (debug)
       debug_vars();
   });
-  server.on("/clear", clearSettingsFile);
-
-  updateDisplay();
+  server.on("/clear", clearSpiffs);
   server.begin();
 }
  
@@ -632,12 +688,14 @@ void loop(void) {
     hold = false;
   }
 
-  unsigned long currentMillis = millis();
-  unsigned long past = currentMillis - previousMillis;
+  unsigned long presTime = millis();
+  unsigned long past = presTime - prevTime;
   if (past > interval) {
+    Serial.println(F("\nInterval passed"));
     getInetIP();
-    Serial.println(F(" Interval passed"));
-    previousMillis = currentMillis; // save the last time sensor was read
+    if (readSettingsWeb() != 200) // first, try reading settings from webserver
+      readSettingsFile(); // if failed, read settings from SPIFFS
+    prevTime = presTime; // save the last time sensor was read
 
     if (emptyFile) {
       Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));
@@ -650,14 +708,13 @@ void loop(void) {
       if (debug)
         debug_vars();
       updateDisplay();
-      updateWebserver();
+      logToWebserver();
     }
 
-    if (interval < 4999) { // set a failsafe interval
+    if (interval < 4999) // set a failsafe interval
       interval = 10000;
-    }
   } else {
-    printProgress(past * 100 / interval);
+  printProgress(past * 100 / interval);
   }
   server.handleClient();
 }

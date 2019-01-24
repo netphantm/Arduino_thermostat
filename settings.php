@@ -53,7 +53,7 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
     if ($json) {
       file_put_contents($fjson, $json);
     } else {
-      error_log("[/var/www/temp/logtemp.php] - Something went wrong, could not append to file /var/www/temp/temp-log-".$_GET["hostname"].".csv");
+      error_log("[/var/www/temp/settings.php] - Something went wrong, could not append to file /var/www/temp/settings-".$_GET["hostname"].".json");
     }
 
     // send data to device

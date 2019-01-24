@@ -191,7 +191,7 @@
 <?php
   print("<title>".$device." - Thermostat IoT</title>");
 ?>
-<meta http-equiv='refresh' content='60'>
+<!-- meta http-equiv='refresh' content='60' -->
 </head>
 <body>
 <div class='content'>

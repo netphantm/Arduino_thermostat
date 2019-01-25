@@ -126,11 +126,11 @@
 ?>
     var options = {
       width: 250, height: 150,
-      min: 0, max: 40,
+      min: -10, max: 50,
 <?php
-  print("      greenFrom: 0, greenTo: ".readDataFile()[3].",\n");
+  print("      greenFrom: -10, greenTo: ".readDataFile()[3].",\n");
   print("      yellowFrom: ".readDataFile()[3].", yellowTo: ".readDataFile()[4].",\n");
-  print("      redFrom: ".readDataFile()[4].", redTo: 40,\n");
+  print("      redFrom: ".readDataFile()[4].", redTo: 50,\n");
 ?>
       minorTicks: 5,
       focusTarget: 'category',

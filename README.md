@@ -3,13 +3,15 @@
 
 > ESP8266 thermostat with DS18B20 oneWire sensor
 
-This is a 'simple' thermostat controller, using a DS18B20 oneWire temperature sensor on a WeMos D1 Mini Pro. It uses two relays which I soldered together on pin D1 (for safety reasons, to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except perhaps if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought a kit and soldered it myself (circuit board, relays, terminal strip and the fun part: SMD components).
+This is a 'simple' thermostat controller, using a DS18B20 oneWire temperature sensor on a WeMos D1 Mini Pro. It uses two relays which I soldered together on pin D1 (to save on used pins and for safety reasons, to be sure that there is no current on either one of the power lines). I tried it first with an DHT11 shield, but that one is very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except perhaps if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought it as a kit and soldered all components myself (circuit board, relays, terminal strip and the fun part: SMD components).
 
 The thermostat will power up the relays if the temperature is greater than temp\_max and power off if temperature falls below temp\_min if the appliance is set as a _cooler_, and accordingly, power them up if temperature falls below temp\_min and power off if the temperature is greater than temp\_max if set as a _heater_.
 
-All necessary variables can be initialized/changed in a settings form on the logging webserver. Some standard values are filled in and the SHA1 fingerprint is calculated on the webserver from it's certificate (to make sure the WeMos sends the data to the right logserver).
+The www branch contains the files needed for rendering a Google graph on a webpage and provide a settings page where you can set/initialize all necessary variables for one or more such devices. Some standard values are filled in, some basic checks performed and the SHA1 fingerprint is calculated on the webserver from it's certificate (to make sure the WeMos sends the data to the right logserver).
 
-A capacitive touch sensor toggles the relais if you press it once (<1s) and changes to manual mode. If you hold it (>1s), it switches back to automatic mode. I don't have buttons, but it's way cooler with touch sensors anyway. The other advantage is, you don't have to bore holes in the inclosure for the buttons. Just glue them to the inner side of the enclosure and add appropriate stickers to the outside.
+A capacitive touch sensor toggles the relais if you press it once (<1s) and then changes to manual mode (means that relais isn't switched by the temperature readings anymore). If you touch and hold it (>1s), it switches back to automatic mode. I don't have buttons, but it's way cooler with touch sensors anyway. The other advantage is, you don't have to bore holes in the inclosure for the buttons. Just glue them to the inner side of the enclosure and add appropriate stickers to the outside.
+
+I know that there are a lot of other simpler methods to do some of this (like for example controlling it via OpenHAB and with Blynk), but I wanted to do it all by myself with services I already have in place, as an exercise and to learn stuff in the process (so please don't contact me with such tips).
 
 ---
 
@@ -27,26 +29,27 @@ A capacitive touch sensor toggles the relais if you press it once (<1s) and chan
 ---
 
 ### Features
-- **.96" or 1.44" TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
+- **.96" B/W or 1.44" color TFT display for: SSID, LAN and internet IP, temperature, mode (man/auto) and relay status**
 - **Uses WiFiManager library, so you don't have to hardcode the WiFi credentials**
 - **Uses a webserver to log the measurements (HTTPS)**
 - **Compares the logservers certificate SHA1 fingerprint with the one provided in the settings**
 - **Progress bar on the serial console, showing time percentage until next log update**
-- **Manual relay override capacitive touch sensor; press longer than 1s to switch back to automatic mode**
+- **Manual relay override via capacitive touch sensor; press longer than 1s to switch back to automatic mode**
 - **Option to change between _'cooler'_ and _'heater'_ thermostats (fire up on `temp >= temp_max` or `temp <= temp_min`)**
-- **Draws a google graph from the logged data and a gauge which shows hysteresis**
+- **Draws a google graph from the logged data and a gauge which also shows hysteresis**
 - **Shows last update date/time in the browser's timezone**
-- **Provides a setup page for configuration variables that are sent to the WeMos, which then stores them as JSON to SPIFFS:**
+- **Settings button on the webpage, which opens the device's settings page**
+- **Provides a setup page for configuration variables that are sent to the WeMos, which then stores them as JSON to the webserver and SPIFFS:**
     - WeMos D1 hostname (in case you have more than one device logging to the same webserver)
     - SHA1 fingerprint (calculated by the php script from localhosts certificate)
     - Logserver hostname
     - Logserver port (HTTPS)
-    - Refresh/measuring interval
+    - Refresh/sensor reading interval
     - Minimum/maximum temperature values for the hysteresis
     - Temperature deviation for calibrating the sensor
-    - Thermostat type (cooler/heater)
+    - Thermostat device type (cooler/heater)
     - Operation mode (manual/automatic)
-    - Time interval between measurements
+    - Time interval between measurements.
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 
@@ -72,24 +75,18 @@ A capacitive touch sensor toggles the relais if you press it once (<1s) and chan
 ---
 
 ### TODO
-- [ ] Store settings also on server (if the device is not in the same network, the server cannot push the settings to it)
-- [x] Change code for both .96" and 1.44" displays that I used
-- [x] Change to only one touch sensor for switching relais on/off and manual/auto
-- [x] Checking that `temp_min <= temp_max` when new settings are pushed
-- [x] Rechecking temperature when getting new preferences, instead of waiting for `interval` time to pass
-- [x] Clean up code and add comments
-- [x] Change '192.168.178.104.php' to 'index.php' and select appliance from a drop-down menue, if you have more than one
-- [x] Add a settings button to the webpage, which opens the device's settings page
-- [x] Change display to ST7735, this one is bigger and in color
-- [ ] CSS-styled mouseover tooltip for the graph, including relay status
-- [ ] Change the horrible design (now I've added even more of it)
+- [x] Also store settings on webserver (if the device is not in the same network, the server cannot push the settings to it).
+- [x] Change code for both .96" and 1.44" displays that I used.
+- [x] Clean up code and add comments.
+- [ ] CSS-styled mouseover tooltip for the graph, including relay status.
+- [ ] Change the horrible design (now I've added even more of it).
 - [ ] Move more of these points to the features section...
-- [ ] \(Perhaps) Enable OTA
-- [ ] \(Perhaps)Write log to a local file if logserver is not reachable and resend it all when connectivity is restored (!)
-- [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below
-- [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then a letsencrypt signed certificate)
-- [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming)
-- [ ] \(Perhaps) switching to syslog on port 514 (UDP?)
+- [ ] \(Perhaps) Enable OTA.
+- [ ] \(Perhaps) ~~~Write log to a local file (if logserver is not reachable) and~~~ resend it all when connectivity is restored (!).
+- [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below. Fritzing should be pretty straight forward.
+- [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then a letsencrypt signed certificate).
+- [ ] \(Perhaps) Change the graph's time range (perhaps enable zooming).
+- [ ] \(Perhaps) switching to syslog on port 514 (UDP?).
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

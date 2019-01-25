@@ -532,7 +532,7 @@ void getInetIP() {
   Serial.print(F("= getInetIP"));
   unsigned long presTimeIP = millis();
   unsigned long pastIP = presTimeIP - prevTimeIP;
-  if (presTimeIP < 60000 || pastIP > 600000) {
+  if (presTimeIP < 60000 || pastIP > 600000) { // update every hour, so we don't piss of the guys @ ipinfo.io
     WiFiClient client;
     HTTPClient http;
     http.begin(client, "http://ipinfo.io/ip");

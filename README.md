@@ -9,6 +9,8 @@ The thermostat will power up the relays if the temperature is greater than temp\
 
 The www branch contains the files needed for rendering a Google graph on a webpage and provide a settings page where you can set/initialize all necessary variables for one or more such devices. Some standard values are filled in, some basic checks performed and the SHA1 fingerprint is calculated on the webserver from it's certificate (to make sure the WeMos sends the data to the right logserver).
 
+The display shows if the device is connected to the WiFi AP and it's SSID if so (or provides the user/pass for the local AP in config mode), the LAN IP it obtained from WiFi AP, the internet IP (which it refreshes only once an hour, so to not get banned from ipinfo.io), the temperature (also min/max on the large display), device type (heater/cooler), relais state (On/Off) and mode (manual/automatic).
+
 A capacitive touch sensor toggles the relais if you press it once (<1s) and then changes to manual mode (means that relais isn't switched by the temperature readings anymore). If you touch and hold it (>1s), it switches back to automatic mode. I don't have buttons, but it's way cooler with touch sensors anyway. The other advantage is, you don't have to bore holes in the inclosure for the buttons. Just glue them to the inner side of the enclosure and add appropriate stickers to the outside.
 
 I know that there are a lot of other simpler methods to do some of this (like for example controlling it via OpenHAB and with Blynk), but I wanted to do it all by myself with services I already have in place, as an exercise and to learn stuff in the process (so please don't contact me with such tips).

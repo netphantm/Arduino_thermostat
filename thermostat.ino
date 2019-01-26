@@ -33,6 +33,7 @@ unsigned long prevTimeIP = 0;
 bool emptyFile = false;
 bool heater = true;
 bool manual = false;
+bool button;
 bool debug = true;
 char lanIP[16];
 String inetIP;
@@ -71,7 +72,7 @@ void getTemperature() {
   String str_last = str_c;
   // read temperature from the sensor
   uptime = (millis() / 1000 ); // Refresh uptime
-  delay(100);
+  delay(10);
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
@@ -89,6 +90,7 @@ void toggleRelais(String sw = "TOGGLE") {
       relaisState = "ON";
       digitalWrite(RELAISPIN, 1);
     }
+    Serial.println(relaisState);
     return;
   } else {
     if (sw == "ON") {
@@ -98,8 +100,8 @@ void toggleRelais(String sw = "TOGGLE") {
       relaisState = "OFF";
       digitalWrite(RELAISPIN, 0);
     }
+    Serial.println(relaisState);
   }
-  Serial.println(relaisState);
 }
 
 void switchRelais() {
@@ -124,6 +126,7 @@ void switchRelais() {
       }
     }
   }
+  delay(100);
 }
 
 //// settings read / write / clear SPIFFS
@@ -480,7 +483,7 @@ void updateDisplay() {
     if (temp_c < temp_min) {
       color = 0x001F;
     } else if (temp_c > temp_max) {
-      color = 0xF800;
+      color = 0xFFC8;
     } else {
       color = 0xFFE0;
     }
@@ -518,7 +521,7 @@ void updateDisplay() {
     }
     if (manual) {
       mode = "Manual";
-      tft.setTextColor(TFT_ORANGE);
+      tft.setTextColor(0xFFC8);
     } else {
       mode = "Automatic";
       tft.setTextColor(TFT_GREEN);
@@ -609,7 +612,7 @@ void setup(void) {
   wifiManager.setDebugOutput(false);
   wifiManager.setAPCallback(configModeCallback);
   if(!wifiManager.autoConnect("Joey","pass4esp")) {
-    delay(3000);
+    delay(1000);
     Serial.println(F("Failed to connect and hit timeout, restarting..."));
     ESP.reset();
   }
@@ -665,27 +668,32 @@ void setup(void) {
 //// start main loop
 void loop(void) {
   bool hold = true;
-  delay(200);
   while (digitalRead(TOUCHPIN) == 1) { // hold here as long as sensor is touched to avoid switching on every loop pass
+    button = true;
     if (hold) { // avoid switching more than once (hangs up the device)
-      delay(500);
-      if (digitalRead(TOUCHPIN) == 1) { // if touch sensor is still triggered, switch back to auto mode
-        manual = false;
-        Serial.println(F("\nSwitched to Automatic mode"));
-        switchRelais();
-        updateDisplay();
-        writeSettingsFile();
-        delay(500);
-        hold = false;
-        break;
-      }
-      toggleRelais();
       manual = true;
-      updateDisplay();
-      writeSettingsFile();
-      Serial.println(F("\nSwitched to Manual mode, manually switched Relais ON"));
+      delay(500);
+      while (digitalRead(TOUCHPIN) == 1) { // if touch sensor is still triggered, switch back to auto mode
+        manual = false;
+        yield();
+      }
     }
+    yield();
     hold = false;
+  }
+
+  delay(100);
+  if (button) {
+    if (manual) {
+      Serial.println(F("\nSwitched to Manual mode"));
+      toggleRelais();
+      updateDisplay();
+    } else {
+      Serial.println(F("\nSwitched to Automatic mode"));
+      switchRelais();
+      updateDisplay();
+    }
+    button = false;
   }
 
   unsigned long presTime = millis();
@@ -714,7 +722,7 @@ void loop(void) {
     if (interval < 4999) // set a failsafe interval
       interval = 10000;
   } else {
-  printProgress(past * 100 / interval);
+    printProgress(past * 100 / interval);
   }
   server.handleClient();
 }

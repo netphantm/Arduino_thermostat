@@ -675,23 +675,23 @@ void loop(void) {
       delay(500);
       while (digitalRead(TOUCHPIN) == 1) { // if touch sensor is still triggered, switch back to auto mode
         manual = false;
-        yield();
       }
+      delay(10);
     }
-    yield();
+    delay(10);
     hold = false;
   }
 
   delay(100);
   if (button) {
     if (manual) {
-      Serial.println(F("\nSwitched to Manual mode"));
       toggleRelais();
       updateDisplay();
+      Serial.println(F("\nSwitched to Manual mode"));
     } else {
-      Serial.println(F("\nSwitched to Automatic mode"));
       switchRelais();
       updateDisplay();
+      Serial.println(F("\nSwitched to Automatic mode"));
     }
     button = false;
   }

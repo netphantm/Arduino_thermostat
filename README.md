@@ -140,6 +140,7 @@ I know that there are simpler or fancyer methods to do some of this (like OpenHA
 
 <img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-06.png" alt="pic-06" width="290px" height="210px" padding="10px"><img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-07.png" alt="pic-07" width="290px" height="210px" padding="10px"><br>
 <img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-08.png" alt="pic-08" width="290px" height="310px" padding="10px"><img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-09.png" alt="pic-09" width="290px" height="310px" padding="10px">
+<img src="https://github.com/netphantm/Arduino_thermostat/raw/master/pics/pic-10.png" alt="pic-10" width="440px">
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

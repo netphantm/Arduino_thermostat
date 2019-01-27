@@ -108,6 +108,12 @@ I know that there are simpler or fancyer methods to do some of this (like OpenHA
 
 - [Dual Relais Shield für WEMOS D1 Mini (ESP 8266) WIFI Modul Kit/Bausatz -Neu!](https://www.ebay.de/itm/Dual-Relais-Shield-fur-WEMOS-D1-Mini-ESP-8266-WIFI-Modul-Kit-Bausatz-Neu/143054227109?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20140107084234%26meid%3Df7ec875706584a5497b0bdaa8d4e8cbc%26pid%3D100011%26rk%3D3%26rkt%3D12%26sd%3D143021212740%26itm%3D143054227109&_trksid=p2047675.c100011.m1850)
 
+- [0,96 Zoll I2C IIC serielle 128 x 64 OLED LCD LED Anzeige Modul für Arduino blau](https://www.ebay.de/itm/0-96-Zoll-I2C-IIC-serielle-128-x-64-OLED-LCD-LED-Anzeige-Modul-f%C3%BCr-Arduino-blau/173489709045?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
+
+- [Display 1.4 Shield V1.0.0 Erweiterung Oled Anzeige Karte](https://www.ebay.de/itm/Display-1-4-Shield-V1-0-0-Erweiterung-Oled-Anzeige-Karte/253565247621?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
+
+- [TTP223 Capacitive Kapazitiver Touch Sensor Modul | Arduino Raspberry Pi ](https://www.ebay.de/itm/5x-TTP223-Capacitive-Kapazitiver-Touch-Sensor-Modul-Arduino-Raspberry-Pi/273501890807?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
+
 #### Software
 
 - [WiFiManager](https://github.com/tzapu/WiFiManager)

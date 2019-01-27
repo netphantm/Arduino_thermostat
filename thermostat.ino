@@ -521,8 +521,8 @@ void updateDisplay() {
 void getInetIP() {
   Serial.print(F("= getInetIP"));
   unsigned long presTimeIP = millis();
-  unsigned long pastIP = presTimeIP - prevTimeIP;
-  if (presTimeIP < 60000 || pastIP > 3600000) { // update every hour, so we don't piss of the guys @ ipinfo.io
+  unsigned long passedIP = presTimeIP - prevTimeIP;
+  if (presTimeIP < 60000 || passedIP > 3600000) { // update every hour, so we don't piss of the guys @ ipinfo.io
     WiFiClient client;
     HTTPClient http;
     http.begin(client, "http://ipinfo.io/ip");
@@ -537,6 +537,7 @@ void getInetIP() {
     } else {
       Serial.print(F("HTTPS GET ERROR: failed getting internet IP! Error: "));
       Serial.println(http.errorToString(httpCode).c_str());
+      inetIP == "Error:" + httpCode;
     }
     http.end();
   }
@@ -686,8 +687,8 @@ void loop(void) {
   }
 
   unsigned long presTime = millis();
-  unsigned long past = presTime - prevTime;
-  if (past > interval) {
+  unsigned long passed = presTime - prevTime;
+  if (passed > interval) {
     Serial.println(F("\nInterval passed"));
     getInetIP();
     if (readSettingsWeb() != 200) // first, try reading settings from webserver
@@ -716,7 +717,7 @@ void loop(void) {
     if (interval < 4999) // set a failsafe interval
       interval = 10000;
   } else {
-    printProgress(past * 100 / interval);
+    printProgress(passed * 100 / interval);
   }
   server.handleClient();
 }

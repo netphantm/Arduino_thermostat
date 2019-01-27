@@ -33,8 +33,8 @@ unsigned long prevTimeIP = 0;
 bool emptyFile = false;
 bool heater = true;
 bool manual = false;
-bool button;
 bool debug = true;
+bool button = false;
 char lanIP[16];
 String inetIP;
 String str_c;
@@ -70,85 +70,80 @@ ESP8266WebServer server(80);
 void getTemperature() {
   Serial.print("= getTemperature: ");
   String str_last = str_c;
-  // read temperature from the sensor
   uptime = (millis() / 1000 ); // Refresh uptime
   delay(10);
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
   Serial.println(temp_c);
-  temp_c = temp_c + temp_dev; // temperature deviation to calibrate your sensor
+  temp_c = temp_c + temp_dev; // calibrating sensor
 }
 
-void toggleRelais(String sw = "TOGGLE") {
-  Serial.print("= toggleRelais: ");
+void switchRelais(String sw = "TOGGLE") { // if no parameter given, assume TOGGLE
+  Serial.print("= switchRelais: ");
   if (sw == "TOGGLE") {
     if (digitalRead(RELAISPIN) == 1) {
-      relaisState = "OFF";
       digitalWrite(RELAISPIN, 0);
+      relaisState = "OFF";
     } else {
-      relaisState = "ON";
       digitalWrite(RELAISPIN, 1);
+      relaisState = "ON";
     }
     Serial.println(relaisState);
     return;
   } else {
     if (sw == "ON") {
-    relaisState = "ON";
     digitalWrite(RELAISPIN, 1);
-    } else {
-      relaisState = "OFF";
+    relaisState = "ON";
+    } else if (sw == "OFF") {
       digitalWrite(RELAISPIN, 0);
+      relaisState = "OFF";
     }
     Serial.println(relaisState);
   }
 }
 
-void switchRelais() {
+void autoSwitchRelais() {
+  Serial.print("= autoSwitchRelais: ");
   if (manual) {
+    delay(10);
     return;
   } else {
     if (heater) {
       if (temp_c <= temp_min) {
-        Serial.println("Auto turned relais ON");
-        toggleRelais("ON");
+        switchRelais("ON");
       } else if (temp_c >= temp_max) {
-        Serial.println("Auto turned relais OFF");
-        toggleRelais("OFF");
+        switchRelais("OFF");
       }
     } else {
       if (temp_c >= temp_max) {
-        Serial.println("Auto turned relais ON");
-        toggleRelais("ON");
+        switchRelais("ON");
       } else if (temp_c <= temp_min) {
-        Serial.println("Auto turned relais OFF");
-        toggleRelais("OFF");
+        switchRelais("OFF");
       }
     }
   }
-  delay(100);
+  delay(10);
 }
 
 //// settings read / write / clear SPIFFS
 void clearSpiffs() {
   Serial.println("= clearSpiffs");
-
   Serial.println("Please wait for SPIFFS to be formatted");
   SPIFFS.format();
-  Serial.println("SPIFFS formatted");
   yield();
-  // mark file as empty
-  emptyFile = true;
-  server.send(200, "text/plain", "HTTP CODE 200: OK, SPIFFS formatted, settings cleared\n");
+  Serial.println("SPIFFS formatted");
+  emptyFile = true; // mark file as empty
+  server.send(200, "text/plain", "200: OK, SPIFFS formatted, settings cleared\n");
 }
 
-int readSettingsWeb() {
+int readSettingsWeb() { // use plain http, as SHA1 fingerprint not known yet
   Serial.println("= readSettingsWeb");
   String pathQuery = "/settings-";
   pathQuery += hostname;
   pathQuery += ".json";
   if (debug) {
-    Serial.print(F("Getting settings from http://"));
+    Serial.print(F("Getting settings from "));
     Serial.print(configHost);
     Serial.print(pathQuery);
   }
@@ -159,16 +154,15 @@ int readSettingsWeb() {
   int httpCode = http.GET();
   if(httpCode > 0) {
     String webJson = String(http.getString());
-    //webJson.trim();
     if (debug) {
       Serial.print(F(": "));
       Serial.println(httpCode);
-      Serial.print(F("Settings JSON from webserver: "));
+      Serial.print(F("Got settings JSON from webserver: "));
       Serial.println(webJson);
     }
     deserializeJson(webJson);
   } else {
-    Serial.print(F("HTTP GET failed getting settings from web! Error: "));
+    Serial.print(F("HTTP GET ERROR: failed getting settings from web! Error: "));
     Serial.println(http.errorToString(httpCode).c_str());
   }
   http.end();
@@ -179,7 +173,6 @@ void readSettingsFile() {
   Serial.println("= readSettingsFile");
 
   File f = SPIFFS.open(sFile, "r"); // open file for reading
-  // open file for reading
   if (!f) {
     Serial.println(F("Settings file read open failed"));
     emptyFile = true;
@@ -201,7 +194,6 @@ void deserializeJson(String json) {
     emptyFile = true;
     return;
   } else {
-    emptyFile = false;
     SHA1 = root["SHA1"].as<String>();
     loghost = root["loghost"].as<String>(), sizeof(loghost);
     httpsPort = root["httpsPort"].as<int>(), sizeof(httpsPort);
@@ -214,6 +206,7 @@ void deserializeJson(String json) {
     debug = root["debug"].as<bool>(), sizeof(debug);
     if (debug)
       Serial.println(F("Deserialized JSON"));
+    emptyFile = false; // mark file as not empty
   }
 }
 
@@ -221,12 +214,11 @@ void updateSettings() {
   Serial.println("\n= updateSettings");
 
   if (server.args() < 1 || server.args() > 10 || !server.arg("SHA1") || !server.arg("loghost")) {
-    server.send(200, "text/html", "HTTP CODE 400: Invalid Request\n");
+    server.send(200, "text/html", "400: Invalid Request\n");
     return;
   }
-  Serial.println("Got new settings");
+  Serial.println("Got new settings from webform");
 
-  // get new settings from URL
   SHA1 = server.arg("SHA1");
   loghost = server.arg("loghost");
   httpsPort = server.arg("httpsPort").toInt();
@@ -234,9 +226,9 @@ void updateSettings() {
   temp_min = server.arg("temp_min").toFloat();
   temp_max = server.arg("temp_max").toFloat();
   temp_dev = server.arg("temp_dev").toFloat();
-  heater = server.arg("heater").toInt() | 0;
+  heater = server.arg("heater").toInt() | 1;
   manual = server.arg("manual").toInt() | 0;
-  debug = server.arg("debug").toInt() | 0;
+  debug = server.arg("debug").toInt() | 1;
 
   writeSettingsFile();
   server.send(200, "text/html", webString);
@@ -248,7 +240,7 @@ void writeSettingsFile() {
   File f = SPIFFS.open(sFile, "w"); // open file for writing
   if (!f) {
     Serial.println(F("Failed to create settings file"));
-    server.send(200, "text/html", "HTTP CODE 200: OK, File write open failed! settings not saved\n");
+    server.send(200, "text/html", "200: OK, File write open failed! settings not saved\n");
     return;
   }
 
@@ -275,7 +267,7 @@ void writeSettingsFile() {
   // write JSON to file
   if (root.printTo(f) == 0) {
     Serial.println(F("Failed to write to file"));
-    webString += "File write open failed\n";
+    webString += "Failed to write to file\n";
   } else {
     Serial.println("OK");
 
@@ -286,7 +278,7 @@ void writeSettingsFile() {
     webString += "\tbody { \n\t\tpadding: 3rem; \n\t\tfont-size: 16px;\n\t}\n";
     webString += "\tform { \n\t\tdisplay: inline; \n\t}\n</style>\n";
     webString += "</head>\n<body>\n";
-    webString += "HTTP CODE 200: OK, Got new settings<br>\n";
+    webString += "200: OK, Got new settings<br>\n";
     webString += "Settings file updated.\n<br>\nBack to \n";
     webString += "<form method='POST' action='https://temperature.hugo.ro'>";
     webString += "\n<button name='device' value='";
@@ -304,13 +296,6 @@ void writeSettingsFile() {
     emptyFile = false; // mark file as not empty
   }
   f.close();
-  /*
-  if (digitalRead(RELAISPIN) == 1) {
-    relaisState = "ON";
-  } else {
-    relaisState = "OFF";
-  }
-  */
 }
 
 //// local webserver handlers / send data to logserver
@@ -319,7 +304,7 @@ void handleRoot() {
 }
 
 void handleNotFound(){
-  server.send(404, "text/plain", "HTTP CODE 404: Not found\n");
+  server.send(404, "text/plain", "404: File not found!\n");
 }
 
 void logToWebserver() {
@@ -365,7 +350,7 @@ void logToWebserver() {
     int httpCode = https.GET();
     if (httpCode > 0) {
       if (debug) {
-        Serial.print(F("HTTPS GET OK, code: "));
+        Serial.print(F("HTTP GET OK: "));
         Serial.println(httpCode);
       }
       if (httpCode == HTTP_CODE_OK) {
@@ -374,12 +359,12 @@ void logToWebserver() {
           Serial.println(epochTime);
       }
     } else {
-      Serial.print(F("HTTPS GET failed! Error: "));
+      Serial.print(F("HTTP GET ERROR: failed logging to webserver! Error: "));
       Serial.println(https.errorToString(httpCode).c_str());
     }
     https.end();
   } else {
-    Serial.println(F("HTTPS Unable to connect"));
+    Serial.println(F("HTTP ERROR: Unable to connect"));
   }
 }
 
@@ -404,6 +389,8 @@ void debug_vars() {
   Serial.println(heater);
   Serial.print(F("- manual: "));
   Serial.println(manual);
+  Serial.print(F("- button: "));
+  Serial.println(button);
   if (emptyFile) {
     Serial.print(F("- emptyFile: "));
     Serial.println(emptyFile);
@@ -548,7 +535,7 @@ void getInetIP() {
       Serial.print(inetIP);
       prevTimeIP = presTimeIP; // save the last time Ip was updated
     } else {
-      Serial.print(F("HTTPS GET failed getting internet IP! Error: "));
+      Serial.print(F("HTTPS GET ERROR: failed getting internet IP! Error: "));
       Serial.println(http.errorToString(httpCode).c_str());
     }
     http.end();
@@ -639,16 +626,18 @@ void setup(void) {
     size_t fileSize = dir.fileSize();
     Serial.printf("\tFS File: %s, size: %s\r\n", fileName.c_str(), formatBytes(fileSize).c_str());
   }
-  Serial.printf("\n");
+  Serial.println("\n");
 
-  toggleRelais("OFF"); // start with relais OFF
+  switchRelais("OFF"); // start with relais OFF
  
   if (readSettingsWeb() != 200) // first, try reading settings from webserver
     readSettingsFile(); // if failed, read settings from SPIFFS
+  /*
   getInetIP();
   getTemperature();
-  switchRelais();
+  autoSwitchRelais();
   updateDisplay();
+  */
 
   // local webserver client handlers
   server.onNotFound(handleNotFound);
@@ -656,12 +645,13 @@ void setup(void) {
   server.on("/update", []() {
     updateSettings();
     getTemperature();
-    switchRelais();
+    autoSwitchRelais();
     updateDisplay();
     if (debug)
       debug_vars();
   });
   server.on("/clear", clearSpiffs);
+
   server.begin();
 }
  
@@ -676,20 +666,19 @@ void loop(void) {
       while (digitalRead(TOUCHPIN) == 1) { // if touch sensor is still triggered, switch back to auto mode
         manual = false;
       }
-      delay(10);
+      yield();
     }
-    delay(10);
+    yield();
     hold = false;
   }
 
-  delay(100);
   if (button) {
     if (manual) {
-      toggleRelais();
+      switchRelais("TOGGLE");
       updateDisplay();
       Serial.println(F("\nSwitched to Manual mode"));
     } else {
-      switchRelais();
+      autoSwitchRelais();
       updateDisplay();
       Serial.println(F("\nSwitched to Automatic mode"));
     }
@@ -706,13 +695,18 @@ void loop(void) {
     prevTime = presTime; // save the last time sensor was read
 
     if (emptyFile) {
-      Serial.println(F("Switching relais off, as no temp_min/temp_max was set"));
-      toggleRelais("OFF");
-      debug_vars();
-      Serial.println(F("Waiting for settings to be sent..."));
+      if (readSettingsWeb() != 200) { // first, try reading settings from webserver
+        Serial.println(F("Switching relais off: no settings found on SPIFFS OR webserver!"));
+        switchRelais("OFF");
+        debug_vars();
+        Serial.println(F("Waiting for settings to be sent..."));
+        delay(500);
+      } else {
+        writeSettingsFile();
+      }
     } else {
       getTemperature();
-      switchRelais();
+      autoSwitchRelais();
       if (debug)
         debug_vars();
       updateDisplay();

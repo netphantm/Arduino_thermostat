@@ -81,6 +81,7 @@ I know that there are simpler or fancyer methods to do some of this (like OpenHA
 - [ ] CSS-styled mouseover tooltip for the graph, including relay status
 - [ ] Change the graph's time range, enable zooming and panning
 - [ ] Change the horrible design (now I've added even more of it)
+- [ ] Responsive design for mobile devices
 - [ ] \(Perhaps) Enable OTA
 - [ ] \(Perhaps) Keep log data in a local file if logserver is not reachable and send it all when connectivity is restored
 - [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below (fritzing should be pretty straight forward anyway)

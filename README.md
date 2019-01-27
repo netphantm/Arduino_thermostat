@@ -77,16 +77,14 @@ I know that there are simpler or fancyer methods to do some of this (like OpenHA
 ---
 
 ### TODO
-- [x] Also store settings on webserver (if the device is not in the same network, the server cannot push the settings to it).
-- [x] Change code for both .96" and 1.44" displays that I used.
-- [x] Clean up code and add comments.
-- [ ] CSS-styled mouseover tooltip for the graph, including relay status.
-- [ ] Change the graph's time range, enable zooming and panning.
-- [ ] Change the horrible design (now I've added even more of it).
-- [ ] \(Perhaps) Enable OTA.
-- [ ] \(Perhaps) ~~Write log to a local file (if logserver is not reachable) and~~ resend data when connectivity is restored.
-- [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below (fritzing should be pretty straight forward anyway).
-- [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then a letsencrypt signed certificate).
+- [x] Clean up code and add comments
+- [ ] CSS-styled mouseover tooltip for the graph, including relay status
+- [ ] Change the graph's time range, enable zooming and panning
+- [ ] Change the horrible design (now I've added even more of it)
+- [ ] \(Perhaps) Enable OTA
+- [ ] \(Perhaps) Keep log data in a local file if logserver is not reachable and send it all when connectivity is restored
+- [ ] \(Perhaps) Documentation, including 'fritzing'. In the mean time, look at my sources in the [Links (software)](#software) below (fritzing should be pretty straight forward anyway)
+- [ ] \(Perhaps) Change checking logserver validity from comparing SHA1 fingerprint, to check against an uploaded CA certificate (longer validity then a letsencrypt signed certificate)
 
 [↑ goto top](#DS18B20-thermostat-with-logging)
 

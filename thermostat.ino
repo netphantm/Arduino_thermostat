@@ -632,12 +632,10 @@ void setup(void) {
  
   if (readSettingsWeb() != 200) // first, try reading settings from webserver
     readSettingsFile(); // if failed, read settings from SPIFFS
-  /*
   getInetIP();
   getTemperature();
   autoSwitchRelais();
   updateDisplay();
-  */
 
   // local webserver client handlers
   server.onNotFound(handleNotFound);
@@ -679,6 +677,8 @@ void loop(void) {
       Serial.println(F("\nSwitched to Manual mode"));
     } else {
       autoSwitchRelais();
+      if (temp_c > temp_min || temp_c < temp_max) // if in hysteresis, switch relais off
+        switchRelais("OFF");
       updateDisplay();
       Serial.println(F("\nSwitched to Automatic mode"));
     }

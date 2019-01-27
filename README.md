@@ -1,4 +1,4 @@
-## Hugo's ESP8266 playground
+## DS18B20 thermostat with logging
 
-- 'master' branch contains the Arduino files
-- 'www' branch is the part needed on the server www directory, where the ESP pushes its measurements
+- 'master' branch contains the Arduino code
+- 'www' branch contains (php) files needed on the webserver's /var/www directory (where the device pushes its measurements and stores it's settings).

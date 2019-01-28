@@ -695,7 +695,7 @@ void loop(void) {
       readSettingsFile(); // if failed, read settings from SPIFFS
     prevTime = presTime; // save the last time sensor was read
 
-    if (emptyFile) {
+    if (emptyFile) { // settings file does not exist
       if (readSettingsWeb() != 200) { // first, try reading settings from webserver
         Serial.println(F("Switching relais off: no settings found on SPIFFS OR webserver!"));
         switchRelais("OFF");
@@ -715,7 +715,7 @@ void loop(void) {
     }
 
     if (interval < 4999) // set a failsafe interval
-      interval = 10000;
+      interval = 20000; // 20 secs
   } else {
     printProgress(passed * 100 / interval);
   }

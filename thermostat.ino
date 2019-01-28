@@ -75,8 +75,8 @@ void getTemperature() {
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
-  Serial.println(temp_c);
   temp_c = temp_c + temp_dev; // calibrating sensor
+  Serial.println(temp_c);
 }
 
 void switchRelais(String sw = "TOGGLE") { // if no parameter given, assume TOGGLE

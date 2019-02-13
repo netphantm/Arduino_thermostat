@@ -121,9 +121,9 @@ print("<br>Refresh interval <input type='text' name='interval' size=2 value=$int
 print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C / \n");
 print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C / \n");
 print("Sensor deviation <input type='text' name='temp_dev' size=1 value=$temp_dev> &deg;C\n");
-print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if($heater) print(" checked=1"); print(">\n");
+print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if ($heater) print(" checked=1"); print(">\n");
 print("<br>Manual mode\t<input type='checkbox' name='manual' value=1"); if ($manual) print(" checked=1"); print(">\n");
-print("<br>[debug]\t<input type='checkbox' name='debug' value=1 checked=1>\n");
+print("<br>[debug]\t<input type='checkbox' name='debug' value=1"); if ($debug) print(" checked=1"); print(">\n");
 print("<br><input type='submit' value='Submit' >\n");
 print("</form></div></body>\n");
 print("<script>\n");

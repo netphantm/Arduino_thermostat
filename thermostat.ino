@@ -50,6 +50,8 @@ String epochTime;
 uint16_t color;
 int httpsPort;
 int interval;
+int cursorX;
+int cursorY;
 float temp_min;
 float temp_max;
 float temp_dev;
@@ -226,9 +228,9 @@ void updateSettings() {
   temp_min = server.arg("temp_min").toFloat();
   temp_max = server.arg("temp_max").toFloat();
   temp_dev = server.arg("temp_dev").toFloat();
-  heater = server.arg("heater").toInt() | 1;
-  manual = server.arg("manual").toInt() | 0;
-  debug = server.arg("debug").toInt() | 1;
+  heater = server.arg("heater").toInt();
+  manual = server.arg("manual").toInt();
+  debug = server.arg("debug").toInt();
 
   writeSettingsFile();
   server.send(200, "text/html", webString);
@@ -459,14 +461,16 @@ void updateDisplay() {
     tft.setTextColor(TFT_YELLOW);
     tft.setTextSize(1);
     tft.println("Connected to SSID:");
-    tft.setTextSize(2);
+    if (WiFi.SSID().length() < 11)
+      tft.setTextSize(2);
     tft.println(WiFi.SSID());
     tft.setTextColor(TFT_WHITE);
     tft.setTextSize(1);
     tft.println("LAN:" + String("") + lanIP);
     tft.println("Inet:" + inetIP);
     tft.println("Temperature:\n");
-    tft.drawRoundRect(1, 52, 127, 22, 3, TFT_WHITE);
+    cursorY = tft.getCursorY() - 4;
+    tft.drawRoundRect(1, cursorY, 127, 22, 3, TFT_WHITE);
     if (temp_c < temp_min) {
       color = 0x001F;
     } else if (temp_c > temp_max) {
@@ -482,8 +486,8 @@ void updateDisplay() {
     tft.setTextSize(1);
     tft.print(" ");
     tft.setTextSize(2);
-    int cursorX = tft.getCursorX() + 5;
-    int cursorY = tft.getCursorY() + 2;
+    cursorX = tft.getCursorX() + 5;
+    cursorY = tft.getCursorY() + 2;
     tft.drawCircle(cursorX, cursorY, 2.5, color);
     //tft.print((char)247);
     tft.println(" C");
@@ -569,20 +573,20 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 #else
     tft.fillScreen(TFT_BLACK); // Black screen fill
     tft.setTextColor(TFT_YELLOW);
-    tft.setTextSize(1);
-    tft.println("WiFi Config\n");
-    tft.setTextColor(TFT_RED);
-    tft.print("IP:");
     tft.setTextSize(2);
-    tft.println("10.0.1.1");
-    tft.setTextSize(1);
-    tft.print("ID:");
-    tft.setTextSize(2);
-    tft.println("Joey");
-    tft.setTextSize(1);
-    tft.print("Pwd: ");
-    tft.setTextSize(2);
-    tft.print("pass4esp");
+    tft.println("WiFi Conf.\n");
+    tft.setTextColor(TFT_BLUE);
+    tft.println("IP:");
+    tft.setTextColor(TFT_GREEN);
+    tft.println(" 10.0.1.1");
+    tft.setTextColor(TFT_BLUE);
+    tft.println("SSID:");
+    tft.setTextColor(TFT_GREEN);
+    tft.println(" " + hostname);
+    tft.setTextColor(TFT_BLUE);
+    tft.println("Password: ");
+    tft.setTextColor(TFT_GREEN);
+    tft.println(" pass4esp");
 #endif
 }
 
@@ -615,7 +619,6 @@ void setup(void) {
     if (!MDNS.begin("esp8266"))
       Serial.println(F("Error setting up mDNS responder"));
   }
-  //String WiFi_Name = WiFi.SSID();
   IPAddress ip = WiFi.localIP();
   sprintf(lanIP, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
 

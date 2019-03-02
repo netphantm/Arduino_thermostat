@@ -3,7 +3,9 @@
 
 > ESP8266 thermostat with DS18B20 oneWire sensor
 
-This is a 'simple' thermostat controller, using a DS18B20 oneWire temperature sensor on a WeMos D1 Mini Pro. It uses two relays, soldered together on pin D1 (to save on used WeMos pins). It uses two relays for safety reasons, to be sure that there is no current on either one of the power lines when switched off. I tried it first with an DHT11 sensor, but it's very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except perhaps if you use it in a sauna). The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I couldn't find a shield with two relays, so I bought it as a kit and soldered all components myself (circuit board, relays, terminal strip, and the fun part: the SMD components).
+This is a 'simple' thermostat controller, using a DS18B20 oneWire temperature sensor on a WeMos D1 Mini Pro. The DS18B20 has a +/-0.5 &deg;C tolerance and is perfectly stable (and even cheaper). I tried it first with an DHT11 sensor, but it's very unreliable, unstable and has a +/-2 &deg;C tolerance (and who needs a humidity sensor anyway, except perhaps if you use it in a sauna).
+
+It uses two relays for safety reasons, to be sure that there is no current on either one of the power lines when switched off. I couldn't find a shield with two relays, so I bought it as a kit and soldered all components to the board myself (relays, terminal strip, and the fun part: the SMD components). It just had to be rewired to switch two separate wires independently, instead of switching current from the same wire to two different consumers.
 
 The thermostat will power up the relays if the temperature is greater than temp\_max and power off if temperature falls below temp\_min if the appliance is set as a _cooler_, and accordingly, power them up if temperature falls below temp\_min and power off if the temperature is greater than temp\_max if set as a _heater_.
 

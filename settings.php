@@ -110,7 +110,7 @@ print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
 print("IoT Thermostat - Settings</h2></div>\n");
 print("<form method='POST'>\n");
 print("Sensor hostname <select id='URL' name='URL'>\n");
-print("<option value='http://192.168.178.104/'>Clamps</option>\n");
+print("<option value='http://192.168.178.103/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
 print("<option value='http://192.168.178.106/'>Donbot</option></select>\n");
 print("<input type='hidden' name='device' value=".$device." />\n");

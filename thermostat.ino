@@ -22,7 +22,7 @@
 #define TOUCHPIN D0
 #define PBSTR "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 79
-//#define dsp_small
+#define dsp_small
 
 const size_t bufferSize = JSON_OBJECT_SIZE(6) + 160;
 const static String sFile = "/settings.txt";

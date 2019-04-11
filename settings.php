@@ -23,14 +23,14 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
   $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
   $debug = isset($_POST["debug"]) ? $_POST["debug"] : false;
 
-  if($temp_min > ($temp_max - 1)) { // check if data is correct
+  if(($temp_min > ($temp_max - 1)) || ($interval < 120000) || ($interval > 900000)) { // check if data is correct
     print("<html>\n");
     print("<body>\n");
     print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
     print("<title>Thermostat IoT Settings</title>\n");
     print("<style>\n.content { background-color: red; width: 1000px; margin: auto; }</style>\n");
     print("</head><body>\n<div class=\"content\">\n");
-    print("<div align=\"center\"><h2><p>Temperature MIN must be SMALLER then Temperature MAX!</p></h2><h1><p>Try again!</p></h1></div>");
+    print("<div align=\"center\"><h2><p>Temperature MIN must be SMALLER then Temperature MAX and interval must be beween 2-15 minutes!</p></h2><h1><p>Try again!</p></h1></div>");
     print("</body>");
     exit();
   } else {

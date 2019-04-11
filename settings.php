@@ -18,7 +18,7 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
   $interval = $_POST["interval"];
   $temp_min = $_POST["temp_min"];
   $temp_max = $_POST["temp_max"];
-  $temp_dev = isset($_POST["temp_dev"]) ? floatval($_POST["temp_dev"]) : 0;
+  $temp_dev = $_POST["temp_dev"];
   $heater = isset($_POST["heater"]) ? $_POST["heater"] : false;
   $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
   $debug = isset($_POST["debug"]) ? $_POST["debug"] : false;

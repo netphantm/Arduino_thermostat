@@ -112,7 +112,7 @@ print("<form method='POST'>\n");
 print("Sensor hostname <select id='URL' name='URL'>\n");
 print("<option value='http://192.168.178.103/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
-print("<option value='http://192.168.178.106/'>Donbot</option></select>\n");
+print("<option value='http://192.168.178.104/'>Donbot</option></select>\n");
 print("<input type='hidden' name='device' value=".$device." />\n");
 print("<br>Certificate SHA1 fingerprint <input type='text' name='SHA1' maxlength=60 size=40 value=$SHA1>\n");
 print("<br>Loghost <input type='text' name='loghost' size=11 value=$loghost>\n");

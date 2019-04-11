@@ -51,7 +51,7 @@
         $date = $line[4];
         $heater = $line[5];
         $manual = $line[6];
-        $interval = ($line[7] / 1000);
+        $interval = ($line[7] / 60000);
         $temp_dev = isset($line[8]) ? floatval($line[8]) : 0;
         $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
       }
@@ -207,7 +207,7 @@
   print("<div>Temperature: <b>".readDataFile()[5]." °C</b></div>\n");
   print("<div>Sensor deviation: <b>".readDataFile()[9]." °C</b></div>\n");
   print("<div>Hysteresis: <b>".readDataFile()[3]." °C > ".readDataFile()[4]." °C</b></div>\n");
-  print("<div>Refresh interval: <b>".readDataFile()[8]."</b> seconds</div>\n");
+  print("<div>Refresh interval: <b>".readDataFile()[8]."</b> minutes</div>\n");
   if (readDataFile()[6] == "1") {
     print("<div>Appliance is a <font style='color:red'><b>Heater</b></font></div>\n");
   } else {

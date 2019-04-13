@@ -4,6 +4,10 @@
   } else {
     $device = "Clamps";
   }
+  $filename = "temp-log-".$device.".csv";
+  if $_POST['outputJson']
+    file_put_contents($filename, $_POST['outputJson']);
+  }
 
   // DEBUG
   //print("POST data: \n"); pr($_POST);
@@ -24,7 +28,6 @@
       error_log("no \$device defined!");
       exit();
     }
-    $filename = "temp-log-".$device.".csv";
     $searchString = ',';
     $numLines = 60;
     $maxLineLength = 100;

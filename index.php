@@ -4,10 +4,6 @@
   } else {
     $device = "Clamps";
   }
-  $filename = "temp-log-".$device.".csv";
-  if $_POST['outputJson']
-    file_put_contents($filename, $_POST['outputJson']);
-  }
 
   // DEBUG
   //print("POST data: \n"); pr($_POST);
@@ -33,6 +29,7 @@
     $maxLineLength = 100;
     $retStr = "";
 
+    $filename = "temp-log-".$device.".csv";
     $fp = fopen($filename, 'r');
     $data = fseek($fp, -($numLines * $maxLineLength), SEEK_END);
     $lines = array();

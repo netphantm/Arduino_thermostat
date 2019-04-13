@@ -1,4 +1,13 @@
 <?php
+  if( isset($_GET['device']) && isset($_GET['outputJson'])) {
+    $filename = "temp-log-".$_GET['device'].".csv";
+
+    if (isset($_GET['outputJson'])) {
+      file_put_contents($filename, $_GET['outputJson']);
+      //error_log("written JSON to file ".$filename.": ".$_GET['outputJson']."\n");
+    }
+  }
+
   if (isset($_POST['device'])) {
     $device = $_POST['device'];
   } else {

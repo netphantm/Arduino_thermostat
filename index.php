@@ -1,11 +1,14 @@
 <?php
-  if( isset($_GET['device']) && isset($_GET['outputJson'])) {
-    $filename = "temp-log-".$_GET['device'].".csv";
+  if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
+    $filename = "settings-".$_POST['device'].".json";
 
-    if (isset($_GET['outputJson'])) {
-      file_put_contents($filename, $_GET['outputJson']);
-      //error_log("written JSON to file ".$filename.": ".$_GET['outputJson']."\n");
+    if (isset($_POST['uploadJson'])) {
+      file_put_contents($filename, $_POST['uploadJson']);
+      pr($_POST);
+      //error_log("written JSON to file ".$filename.": ".$_POST['uploadJson']."\n");
     }
+    print("written JSON to file ".$filename.": ".$_POST['uploadJson']."\n");
+    exit(200);
   }
 
   if (isset($_POST['device'])) {
@@ -188,9 +191,9 @@
     chart.draw(data, options);
     var button = document.getElementById('change');
     button.onclick = function () {
-      options.hAxis.format === 'dd MMM, HH:mm' ?
-      options.hAxis.format = 'd/M-HH:mm' :
-      options.hAxis.format = 'dd MMM, HH:mm';
+      options.hAxis.format === 'dd MMM\nHH:mm' ?
+      options.hAxis.format = 'dd/MM\nHH:mm' :
+      options.hAxis.format = 'dd MMM\nHH:mm';
       chart.draw(data, options); 
     };
   }

@@ -1,13 +1,11 @@
 <?php
   if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
-    $filename = "settings-".$_POST['device'].".json";
+    $settingsFileName = "settings-".$_POST['device'].".json";
 
-    if (isset($_POST['uploadJson'])) {
-      file_put_contents($filename, $_POST['uploadJson']);
-      pr($_POST);
-      //error_log("written JSON to file ".$filename.": ".$_POST['uploadJson']."\n");
-    }
-    print("written JSON to file ".$filename.": ".$_POST['uploadJson']."\n");
+    file_put_contents($settingsFileName, $_POST['uploadJson']);
+    pr($_POST);
+    error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
+    print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     exit(200);
   }
 
@@ -41,12 +39,12 @@
     $maxLineLength = 100;
     $retStr = "";
 
-    $filename = "temp-log-".$device.".csv";
-    $fp = fopen($filename, 'r');
-    $data = fseek($fp, -($numLines * $maxLineLength), SEEK_END);
+    $logFileName = "temp-log-".$device.".csv";
+    $logFile = fopen($logFileName, 'r');
+    $data = fseek($logFile, -($numLines * $maxLineLength), SEEK_END);
     $lines = array();
-    while (!feof($fp)) {
-      $lines[] = fgets($fp);
+    while (!feof($logFile)) {
+      $lines[] = fgets($logFile);
     }
     //print pr($lines);
 
@@ -68,7 +66,7 @@
         $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
       }
     }
-    fclose($fp);
+    fclose($logFile);
     return array ($retStr, $date, $state, $temp_min, $temp_max, $temp, $heater, $manual, $interval, $temp_dev);
   }
 ?>

@@ -37,7 +37,6 @@ bool debug = true;
 bool button = false;
 char lanIP[16];
 String inetIP;
-String str_c;
 String mode;
 String WiFi_Name;
 uint8_t sha1[20];
@@ -71,12 +70,14 @@ ESP8266WebServer server(80);
 //// read temperature from sensor / switch relay on or off
 void getTemperature() {
   Serial.print("= getTemperature: ");
-  String str_last = str_c;
+  float last_temp_c = temp_c;
   uptime = (millis() / 1000 ); // Refresh uptime
   delay(10);
   DS18B20.requestTemperatures();  // initialize temperature sensor
   temp_c = float(DS18B20.getTempCByIndex(0)); // read sensor
   yield();
+  if (temp_c < -120)
+    temp_c = last_temp_c;
   temp_c = temp_c + temp_dev; // calibrating sensor
   Serial.println(temp_c);
 }

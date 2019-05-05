@@ -1,4 +1,18 @@
 <?php
+
+  // DEBUG
+  //print("POST data: \n"); pr($_POST);
+
+  if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
+    $settingsFileName = "settings-".$_POST['device'].".json";
+
+    file_put_contents($settingsFileName, $_POST['uploadJson']);
+    pr($_POST);
+    error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
+    print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
+    exit(200);
+  }
+
   function pr($var) {
     print '<pre>';
     print_r($var);
@@ -6,6 +20,11 @@
   }
 
   function readDataFile() {
+    if (isset($_POST['device'])) {
+      $device = $_POST['device'];
+    } else {
+      $device = "Clamps";
+    }
     if (empty($device)) {
       error_log("no \$device defined!");
       exit();
@@ -44,26 +63,6 @@
     }
     fclose($logFile);
     return array ($retStr, $date, $state, $temp_min, $temp_max, $temp, $heater, $manual, $interval, $temp_dev);
-  }
-
-  // DEBUG
-  //print("POST data: \n"); pr($_POST);
-  //print("device= ".$device);
-
-  if (isset($_POST['device'])) {
-    $device = $_POST['device'];
-  } else {
-    $device = "Clamps";
-  }
-
-  if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
-    $settingsFileName = "settings-".$_POST['device'].".json";
-
-    file_put_contents($settingsFileName, $_POST['uploadJson']);
-    pr($_POST);
-    error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
-    print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
-    exit(200);
   }
 ?>
 
@@ -195,7 +194,7 @@
 
 <link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico' />
 <?php
-  print("<title>".$device." - Thermostat IoT</title>");
+  print("<title>".$_POST["device"]." - Thermostat IoT</title>");
 ?>
 <!-- meta http-equiv='refresh' content='60' -->
 </head>
@@ -203,7 +202,7 @@
 <div class='content'>
 <div align='center'><h2>ESP8266/WeMos D1 Mini Pro - DS18B20
 <?php
-  print("<br>".$device." - IoT Thermostat</h2></div>\n");
+  print("<br>".$_POST["device"]." - IoT Thermostat</h2></div>\n");
 ?>
 <div align='center'><table style='width:950px;'><tr><td>
 </td></tr></table>
@@ -232,7 +231,7 @@
 ?>
 <form id='dev' method='POST'>
 <?php
-  print("Device hostname: ".$device."\n");
+  print("Device hostname: ".$_POST["device"]."\n");
 ?>
   <select name='device' onchange='dev_change()'>
     <option>Select...</option>

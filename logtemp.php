@@ -6,7 +6,7 @@ if(!empty($_GET["status"]) && !empty($_GET["temperature"]) && !empty($_GET["host
   $niceTime = (new DateTime("$epochTime[0]"))->format('Y-m-d H:i:s');
   $interval = isset($_GET["interval"]) ? $_GET["interval"] : 120000;
   $temp_dev = isset($_GET["temp_dev"]) ? $_GET["temp_dev"] : 0;
-  $csvData = array($_GET["status"],$_GET["temperature"],$_GET["temp_min"],$_GET["temp_max"],$epochTime,$_GET["heater"],$_GET["manual"],$interval,$temp_dev);
+  $csvData = array($_GET["status"],$_GET["temperature"],$_GET["temp_min"],$_GET["temp_max"],$epochTime,$_GET["heater"],$_GET["manual"],$interval,$temp_dev,$niceTime);
   print($epochTime.", ".$niceTime);
 
   $fcsv = fopen("/var/www/temp/temp-log-".$_GET["hostname"].".csv","a"); 

@@ -22,8 +22,17 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
   $heater = isset($_POST["heater"]) ? $_POST["heater"] : false;
   $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
   $debug = isset($_POST["debug"]) ? $_POST["debug"] : false;
+  $tempP0 = isset($_POST["tempP0"]) ? $_POST["tempP0"] : 23;
+  $hourP0 = isset($_POST["hourP0"]) ? $_POST["hourP0"] : 6;
+  $minuteP0 = isset($_POST["minuteP0"]) ? $_POST["minuteP0"] : 30;
+  $tempP1 = isset($_POST["tempP1"]) ? $_POST["tempP1"] : 25;
+  $hourP1 = isset($_POST["hourP1"]) ? $_POST["hourP1"] : 9;
+  $minuteP1 = isset($_POST["minuteP1"]) ? $_POST["minuteP1"] : 30;
+  $tempP2 = isset($_POST["tempP2"]) ? $_POST["tempP2"] : 21;
+  $hourP2 = isset($_POST["hourP2"]) ? $_POST["hourP2"] : 22;
+  $minuteP2 = isset($_POST["minuteP2"]) ? $_POST["minuteP2"] : 30;
 
-  if(($temp_min > ($temp_max - 1)) || ($interval < 120000) || ($interval > 900000)) { // check if data is correct
+  if(($temp_min > ($temp_max - 1)) || ($interval < 30000) || ($interval > 900000)) { // check if data is correct
     print("<html>\n");
     print("<body>\n");
     print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
@@ -45,7 +54,16 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
       "temp_dev" => $temp_dev,
       "heater" => $heater,
       "manual" => $manual,
-      "debug" => $debug
+      "debug" => $debug,
+      "tempP0" => $tempP0,
+      "hourP0" => $hourP0,
+      "minuteP0" => $minuteP0,
+      "tempP1" => $tempP1,
+      "hourP1" => $hourP1,
+      "minuteP1" => $minuteP1,
+      "tempP2" => $tempP2,
+      "hourP2" => $hourP2,
+      "minuteP2" => $minuteP2,
     );
     $json = json_encode($array);
     $fjson = "/var/www/temp/settings-".$_POST["device"].".json";
@@ -56,7 +74,11 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
     }
 
     // send data to device
-    header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+    if ($device = "Donbot") {
+      header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug."&tempP0=".$tempP0."&hourP0=".$hourP0."&minuteP0=".$minuteP0."&tempP1=".$tempP1."&hourP1=".$hourP1."&minuteP1=".$minuteP1."&tempP2=".$tempP2."&hourP2=".$hourP2."&minuteP2=".$minuteP2);
+    } else {
+      header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+    }
     exit;
   }
 }
@@ -91,16 +113,33 @@ $SHA1 = str_replace("SHA1 Fingerprint=", '', x509_fingerprint($pem,$hash='sha1')
 $SHA1 = wordwrap($SHA1 , 2 , ':' , true );
 $loghost = "temperature.hugo.ro";
 $httpsPort = "443";
-$temp_min = isset($_POST["temp_min"]) ? $_POST["temp_min"]: 24;
-$temp_max = isset($_POST["temp_max"]) ? $_POST["temp_max"]: 26;
-$temp_dev = isset($_POST["temp_dev"]) ? $_POST["temp_dev"]: 0;
-$interval = isset($_POST["interval"]) ? $_POST["interval"]: 300000;
-$heater = isset($_POST["heater"]) ? $_POST["heater"] : 0;
-$manual = isset($_POST["manual"]) ? $_POST["manual"] : 0;
-$debug = isset($_POST["debug"]) ? $_POST["debug"] : 0;
+$temp_min = isset($_POST["temp_min"]) ? $_POST["temp_min"] : 24;
+$temp_max = isset($_POST["temp_max"]) ? $_POST["temp_max"] : 26;
+$temp_dev = isset($_POST["temp_dev"]) ? $_POST["temp_dev"] : 0;
+$interval = isset($_POST["interval"]) ? $_POST["interval"] : 300000;
+$heater = isset($_POST["heater"]) ? $_POST["heater"] : false;
+$manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
+$debug = isset($_POST["debug"]) ? $_POST["debug"] : false;
 $device = $_POST["device"];
-
+if ($device = "Donbot") {
+  $tempP0 = isset($_POST["tempP0"]) ? $_POST["tempP0"] : 23;
+  $hourP0 = isset($_POST["hourP0"]) ? $_POST["hourP0"] : 6;
+  $minuteP0 = isset($_POST["minuteP0"]) ? $_POST["minuteP0"] : 30;
+  $tempP1 = isset($_POST["tempP1"]) ? $_POST["tempP1"] : 25;
+  $hourP1 = isset($_POST["hourP1"]) ? $_POST["hourP1"] : 9;
+  $minuteP1 = isset($_POST["minuteP1"]) ? $_POST["minuteP1"] : 30;
+  $tempP2 = isset($_POST["tempP2"]) ? $_POST["tempP2"] : 22;
+  $hourP2 = isset($_POST["hourP2"]) ? $_POST["hourP2"] : 21;
+  $minuteP2 = isset($_POST["minuteP2"]) ? $_POST["minuteP2"] : 30;
+}
 print("<html><head>\n");
+?>
+<script type='text/javascript'>
+  function dev_change() {
+    location.reload()
+  }
+</script>
+<?php
 print("</head><body>\n");
 print("<link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico'/>\n");
 print("<title>IoT Thermostat - Settings</title>\n");
@@ -109,7 +148,7 @@ print("</head><body>\n<div class='content'>\n");
 print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
 print("IoT Thermostat - Settings</h2></div>\n");
 print("<form method='POST'>\n");
-print("Sensor hostname <select id='URL' name='URL'>\n");
+print("Sensor hostname <select id='URL' name='URL' onchange='dev_change()'>\n");
 print("<option value='http://192.168.178.103/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
 print("<option value='http://192.168.178.104/'>Donbot</option></select>\n");
@@ -121,8 +160,22 @@ print("<br>Refresh interval <input type='text' name='interval' size=1 value=$int
 print("<br>Temperature MIN <input type='text' name='temp_min' size=1 value=$temp_min> &deg;C / \n");
 print("Temperature MAX <input type='text' name='temp_max' size=1 value=$temp_max> &deg;C / \n");
 print("Sensor deviation <input type='text' name='temp_dev' size=1 value=$temp_dev> &deg;C\n");
-print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if ($heater) print(" checked=1"); print(">\n");
+if ($_POST["device"] == "Donbot") {
+  print("\t<input type='hidden' name='heater' value=1"); print(">\n");
+  print("<br> <b>Program 1:</b> Temperature <input type='text' name='tempP0' size=1 value=$tempP0> &deg;C \n");
+  print("Starting hour <input type='text' name='hourP0' size=1 value=$hourP0> \n");
+  print("Starting minute <input type='text' name='minuteP0' size=1 value=$minuteP0> \n");
+  print("<br><b> Program 2:</b> Temperature <input type='text' name='tempP1' size=1 value=$tempP1> &deg;C \n");
+  print("Starting hour <input type='text' name='hourP1' size=1 value=$hourP1> \n");
+  print("Starting minute <input type='text' name='minuteP1' size=1 value=$minuteP1> \n");
+  print("<br><b> Program 3:</b> Temperature <input type='text' name='tempP2' size=1 value=$tempP2> &deg;C \n");
+  print("Starting hour <input type='text' name='hourP2' size=1 value=$hourP2> \n");
+  print("Starting minute <input type='text' name='minuteP2' size=1 value=$minuteP2> \n");
+} else {
+  print("<br>It's a Heater\t<input type='checkbox' name='heater' value=1"); if ($heater) print(" checked=1"); print(">\n");
+}
 print("<br>Manual mode\t<input type='checkbox' name='manual' value=1"); if ($manual) print(" checked=1"); print(">\n");
+#print("<br>Relais On\t<input type='checkbox' name='status' value=1"); if ($status) print(" checked=1"); print(">\n");
 print("<br>[debug]\t<input type='checkbox' name='debug' value=1"); if ($debug) print(" checked=1"); print(">\n");
 print("<br><input type='submit' value='Submit' >\n");
 print("</form></div></body>\n");

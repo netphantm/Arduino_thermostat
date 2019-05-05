@@ -1,23 +1,4 @@
 <?php
-  if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
-    $settingsFileName = "settings-".$_POST['device'].".json";
-
-    file_put_contents($settingsFileName, $_POST['uploadJson']);
-    pr($_POST);
-    error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
-    print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
-    exit(200);
-  }
-
-  if (isset($_POST['device'])) {
-    $device = $_POST['device'];
-  } else {
-    $device = "Clamps";
-  }
-
-  // DEBUG
-  //print("POST data: \n"); pr($_POST);
-  //print("device= ".$device);
   function pr($var) {
     print '<pre>';
     print_r($var);
@@ -25,11 +6,6 @@
   }
 
   function readDataFile() {
-    if (isset($_POST['device'])) {
-      $device = $_POST['device'];
-    } else {
-      $device = "Clamps";
-    }
     if (empty($device)) {
       error_log("no \$device defined!");
       exit();
@@ -68,6 +44,26 @@
     }
     fclose($logFile);
     return array ($retStr, $date, $state, $temp_min, $temp_max, $temp, $heater, $manual, $interval, $temp_dev);
+  }
+
+  // DEBUG
+  //print("POST data: \n"); pr($_POST);
+  //print("device= ".$device);
+
+  if (isset($_POST['device'])) {
+    $device = $_POST['device'];
+  } else {
+    $device = "Clamps";
+  }
+
+  if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
+    $settingsFileName = "settings-".$_POST['device'].".json";
+
+    file_put_contents($settingsFileName, $_POST['uploadJson']);
+    pr($_POST);
+    error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
+    print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
+    exit(200);
   }
 ?>
 

@@ -10,7 +10,7 @@
     pr($_POST);
     error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
-    exit(200);
+    exit(0);
   }
 
   function pr($var) {
@@ -249,7 +249,7 @@
   print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
   print("<input type='hidden' name='interval' value=".readDataFile()[8]." />\n");
   print("<input type='hidden' name='device' value=".$device." />\n");
-  print("<button name='device' value=".$device.">Settings</button>\n");
+  print("<button name='device' value=".$_POST["device"].">Settings</button>\n");
 ?>
 </form></td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>

@@ -7,8 +7,8 @@
     $settingsFileName = "settings-".$_POST['device'].".json";
 
     file_put_contents($settingsFileName, $_POST['uploadJson']);
-    pr($_POST);
-    error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
+    //pr($_POST);
+    //error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     exit(0);
   }

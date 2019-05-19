@@ -3,11 +3,15 @@
   // DEBUG
   //print("POST data: \n"); pr($_POST);
 
+  $device = $_POST["device"];
+  if (!$device) {
+    $device = "Donbot";
+  }
+
   if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
     $settingsFileName = "settings-".$_POST['device'].".json";
 
     file_put_contents($settingsFileName, $_POST['uploadJson']);
-    //pr($_POST);
     //error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     exit(0);
@@ -23,7 +27,7 @@
     if (isset($_POST['device'])) {
       $device = $_POST['device'];
     } else {
-      $device = "Clamps";
+      $device = "Donbot";
     }
     if (empty($device)) {
       error_log("no \$device defined!");
@@ -54,8 +58,8 @@
         $temp_min = $line[2];
         $temp_max = $line[3];
         $date = $line[4];
-        $heater = $line[5];
-        $manual = $line[6];
+        $heater = ($line[5] == 1 ? true : false);
+        $manual = ($line[6] == 1 ? true : false);
         $interval = ($line[7] / 60000);
         $temp_dev = isset($line[8]) ? floatval($line[8]) : 0;
         $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
@@ -194,7 +198,7 @@
 
 <link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico' />
 <?php
-  print("<title>".$_POST["device"]." - Thermostat IoT</title>");
+  print("<title>".$device." - Thermostat IoT</title>");
 ?>
 <!-- meta http-equiv='refresh' content='60' -->
 </head>
@@ -202,7 +206,7 @@
 <div class='content'>
 <div align='center'><h2>ESP8266/WeMos D1 Mini Pro - DS18B20
 <?php
-  print("<br>".$_POST["device"]." - IoT Thermostat</h2></div>\n");
+  print("<br>".$device." - IoT Thermostat</h2></div>\n");
 ?>
 <div align='center'><table style='width:950px;'><tr><td>
 </td></tr></table>
@@ -231,7 +235,7 @@
 ?>
 <form id='dev' method='POST'>
 <?php
-  print("Device hostname: ".$_POST["device"]."\n");
+  print("Device hostname: ".$device."\n");
 ?>
   <select name='device' onchange='dev_change()'>
     <option>Select...</option>
@@ -240,16 +244,20 @@
     <option value='Donbot'>Donbot</option>
   </select>
 </form>
-<form id='settings' method='POST' action='/settings.php'>
 <?php
+  if ($device == 'Donbot') {
+    print("<form id='settings' method='POST' action='/temp/settings.php'>");
+  } else {
+    print("<form id='settings' method='POST' action='/settings.php'>");
+  }
   print("<input type='hidden' name='temp_min' value=".readDataFile()[3]." />\n");
   print("<input type='hidden' name='temp_max' value=".readDataFile()[4]." />\n");
   print("<input type='hidden' name='temp_dev' value=".readDataFile()[9]." />\n");
-  print("<input type='hidden' name='heater' value=".readDataFile()[6]." />\n");
-  print("<input type='hidden' name='manual' value=".readDataFile()[7]." />\n");
+  print("<input type='hidden' name='heater' value=".(readDataFile()[6] ?: 0)." />\n");
+  print("<input type='hidden' name='manual' value=".(readDataFile()[7] ?: 0)." />\n");
   print("<input type='hidden' name='interval' value=".readDataFile()[8]." />\n");
   print("<input type='hidden' name='device' value=".$device." />\n");
-  print("<button name='device' value=".$_POST["device"].">Settings</button>\n");
+  print("<button name='device' value=".$device.">Settings</button>\n");
 ?>
 </form></td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>

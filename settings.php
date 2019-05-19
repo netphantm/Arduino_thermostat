@@ -1,6 +1,6 @@
 <?php
 
-//print "POST data: \n"; pr($_POST);
+print "POST data: \n"; pr($_POST);
 
 // needed for DEBUG
 function pr($var) {
@@ -44,27 +44,19 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
     exit();
   } else {
     // write JSON to file
-    if (!isset(tempP0) {
-    $array = Array (
-      "SHA1" => $SHA1,
-      "loghost" => $loghost,
-      "httpsPort" => $httpsPort,
-      "interval" => $interval,
-      "temp_min" => $temp_min,
-      "temp_max" => $temp_max,
-      "temp_dev" => $temp_dev,
-      "heater" => $heater,
-      "manual" => $manual,
-      "debug" => $debug,
-      "tempP0" => $tempP0,
-      "hourP0" => $hourP0,
-      "minuteP0" => $minuteP0,
-      "tempP1" => $tempP1,
-      "hourP1" => $hourP1,
-      "minuteP1" => $minuteP1,
-      "tempP2" => $tempP2,
-      "hourP2" => $hourP2,
-      "minuteP2" => $minuteP2,
+    if ($_POST["device"] != "Donbot") {
+      $array = Array (
+        "SHA1" => $SHA1,
+        "loghost" => $loghost,
+        "httpsPort" => $httpsPort,
+        "interval" => $interval,
+        "temp_min" => $temp_min,
+        "temp_max" => $temp_max,
+        "temp_dev" => $temp_dev,
+        "heater" => $heater,
+        "manual" => $manual,
+        "debug" => $debug,
+      );
     } else {
       $arrayThermostat = Array (
         "SHA1" => $SHA1,
@@ -95,11 +87,11 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
           "temp" => $tempP2,
         ),
       );
+      $array = Array (
+        "thermostat" => $arrayThermostat,
+        "programs" => $arrayPrograms,
+      );
     }
-    $array = Array (
-      "thermostat" => $arrayThermostat,
-      "programs" => $arrayPrograms,
-    );
     $json = json_encode($array);
     $fjson = "/var/www/temp/settings-".$_POST["device"].".json";
     if ($json) {
@@ -109,7 +101,7 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
     }
 
     // send data to device
-    if ($device = "Donbot") {
+    if ($_POST["device"] == "Donbot") {
       header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug."&hourP0=".$hourP0."&minuteP0=".$minuteP0."&tempP0=".$tempP0."&hourP1=".$hourP1."&minuteP1=".$minuteP1."&tempP1=".$tempP1."&hourP2=".$hourP2."&minuteP2=".$minuteP2."&tempP2=".$tempP2);
     } else {
       header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug);
@@ -156,7 +148,7 @@ $heater = ($_POST["heater"] == "on" ? true : false);
 $heater = isset($_POST["heater"]) ? $_POST["heater"] : true;
 $manual = isset($_POST["manual"]) ? $_POST["manual"] : false;
 $debug = isset($_POST["debug"]) ? $_POST["debug"] : true;
-if ($device = "Donbot") {
+if ($_POST["device"] == "Donbot") {
   $hourP0 = isset($_POST["hourP0"]) ? $_POST["hourP0"] : 6;
   $minuteP0 = isset($_POST["minuteP0"]) ? $_POST["minuteP0"] : 30;
   $tempP0 = isset($_POST["tempP0"]) ? $_POST["tempP0"] : 23;
@@ -187,7 +179,7 @@ print("Sensor hostname <select id='URL' name='URL' onchange='dev_change()'>\n");
 print("<option value='http://192.168.178.103/'>Clamps</option>\n");
 print("<option value='http://192.168.178.105/'>Joey</option>\n");
 print("<option value='http://192.168.178.104/'>Donbot</option></select>\n");
-print("<input type='hidden' name='device' value=".$device." />\n");
+print("<input type='hidden' name='device' value=".$_POST["device"]." />\n");
 print("<br>Certificate SHA1 fingerprint <input type='text' name='SHA1' maxlength=60 size=42 value=$SHA1>\n");
 print("<br>Loghost <input type='text' name='loghost' size=11 value=$loghost>\n");
 print("Port <input type='text' name='httpsPort' size=2 value=$httpsPort></td></tr><tr><td>\n");

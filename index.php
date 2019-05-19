@@ -245,11 +245,7 @@
   </select>
 </form>
 <?php
-  if ($device == 'Donbot') {
-    print("<form id='settings' method='POST' action='/temp/settings.php'>");
-  } else {
-    print("<form id='settings' method='POST' action='/settings.php'>");
-  }
+  print("<form id='settings' method='POST' action='/settings.php'>");
   print("<input type='hidden' name='temp_min' value=".readDataFile()[3]." />\n");
   print("<input type='hidden' name='temp_max' value=".readDataFile()[4]." />\n");
   print("<input type='hidden' name='temp_dev' value=".readDataFile()[9]." />\n");

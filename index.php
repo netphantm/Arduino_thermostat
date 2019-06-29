@@ -5,7 +5,7 @@
 
   $device = $_POST["device"];
   if (!$device) {
-    $device = "Donbot";
+    $device = "Clamps";
   }
 
   if( isset($_POST['device']) && isset($_POST['uploadJson'])) {

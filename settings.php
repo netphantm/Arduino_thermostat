@@ -1,6 +1,6 @@
 <?php
 
-print "POST data: \n"; pr($_POST);
+//print "POST data: \n"; pr($_POST);
 
 // needed for DEBUG
 function pr($var) {
@@ -32,14 +32,14 @@ if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"])
   $minuteP2 = isset($_POST["minuteP2"]) ? $_POST["minuteP2"] : 30;
   $tempP2 = isset($_POST["tempP2"]) ? $_POST["tempP2"] : 21;
 
-  if(($temp_min > ($temp_max - 1)) || ($interval < 30000) || ($interval > 900000)) { // check if data is correct
+  if(($temp_min > ($temp_max - 1)) || ($interval < 30000) || ($interval > 1800000)) { // check if data is correct
     print("<html>\n");
     print("<body>\n");
     print("<link rel=\"shortcut icon\" href=\"https://www.hugo.ro/favicon.ico\"/>\n");
     print("<title>Thermostat IoT Settings</title>\n");
     print("<style>\n.content { background-color: red; width: 1000px; margin: auto; }</style>\n");
     print("</head><body>\n<div class=\"content\">\n");
-    print("<div align=\"center\"><h2><p>Temperature MIN must be SMALLER then Temperature MAX and interval must be beween 2-15 minutes!</p></h2><h1><p>Try again!</p></h1></div>");
+    print("<div align=\"center\"><h2><p>Temperature MIN must be SMALLER then Temperature MAX and interval must be beween 2-30 minutes!</p></h2><h1><p>Try again!</p></h1></div>");
     print("</body>");
     exit();
   } else {

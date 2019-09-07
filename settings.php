@@ -9,9 +9,9 @@ function pr($var) {
   print '</pre>';
 }
 
-if( !empty($_POST["URL"]) && !empty($_POST["SHA1"]) && !empty($_POST["loghost"]) && !empty($_POST["httpsPort"]) && !empty($_POST["interval"]) && !empty($_POST["temp_min"]) && !empty($_POST["temp_max"]) ) {
+if( !empty($_POST["SHA1"]) && !empty($_POST["loghost"]) && !empty($_POST["httpsPort"]) && !empty($_POST["interval"]) && !empty($_POST["temp_min"]) && !empty($_POST["temp_max"]) ) {
   // gather data
-  $URL = $_POST["URL"];
+  //$URL = $_POST["URL"];
   $SHA1 = $_POST["SHA1"];
   $loghost = $_POST["loghost"];
   $httpsPort = $_POST["httpsPort"];
@@ -159,19 +159,13 @@ if ($_POST["device"] == "Donbot") {
   $minuteP2 = isset($_POST["minuteP2"]) ? $_POST["minuteP2"] : 30;
   $tempP2 = isset($_POST["tempP2"]) ? $_POST["tempP2"] : 22;
 }
-print("<html><head>\n");
+print("<html>\n<head>\n");
 ?>
-<script type='text/javascript'>
-  function dev_change() {
-    location.reload()
-  }
-</script>
 <?php
-print("</head><body>\n");
 print("<link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico'/>\n");
 print("<title>IoT Thermostat - Settings</title>\n");
-print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: auto; }</style>\n");
-print("</head><body>\n<div class='content'>\n");
+print("<style>\n.content { background-color: lightcyan; width: 1000px; margin: auto; }\n</style>\n");
+print("</head>\n<body>\n<div class='content'>\n");
 print("<div align=\"center\"><h2>ESP8266/WeMos D1 Mini Pro - DS18B20<br>");
 print("IoT Thermostat - Settings</h2></div>\n");
 print("<form method='POST'>\n");
@@ -215,5 +209,10 @@ print("    }\n");
 print("  }\n");
 print("}\n");
 print("setSelectedIndex(document.getElementById('URL'),'".$_POST['device']."');\n");
-print("</script>\n");
+print("</script>\n</html>\n");
 ?>
+<script type='text/javascript'>
+  function dev_change() {
+    location.reload()
+  }
+</script>

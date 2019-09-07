@@ -1,6 +1,10 @@
 <?php
 
 //print "POST data: \n"; pr($_POST);
+error_log("data: \n");
+error_log(print_r($_SERVER ,true));
+error_log("\n");
+error_log(print_r($_POST ,true));
 
 // needed for DEBUG
 function pr($var) {
@@ -11,7 +15,7 @@ function pr($var) {
 
 if( !empty($_POST["SHA1"]) && !empty($_POST["loghost"]) && !empty($_POST["httpsPort"]) && !empty($_POST["interval"]) && !empty($_POST["temp_min"]) && !empty($_POST["temp_max"]) ) {
   // gather data
-  //$URL = $_POST["URL"];
+  $URL = $_POST["URL"];
   $SHA1 = $_POST["SHA1"];
   $loghost = $_POST["loghost"];
   $httpsPort = $_POST["httpsPort"];
@@ -102,9 +106,9 @@ if( !empty($_POST["SHA1"]) && !empty($_POST["loghost"]) && !empty($_POST["httpsP
 
     // send data to device
     if ($_POST["device"] == "Donbot") {
-      header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug."&hourP0=".$hourP0."&minuteP0=".$minuteP0."&tempP0=".$tempP0."&hourP1=".$hourP1."&minuteP1=".$minuteP1."&tempP1=".$tempP1."&hourP2=".$hourP2."&minuteP2=".$minuteP2."&tempP2=".$tempP2);
+      header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug."&hourP0=".$hourP0."&minuteP0=".$minuteP0."&tempP0=".$tempP0."&hourP1=".$hourP1."&minuteP1=".$minuteP1."&tempP1=".$tempP1."&hourP2=".$hourP2."&minuteP2=".$minuteP2."&tempP2=".$tempP2, true, 308);
     } else {
-      header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug);
+      header('Location: '.$_POST["URL"]."update?SHA1=".$SHA1."&loghost=".$loghost."&httpsPort=".$httpsPort."&interval=".$interval."&temp_min=".$temp_min."&temp_max=".$temp_max."&temp_dev=".$temp_dev."&heater=".$heater."&manual=".$manual."&debug=".$debug, true, 308);
     }
     exit;
   }

@@ -62,7 +62,7 @@
         $manual = ($line[6] == 1 ? true : false);
         $interval = ($line[7] / 60000);
         $temp_dev = isset($line[8]) ? floatval($line[8]) : 0;
-        $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp."], ";
+        $retStr = $retStr."\n      [new Date(".$date."), '".$state."', ".$temp.", ".(($temp_max - $temp_min) / 2 + $temp_min)."], ";
       }
     }
     fclose($logFile);
@@ -152,7 +152,8 @@
     var data = google.visualization.arrayToDataTable([
       [{label: 'Date', type: 'datetime', role: 'domain'},
       {label: 'State', type: 'string', role: 'tooltip', 'p': {'html': true}},
-      {label: 'Temperature', type: 'number', role: 'data'}],
+      {label: 'Temperature', type: 'number', role: 'data'},
+      {label: 'Temp_set', type: 'number', role: 'data'}],
 <?php
   print(readDataFile()[0]);
 ?>
@@ -165,6 +166,10 @@
       vAxis: {
         title: 'Temperature (Celsius)',
       },
+      series: {
+        0: { color: 'blue', curveType: 'function' },
+        1: { color: 'orange' },
+      },
       animation: {
         startup: true,
         easing: 'out',
@@ -176,7 +181,6 @@
       },
       title: 'Temperature Activity',
       focustarget: 'category',
-      curveType: 'function',
       backgroundColor: 'lightcyan',
       legend: { position: 'bottom' },
       chartArea: {width: '80%', height: '70%'},

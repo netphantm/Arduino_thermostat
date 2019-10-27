@@ -265,7 +265,7 @@
 <style>div.google-visualization-tooltip { ; }</style>
 <div id='curve_chart' style='width: 1000px; height: 600px'></div></div>
 <button id='change'>Change the date format</button>
-<div class='tooltip'><a href='mailto:mail@hugo.ro?subject=Thermostat IoT'>&copy;2018</a>
+<div class='tooltip'><a href='mailto:mail@hugo.ro?subject=Thermostat IoT'>&copy;2018</a> / <a href='https://github.com/netphantm/Arduino_home-thermostat'>Source</a>
 <span class='tooltiptext'>by Hugo (and others)</span></div>
 <script type='text/javascript'>
   function dev_change() {

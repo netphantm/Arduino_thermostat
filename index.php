@@ -1,16 +1,16 @@
 <?php
-
+  $numLines = $_POST['Lines'] ? $_POST['Lines'] : 60;
   // DEBUG
+  //print("numLines=".$numLines."<br>\n");
   //print("POST data: \n"); pr($_POST);
 
   $device = $_POST["device"];
-  if (!$device) {
-    $device = "Clamps";
+  if (! $device) {
+    $device = "Donbot";
   }
 
   if( isset($_POST['device']) && isset($_POST['uploadJson'])) {
     $settingsFileName = "settings-".$_POST['device'].".json";
-
     file_put_contents($settingsFileName, $_POST['uploadJson']);
     //error_log("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
     print("written JSON to file ".$settingsFileName.": ".$_POST['uploadJson']."\n");
@@ -33,11 +33,10 @@
       error_log("no \$device defined!");
       exit();
     }
+    global $numLines;
     $searchString = ',';
-    $numLines = 60;
     $maxLineLength = 100;
     $retStr = "";
-
     $logFileName = "temp-log-".$device.".csv";
     $logFile = fopen($logFileName, 'r');
     $data = fseek($logFile, -($numLines * $maxLineLength), SEEK_END);
@@ -45,7 +44,6 @@
     while (!feof($logFile)) {
       $lines[] = fgets($logFile);
     }
-    //print pr($lines);
 
     $c = count($lines);
     $i = $c >= $numLines? $c-$numLines: 0;
@@ -258,18 +256,49 @@
   print("<input type='hidden' name='interval' value=".readDataFile()[8]." />\n");
   print("<input type='hidden' name='device' value=".$device." />\n");
   print("<button name='device' value=".$device.">Settings</button>\n");
+  print("</form>Zoom Graph: \n");
+  print("<form id='zoomin' method='POST'>\n");
+  print("<input type='hidden' name='device' value=".$device." />\n");
+  print("<button name='Lines' id='Linessub' onclick='zoomin()'>+</button>\n");
+  print("</form>\n");
+  print("<form id='zoomout' method='POST'>\n");
+  print("<input type='hidden' name='device' value=".$device." />\n");
+  print("<button name='Lines' id='Linesadd' onclick='zoomout()'>-</button>\n");
+  print("</form>\n");
+  print("<form id='reset' method='POST'>\n");
+  print("<input type='hidden' name='device' value=".$device." />\n");
+  print("<button name='Lines' id='Linesres' onclick='reset()'>Reset</button>\n");
+  print("</form></td><td>\n");
 ?>
-</form></td><td>
 <div id='chart_divTemp' style='width: 140px;'></div>
 </td></tr></table>
 <style>div.google-visualization-tooltip { ; }</style>
 <div id='curve_chart' style='width: 1000px; height: 600px'></div></div>
 <button id='change'>Change the date format</button>
 <div class='tooltip'><a href='mailto:mail@hugo.ro?subject=Thermostat IoT'>&copy;2018</a> / <a href='https://github.com/netphantm/Arduino_thermostat'>Source</a>
-<span class='tooltiptext'>by Hugo (and others)</span></div>
+<span class='tooltiptext'>by Hugo<p>(and others)</span></div>
 <script type='text/javascript'>
+  function zoomin() {
+    var numLines = "<?php echo $numLines ?>";
+    if (numLines >= 40) {
+      numLines = +numLines - 20;
+      //alert('numLines='+numLines);
+    }
+    document.getElementById('Linessub').value = numLines;
+  }
+  function zoomout() {
+    var numLines = "<?php echo $numLines ?>";
+    if (numLines <= 200) {
+      numLines = +numLines + 20;
+    }
+    document.getElementById('Linesadd').value = numLines;
+  }
+  function reset() {
+    var numLines = 60;
+    document.getElementById('Linesres').value = numLines;
+  }
   function dev_change() {
-    document.getElementById('dev').submit()
+    document.getElementById('dev').submit();
   }
   (function()
 <?php

@@ -1,8 +1,8 @@
 <?php
-  $numLines = $_POST['Lines'] ? $_POST['Lines'] : 60;
   // DEBUG
-  //print("numLines=".$numLines."<br>\n");
   //print("POST data: \n"); pr($_POST);
+
+  $numLines = $_POST['Lines'] ? $_POST['Lines'] : 60;
 
   $device = $_POST["device"];
   if (! $device) {
@@ -150,8 +150,8 @@
     var data = google.visualization.arrayToDataTable([
       [{label: 'Date', type: 'datetime', role: 'domain'},
       {label: 'State', type: 'string', role: 'tooltip', 'p': {'html': true}},
-      {label: 'Temperature', type: 'number', role: 'data'},
-      {label: 'Temp_set', type: 'number', role: 'data'}],
+      {label: 'Actual Temp', type: 'number', role: 'data'},
+      {label: 'Nominal Temp', type: 'number', role: 'data'}],
 <?php
   print(readDataFile()[0]);
 ?>
@@ -171,11 +171,11 @@
       animation: {
         startup: true,
         easing: 'out',
-        duration: 1000,
+        duration: 700,
       },
       tooltip: {
         isHtml: true,
-        trigger: 'selection',
+        //trigger: 'selection',
       },
       title: 'Temperature Activity',
       focustarget: 'category',
@@ -200,7 +200,7 @@
 
 <link rel='shortcut icon' href='https://www.hugo.ro/favicon.ico' />
 <?php
-  print("<title>".$device." - Thermostat IoT</title>");
+  print("<title>".$device." - IoT Thermostat</title>");
 ?>
 <!-- meta http-equiv='refresh' content='60' -->
 </head>
@@ -265,9 +265,9 @@
   print("<input type='hidden' name='device' value=".$device." />\n");
   print("<button name='Lines' id='Linesadd' onclick='zoomout()'>-</button>\n");
   print("</form>\n");
-  print("<form id='reset' method='POST'>\n");
+  print("<form id='zoomreset' method='POST'>\n");
   print("<input type='hidden' name='device' value=".$device." />\n");
-  print("<button name='Lines' id='Linesres' onclick='reset()'>Reset</button>\n");
+  print("<button name='Lines' id='Linesrst' onclick='zoomreset()'>Reset</button>\n");
   print("</form></td><td>\n");
 ?>
 <div id='chart_divTemp' style='width: 140px;'></div>
@@ -278,6 +278,9 @@
 <div class='tooltip'><a href='mailto:mail@hugo.ro?subject=Thermostat IoT'>&copy;2018</a> / <a href='https://github.com/netphantm/Arduino_thermostat'>Source</a>
 <span class='tooltiptext'>by Hugo<p>(and others)</span></div>
 <script type='text/javascript'>
+  function dev_change() {
+    document.getElementById('dev').submit();
+  }
   function zoomin() {
     var numLines = "<?php echo $numLines ?>";
     if (numLines >= 40) {
@@ -293,12 +296,9 @@
     }
     document.getElementById('Linesadd').value = numLines;
   }
-  function reset() {
+  function zoomreset() {
     var numLines = 60;
-    document.getElementById('Linesres').value = numLines;
-  }
-  function dev_change() {
-    document.getElementById('dev').submit();
+    document.getElementById('Linesrst').value = numLines;
   }
   (function()
 <?php

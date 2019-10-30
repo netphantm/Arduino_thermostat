@@ -130,14 +130,14 @@
       ['Label', 'Value'],
 <?php
   print("      ['Temp °C', ".readDataFile()[5]."], ]);\n");
-?>
-    var options = {
-      width: 250, height: 150,
-      min: -10, max: 50,
-<?php
-  print("      greenFrom: -10, greenTo: ".readDataFile()[3].",\n");
+  print("      var options = {\n");
+  print("      width: 250, height: 150,\n");
+  $from = (readDataFile()[3] < (readDataFile()[5] + readDataFile()[9])) ? (readDataFile()[3] - 5) : (readDataFile()[3] - 5);
+  $to = (readDataFile()[4] > (readDataFile()[5] + readDataFile()[9])) ? (readDataFile()[5] + 5) : (readDataFile()[4] + 5);
+  print("      min: ".$from.", max: ".$to.",\n");
+  print("      greenFrom: .".$from.", greenTo: ".readDataFile()[3].",\n");
   print("      yellowFrom: ".readDataFile()[3].", yellowTo: ".readDataFile()[4].",\n");
-  print("      redFrom: ".readDataFile()[4].", redTo: 50,\n");
+  print("      redFrom: ".readDataFile()[4].", redTo: ".$to.",\n");
 ?>
       minorTicks: 5,
       focusTarget: 'category',
